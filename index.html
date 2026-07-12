@@ -13,6 +13,14 @@
   </head>
   <body>
     <div id="app" class="app"></div>
-    <script src="script/index.js"></script>
+
+    <script type="module">
+      import { loadModule } from 'https://klesun.github.io/ts-browser/src/ts-browser.js';
+      // language=file-reference
+      const entryScriptPath = './script/index.ts';
+      loadModule(entryScriptPath).then((indexModule) => {
+        return indexModule.default(document.getElementById('app'));
+      });
+    </script>
   </body>
 </html>
