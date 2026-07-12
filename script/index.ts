@@ -1,9 +1,39 @@
 import { renderInitialMarkup } from './initial-markup';
 import { loadData } from './database';
-import { bindIOEvents, render } from './render';
+import { render, renderRootElement, rerenderViewElement } from './render';
+import { t } from './lang/index';
+import { LANG_EN_US } from './lang/en_US';
+import { el } from './utils';
+import { defaultState } from './state';
 
 /* ============================= INIT ============================= */
 async function init(rootEl: HTMLElement) {
+  if (!window.indexedDB) {
+    const emptyStateEl = el('div', { className: 'empty-state' }, [
+      el('div', { className: 'display' }, LANG_EN_US.indexedDB.unavailable),
+      el('p', {}, LANG_EN_US.indexedDB.unsupported),
+    ]);
+    renderRootElement(rootEl, emptyStateEl);
+    return;
+  }
+
+  renderRootElement(
+    rootEl,
+    el('div', { className: 'empty-state' }, [
+      el('div', { className: 'display' }, t('loading')),
+    ])
+  );
+
+  try {
+    const data = await loadData();
+    Object.assign(window.state, data);
+  } catch (e) {
+    const err = e as Error;
+    console.error(err);
+    alert(err.message);
+    Object.assign(window.state, defaultState);
+  }
+
   renderInitialMarkup(rootEl);
 
   const viewEl = rootEl.querySelector('#view') as HTMLElement;
@@ -14,23 +44,6 @@ async function init(rootEl: HTMLElement) {
 
   window.state.viewEl = viewEl;
 
-  if (!window.indexedDB) {
-    window.state.viewEl.innerHTML = `<div class="empty-state"><div class="display">IndexedDB недоступен</div><p>Этот браузер не поддерживает IndexedDB, приложение не сможет сохранять данные.</p></div>`;
-    return;
-  }
-  window.state.viewEl.innerHTML = `<div class="empty-state"><div class="display">Загрузка…</div></div>`;
-  try {
-    const data = await loadData();
-    window.state.ingredients = data.ingredients;
-    window.state.fridge = data.fridge;
-    window.state.recipes = data.recipes;
-  } catch (e) {
-    console.error(e);
-    window.state.ingredients = [];
-    window.state.fridge = {};
-    window.state.recipes = [];
-  }
-  bindIOEvents();
   render();
 }
 

@@ -1,17 +1,20 @@
+import { t } from '../lang/index';
 import { saveData } from '../database';
 import { fridgeEntry, getOrCreateIngredient } from '../ingredient';
-import { el, escapeAttr, escapeHtml } from '../utils';
+import { units } from '../options';
+import { rerenderViewElement } from '../render';
+import { el } from '../utils';
 
 export function renderFridgeTab() {
   const addProductEl = el('div', { className: 'card' }, [
-    el('h3', { style: { marginTop: '0' }, text: 'Мои продукты' }),
+    el('h3', { style: { marginTop: '0' }, text: t('fridge.title') }),
     el('div', { className: 'field-row' }, [
       el('div', { className: 'field', style: { flex: '2' } }, [
-        el('label', { text: 'Название' }),
+        el('label', { text: t('fridge.fields.name.label') }),
         el('input', {
           type: 'text',
           id: 'newIngName',
-          placeholder: 'например, куриное филе',
+          placeholder: t('fridge.fields.name.placeholder'),
           list: 'ingSuggestList',
         }),
         el('datalist', { id: 'ingSuggestList' }, [
@@ -21,53 +24,52 @@ export function renderFridgeTab() {
         ]),
       ]),
       el('div', { className: 'field' }, [
-        el('label', { text: 'Количество' }),
+        el('label', { text: t('fridge.fields.amount.label') }),
         el('input', {
           type: 'number',
           id: 'newIngAmount',
-          placeholder: 'напр. 500',
+          placeholder: t('fridge.fields.amount.placeholder'),
           min: 0,
           step: 'any',
         }),
       ]),
       el('div', { className: 'field' }, [
-        el('label', { text: 'Ед. изм.' }),
+        el('label', { text: t('fridge.fields.unit.label') }),
         el('input', {
           type: 'text',
           id: 'newIngUnit',
-          placeholder: 'г, шт, л…',
+          placeholder: t('fridge.fields.unit.placeholder'),
           list: 'unitSuggestList',
         }),
         el('datalist', { id: 'unitSuggestList' }, [
-          el('option', { value: 'г' }),
-          el('option', { value: 'кг' }),
-          el('option', { value: 'мл' }),
-          el('option', { value: 'л' }),
-          el('option', { value: 'шт' }),
-          el('option', { value: 'ст.л.' }),
-          el('option', { value: 'ч.л.' }),
-          el('option', { value: 'по вкусу' }),
+          ...units.map((u) => el('option', { value: t(`units.${u}`) })),
         ]),
       ]),
     ]),
-    el('button', { className: 'btn', id: 'addIngBtn', text: 'Добавить продукт' })
+    el('button', {
+      className: 'btn',
+      id: 'addIngBtn',
+      text: t('fridge.actions.addProduct'),
+    }),
   ]);
 
   const myProductsTitleEl = el('div', { className: 'section-title' }, [
-    `Мои продукты (${window.state.ingredients.length})`,
+    t('fridge.productsList.title', { count: window.state.ingredients.length }),
   ]);
 
-  window.state.viewEl.innerHTML = '';
-  window.state.viewEl.append(addProductEl, myProductsTitleEl);
+  const children = [addProductEl, myProductsTitleEl];
 
   if (window.state.ingredients.length === 0) {
     const noProductsEl = el('div', { className: 'empty-state' }, [
-      el('div', { className: 'display', text: 'Список пуст' }),
+      el('div', {
+        className: 'display',
+        text: t('fridge.productsList.emptyState.title'),
+      }),
       el('p', {
-        text: 'Добавьте продукты, которые у вас есть — это позволит фильтровать рецепты.',
+        text: t('fridge.productsList.emptyState.hint'),
       }),
     ]);
-    window.state.viewEl.append(noProductsEl);
+    children.push(noProductsEl);
   } else {
     const productsListEl = el('div', { className: 'fridge-list' }, [
       ...window.state.ingredients
@@ -87,28 +89,33 @@ export function renderFridgeTab() {
                 type: 'number',
                 min: 0,
                 step: 'any',
-                placeholder: 'кол-во',
+                placeholder: t(
+                  'fridge.productsList.ingredient.fields.quantity.placeholder'
+                ),
                 value: fe.amount != null ? fe.amount : '',
                 'data-amount': ing.id,
               }),
               el('input', {
                 type: 'text',
-                placeholder: 'ед.',
+                placeholder: t(
+                  'fridge.productsList.ingredient.fields.unit.placeholder'
+                ),
                 value: fe.unit ? fe.unit : '',
                 'data-unit': ing.id,
               }),
             ]),
             el('button', {
               className: 'del',
-              'data-delIng': ing.id,
-              text: 'Удалить',
+              'data-deling': ing.id,
+              text: t('fridge.productsList.actions.remove'),
             }),
           ]);
         }),
     ]);
-    window.state.viewEl.append(productsListEl);
+    children.push(productsListEl);
   }
 
+  rerenderViewElement(...children);
   bindFridgeTabEvents();
 }
 
@@ -118,7 +125,9 @@ export function bindFridgeTabEvents() {
 
   addBtn.addEventListener('click', () => {
     const nameInput = document.getElementById('newIngName') as HTMLInputElement;
-    const amountInput = document.getElementById('newIngAmount') as HTMLInputElement;
+    const amountInput = document.getElementById(
+      'newIngAmount'
+    ) as HTMLInputElement;
     const unitInput = document.getElementById('newIngUnit') as HTMLInputElement;
     const name = nameInput.value.trim();
     if (!name) {
@@ -176,22 +185,26 @@ export function bindFridgeTabEvents() {
       saveData();
     });
   });
-  window.state.viewEl.querySelectorAll('[data-delIng]').forEach((button) => {
+  window.state.viewEl.querySelectorAll('[data-deling]').forEach((button) => {
     const btn = button as HTMLButtonElement;
 
     btn.addEventListener('click', () => {
-      const id = btn.dataset.delIng;
+      const id = btn.dataset.deling;
       if (!id) return;
 
       const usedIn = window.state.recipes.filter((r) =>
         r.items.some((it) => it.ingredientId === id)
       );
-      let msg = 'Удалить этот продукт из списка?';
+      let msg = t('fridge.productsList.actions.confirmDelete');
       if (usedIn.length) {
-        msg = `Этот продукт используется в ${usedIn.length} рецепт(ах). При удалении он также будет убран из них. Продолжить?`;
+        msg = t('fridge.productsList.actions.confirmDeleteWhenUsed', {
+          count: usedIn.length,
+        });
       }
       if (confirm(msg)) {
-        window.state.ingredients = window.state.ingredients.filter((i) => i.id !== id);
+        window.state.ingredients = window.state.ingredients.filter(
+          (i) => i.id !== id
+        );
         delete window.state.fridge[id];
         window.state.recipes.forEach((r) => {
           r.items = r.items.filter((it) => it.ingredientId !== id);

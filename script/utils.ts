@@ -4,6 +4,19 @@ export function uid(): string {
     : 'id-' + Date.now() + '-' + Math.random().toString(16).slice(2);
 }
 
+export function pick<T extends object, K extends readonly (keyof T)[]>(
+  obj: T,
+  keys: K
+): Pick<T, K[number]> {
+  const result = {} as Pick<T, K[number]>;
+  keys.forEach((k) => {
+    if (k in obj) {
+      result[k] = obj[k];
+    }
+  });
+  return result;
+}
+
 export function escapeHtml(str: string): string {
   return String(str ?? '').replace(
     /[&<>"']/g,
@@ -21,17 +34,36 @@ export function escapeAttr(str: string): string {
   return escapeHtml(str);
 }
 
+export type ChildElement =
+  | HTMLElement
+  | string
+  | number
+  | null
+  | undefined
+  | boolean;
+
 type Attrs = {
   text?: string;
   className?: string | (string | undefined | null)[];
+  class?: never; // deprecated, use className
   style?: Partial<CSSStyleProperties>;
   [key: string]: any;
 };
 
+function appendChild(node: HTMLElement, child: ChildElement) {
+  if (child == null || typeof child === 'boolean') return;
+
+  if (typeof child === 'string' || typeof child === 'number') {
+    node.appendChild(document.createTextNode(escapeHtml(String(child))));
+  } else {
+    node.appendChild(child);
+  }
+}
+
 export function el(
   tag: string,
   attrs: Attrs = {},
-  children: (HTMLElement | string | null | undefined)[] = []
+  children: ChildElement | ChildElement[] = []
 ) {
   const node = document.createElement(tag);
   Object.entries(attrs).forEach(([k, v]) => {
@@ -64,9 +96,10 @@ export function el(
     }
     node.setAttribute(k, v);
   });
-  children.forEach((c) => {
-    if (c == null) return;
-    node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-  });
+
+  const childrenArray = Array.isArray(children) ? children : [children];
+
+  childrenArray.forEach((c) => appendChild(node, c));
+
   return node;
 }

@@ -1,7 +1,10 @@
+import { t } from '../lang/index';
 import { saveData } from '../database';
 import { getOrCreateIngredient, ingredientName } from '../ingredient';
+import { units } from '../options';
+import { rerenderViewElement } from '../render';
 import { Recipe, RecipeItem } from '../state';
-import { el, escapeAttr, escapeHtml, uid } from '../utils';
+import { el, uid } from '../utils';
 
 export function startDraftFromRecipe(recipe?: Recipe) {
   if (recipe) {
@@ -34,38 +37,38 @@ export function renderAddTab() {
     window.state.draftItems.forId = editing ? editing.id : 'new';
   }
 
-  window.state.viewEl.innerHTML = '';
-
   const recipeFormEl = el('div', { className: 'card' }, [
     el('h3', {
       style: { marginTop: '0' },
-      text: editing ? 'Редактировать рецепт' : 'Новый рецепт',
+      text: editing ? t('addRecipe.editRecipe') : t('addRecipe.addRecipe'),
     }),
     el('div', { className: 'field' }, [
-      el('label', { text: 'Название' }),
+      el('label', { text: t('addRecipe.fields.name.label') }),
       el('input', {
         type: 'text',
         id: 'recName',
-        placeholder: 'например, Паста Карбонара',
+        placeholder: t('addRecipe.fields.name.placeholder'),
         value: editing ? editing.name : draftName || '',
       }),
     ]),
     el('div', { className: 'field' }, [
-      el('label', { text: 'Описание / способ приготовления' }),
+      el('label', { text: t('addRecipe.fields.description.label') }),
       el('textarea', {
         id: 'recDesc',
-        placeholder: 'Короткое описание или шаги приготовления…',
+        placeholder: t('addRecipe.fields.description.placeholder'),
         text: editing ? editing.description || '' : draftDesc || '',
       }),
     ]),
-    el('label', { text: 'Ингредиенты' }),
+    el('label', { text: t('addRecipe.fields.ingredients.label') }),
     el('div', { id: 'ingRows' }, [
       ...window.state.draftItems.items.map((item, idx) =>
         el('div', { className: 'ing-row', 'data-idx': idx.toString() }, [
           el('div', { className: 'field' }, [
             el('input', {
               type: 'text',
-              placeholder: 'продукт',
+              placeholder: t(
+                'addRecipe.fields.ingredients.fields.name.placeholder'
+              ),
               value: item.name,
               'data-role': 'name',
               list: 'ingSuggestList2',
@@ -76,7 +79,9 @@ export function renderAddTab() {
               type: 'number',
               min: 0,
               step: 'any',
-              placeholder: 'кол-во',
+              placeholder: t(
+                'addRecipe.fields.ingredients.fields.quantity.placeholder'
+              ),
               value: item.amount != null ? item.amount.toString() : '',
               'data-role': 'amount',
             }),
@@ -84,7 +89,9 @@ export function renderAddTab() {
           el('div', { className: 'field' }, [
             el('input', {
               type: 'text',
-              placeholder: 'ед.',
+              placeholder: t(
+                'addRecipe.fields.ingredients.fields.unit.placeholder'
+              ),
               value: item.unit || '',
               'data-role': 'unit',
               list: 'unitSuggestList2',
@@ -93,7 +100,7 @@ export function renderAddTab() {
           el('button', {
             className: 'icon-btn',
             'data-remove': idx.toString(),
-            title: 'Удалить строку',
+            title: t('addRecipe.fields.ingredients.actions.removeRow'),
             text: '✕',
           }),
         ])
@@ -103,17 +110,10 @@ export function renderAddTab() {
       ...window.state.ingredients.map((i) => el('option', { value: i.name })),
     ]),
     el('datalist', { id: 'unitSuggestList2' }, [
-      el('option', { value: 'г' }),
-      el('option', { value: 'кг' }),
-      el('option', { value: 'мл' }),
-      el('option', { value: 'л' }),
-      el('option', { value: 'шт' }),
-      el('option', { value: 'ст.л.' }),
-      el('option', { value: 'ч.л.' }),
-      el('option', { value: 'по вкусу' }),
+      ...units.map((u) => el('option', { value: t(`units.${u}`) })),
     ]),
     el('button', { className: ['btn', 'ghost'], id: 'addRowBtn' }, [
-      '+ добавить ингредиент',
+      t('addRecipe.fields.ingredients.actions.addRow'),
     ]),
     el(
       'div',
@@ -126,21 +126,23 @@ export function renderAddTab() {
       },
       [
         el('button', { className: 'btn', id: 'saveRecipeBtn' }, [
-          editing ? 'Сохранить изменения' : 'Добавить рецепт',
+          editing ? t('common.change') : t('addRecipe.actions.addRecipe'),
         ]),
         editing
-          ? el('button', { className: ['btn', 'secondary'], id: 'cancelEditBtn' }, [
-              'Отменить',
-            ])
+          ? el(
+              'button',
+              { className: ['btn', 'secondary'], id: 'cancelEditBtn' },
+              [t('common.cancel')]
+            )
           : null,
       ]
     ),
     el('div', {
       className: 'section-title',
-      text: `Все рецепты (${window.state.recipes.length})`,
+      text: t('addRecipe.recipesCount', { count: window.state.recipes.length }),
     }),
     window.state.recipes.length === 0
-      ? el('div', { className: 'empty-hint', text: 'Рецептов пока нет.' })
+      ? el('div', { className: 'empty-hint', text: t('addRecipe.noRecipes') })
       : el(
           'div',
           { className: 'recipe-list-compact' },
@@ -153,13 +155,17 @@ export function renderAddTab() {
                   el('div', { className: 'rname', text: r.name }),
                   el('div', {
                     className: 'rmeta',
-                    text: `${r.items.length} ингредиент(ов)`,
+                    text: t('addRecipe.ingredientsCount', {
+                      count: r.items.length,
+                    }),
                   }),
                 ]),
                 el('div', { className: 'rlc-actions' }, [
-                  el('button', { 'data-editc': r.id }, ['Изменить']),
+                  el('button', { 'data-editc': r.id }, [
+                    t('common.edit'),
+                  ]),
                   el('button', { className: 'danger', 'data-delc': r.id }, [
-                    'Удалить',
+                    t('common.delete'),
                   ]),
                 ]),
               ])
@@ -167,7 +173,7 @@ export function renderAddTab() {
         ),
   ]);
 
-  window.state.viewEl.appendChild(recipeFormEl);
+  rerenderViewElement(recipeFormEl);
   bindAddTabEvents(editing);
 }
 
@@ -237,7 +243,7 @@ export function bindAddTabEvents(editing?: Recipe) {
       });
     });
     if (items.length === 0) {
-      alert('Добавьте хотя бы один ингредиент.');
+      alert(t('addRecipe.actions.saveAlert.noIngredients'));
       return;
     }
     if (editing) {
@@ -295,7 +301,7 @@ export function bindAddTabEvents(editing?: Recipe) {
   window.state.viewEl.querySelectorAll('[data-delc]').forEach((button) => {
     const btn = button as HTMLButtonElement;
     btn.addEventListener('click', () => {
-      if (confirm('Удалить этот рецепт?')) {
+      if (confirm(t('addRecipe.actions.confirmDelete'))) {
         window.state.recipes = window.state.recipes.filter(
           (r) => r.id !== btn.dataset.delc
         );

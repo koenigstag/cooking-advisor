@@ -1,3 +1,4 @@
+import { t } from '../lang/index';
 import { saveData } from '../database';
 import {
   evaluateRecipe,
@@ -5,8 +6,10 @@ import {
   fridgeEntry,
   ingredientName,
 } from '../ingredient';
+import { rerenderViewElement } from '../render';
 import { Recipe } from '../state';
-import { el, escapeHtml } from '../utils';
+import { el } from '../utils';
+import { setActiveTab } from './index';
 
 export function renderRecipesTab() {
   const hasIngredients = window.state.ingredients.length > 0;
@@ -18,43 +21,55 @@ export function renderRecipesTab() {
     throw new Error('viewEl is not set');
   }
 
-  console.debug('renderRecipesTab: filterOpen=', filterOpen, 'hasIngredients=', hasIngredients, 'hasRecipes=', hasRecipes, 'recipeSearch=', window.state.recipeSearch);
-
-  viewEl.innerHTML = '';
-
   const filterPanelEl = el('div', { className: 'filter-panel' }, [
     el('div', { className: 'fp-head' }, [
-      el('h3', { text: 'Что у меня есть' }),
-      el('a', {
-        id: 'toggleFilter',
-        text: filterOpen ? 'свернуть' : 'развернуть',
-      }),
-      ...(filterOpen
-        ? !hasIngredients
-          ? [
-              el('div', { className: 'empty-hint' }, [
-                'Продуктов пока нет. Добавьте их во вкладке «Мои продукты» или прямо при создании рецепта.',
-              ]),
-            ]
-          : [
-              el('div', { className: 'chip-row', id: 'filterChips' }, [
-                ...window.state.ingredients
-                  .slice()
-                  .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
-                  .map((ing) => {
-                    const fe = fridgeEntry(ing.id);
-                    return el(
-                      'span',
-                      {
-                        className: `chip ${fe.inStock ? 'on' : ''}`,
-                        'data-ing': ing.id,
-                      },
-                      [el('span', { className: 'dot' }), ing.name]
-                    );
-                  }),
-              ]),
-            ]
-        : ([] as HTMLElement[])),
+      el('h3', { text: t('recipeList.whatIHave') }),
+      ...(!hasIngredients
+        ? [
+            el('div', { className: 'empty-hint' }, [
+              t('recipeList.noIngredientsHint'),
+            ]),
+          ]
+        : [
+            el(
+              'div',
+              {
+                style: {
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  minHeight: '30px',
+                },
+              },
+              [
+                filterOpen
+                  ? el('div', { className: 'chip-row', id: 'filterChips' }, [
+                      ...window.state.ingredients
+                        .slice()
+                        .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
+                        .map((ing) => {
+                          const fe = fridgeEntry(ing.id);
+                          return el(
+                            'span',
+                            {
+                              className: `chip ${fe.inStock ? 'on' : ''}`,
+                              'data-ing': ing.id,
+                            },
+                            [el('span', { className: 'dot' }), ing.name]
+                          );
+                        }),
+                    ])
+                  : null,
+
+                el('a', {
+                  id: 'toggleFilter',
+                  text: filterOpen
+                    ? t('recipeList.collapse')
+                    : t('recipeList.expand'),
+                }),
+              ]
+            ),
+          ]),
     ]),
     el(
       'div',
@@ -72,7 +87,7 @@ export function renderRecipesTab() {
         el('input', {
           type: 'text',
           id: 'recipeSearch',
-          placeholder: 'Поиск по названию…',
+          placeholder: t('recipeList.searchPlaceholder'),
           value: window.state.recipeSearch,
         }),
         el(
@@ -83,7 +98,13 @@ export function renderRecipesTab() {
               color: 'var(--ink-soft)',
             },
           },
-          [hasRecipes ? window.state.recipes.length + ' рец.' : '']
+          [
+            hasRecipes
+              ? window.state.recipes.length +
+                ' ' +
+                t('recipeList.recipesEnding')
+              : '',
+          ]
         ),
       ]
     ),
@@ -91,15 +112,14 @@ export function renderRecipesTab() {
 
   if (!hasRecipes) {
     const noRecipesEl = el('div', { className: 'empty-state' }, [
-      el('div', { className: 'display' }, ['Пока нет ни одного рецепта']),
-      el('p', {}, [
-        'Добавьте первый рецепт во вкладке «Добавить рецепт» — и он появится здесь.',
-      ]),
+      el('div', { className: 'display' }, t('recipeList.noRecipesTitle')),
+      el('p', {}, t('recipeList.noRecipesHint')),
     ]);
-
     filterPanelEl.appendChild(noRecipesEl);
-    window.state.viewEl.appendChild(filterPanelEl);
+
+    rerenderViewElement(filterPanelEl);
     bindRecipesTabEvents();
+
     return;
   }
 
@@ -118,7 +138,7 @@ export function renderRecipesTab() {
 
   if (list.length === 0) {
     const noResultsEl = el('div', { className: 'empty-state' }, [
-      el('div', { className: 'display' }, ['Ничего не найдено']),
+      el('div', { className: 'display' }, t('recipeList.noResultsTitle')),
     ]);
     filterPanelEl.appendChild(noResultsEl);
   } else {
@@ -128,10 +148,7 @@ export function renderRecipesTab() {
     filterPanelEl.appendChild(recipeCardsEl);
   }
 
-  console.debug('renderRecipesTab: filterOpen=', filterOpen, 'hasIngredients=', hasIngredients, 'hasRecipes=', hasRecipes, 'recipeSearch=', window.state.recipeSearch, 'list.length=', list.length);
-
-  viewEl.appendChild(filterPanelEl);
-
+  rerenderViewElement(filterPanelEl);
   bindRecipesTabEvents();
 }
 
@@ -143,17 +160,25 @@ export function renderRecipeCard(
   const fullMatch = ev.status === 'full';
   let statusLabelEl: HTMLElement;
   if (ev.status === 'full')
-    statusLabelEl = el('span', { className: 'status-label' }, [
-      'Можно готовить',
-    ]);
+    statusLabelEl = el(
+      'span',
+      { className: 'status-label' },
+      t('recipeList.status.canCook')
+    );
   else if (ev.status === 'partial')
-    statusLabelEl = el('span', { className: ['status-label', 'partial'] }, [
-      `Не хватает ${ev.missingList.length + ev.warnList.length}`,
-    ]);
+    statusLabelEl = el(
+      'span',
+      { className: ['status-label', 'partial'] },
+      t('recipeList.status.missingIngredients', {
+        count: ev.missingList.length + ev.warnList.length,
+      })
+    );
   else
-    statusLabelEl = el('span', { className: ['status-label', 'none'] }, [
-      'Нет продуктов',
-    ]);
+    statusLabelEl = el(
+      'span',
+      { className: ['status-label', 'none'] },
+      t('recipeList.status.noIngredients')
+    );
 
   // readiness pips (max 8 shown, else compress)
   let pipsEls: HTMLElement[] = [];
@@ -176,9 +201,7 @@ export function renderRecipeCard(
     );
     const qtyEl =
       item.amount != null
-        ? el('small', {}, [
-            `${item.amount}${item.unit ? ' ' + escapeHtml(item.unit) : ''}`,
-          ])
+        ? el('small', {}, [`${item.amount}${item.unit ? ' ' + item.unit : ''}`])
         : null;
     ingredientsEl.appendChild(
       el(
@@ -186,9 +209,11 @@ export function renderRecipeCard(
         { className: ['chip', 'readonly', isMissing ? 'missing' : 'on'] },
         [
           el('span', { className: 'dot' }),
-          escapeHtml(ingredientName(item.ingredientId)),
+          ingredientName(item.ingredientId),
           qtyEl ? el('small', {}, [qtyEl]) : null,
-          isWarn ? el('small', {}, ['(мало)']) : null,
+          isWarn
+            ? el('small', {}, [t('recipeList.status.warnLowStock')])
+            : null,
         ]
       )
     );
@@ -199,22 +224,25 @@ export function renderRecipeCard(
     { className: ['recipe-card', fullMatch ? 'full-match' : ''].join(' ') },
     [
       el('div', { className: 'rc-head' }, [
-        el('h3', {}, [escapeHtml(recipe.name)]),
+        el('h3', {}, [recipe.name]),
         el('div', { className: 'readiness' }, pipsEls),
       ]),
       recipe.description
-        ? el('p', { className: 'rc-desc' }, [escapeHtml(recipe.description)])
+        ? el('p', { className: 'rc-desc' }, [recipe.description])
         : null,
       ingredientsEl,
       el('div', { className: 'rc-footer' }, [
         statusLabelEl,
         el('div', { style: { marginTop: '5px' } }, [
-          ` · ${ev.matched}/${ev.total} есть в наличии`,
+          t('recipeList.status.matchedIngredients', {
+            matched: ev.matched,
+            total: ev.total,
+          }),
         ]),
       ]),
       el('div', { className: 'rc-actions' }, [
-        el('button', { 'data-edit': recipe.id }, ['Редактировать']),
-        el('button', { 'data-del': recipe.id }, ['Удалить']),
+        el('button', { 'data-edit': recipe.id }, t('common.edit')),
+        el('button', { 'data-del': recipe.id }, t('common.delete')),
       ]),
     ]
   );
@@ -223,9 +251,9 @@ export function renderRecipeCard(
 }
 
 export function bindRecipesTabEvents() {
-  const t = document.getElementById('toggleFilter');
-  if (t)
-    t.addEventListener('click', () => {
+  const tf = document.getElementById('toggleFilter');
+  if (tf)
+    tf.addEventListener('click', () => {
       window.state.filterOpen = !window.state.filterOpen;
       renderRecipesTab();
     });
@@ -267,18 +295,13 @@ export function bindRecipesTabEvents() {
   window.state.viewEl.querySelectorAll('[data-edit]').forEach((btn) => {
     btn.addEventListener('click', () => {
       window.state.editingRecipeId = (btn as HTMLElement).dataset.edit;
-      window.state.activeTab = 'add';
-      document
-        .querySelectorAll('nav.tabs button')
-        .forEach((b) =>
-          b.classList.toggle('active', (b as HTMLElement).dataset.tab === 'add')
-        );
-      window.render();
+
+      setActiveTab('addRecipe');
     });
   });
   window.state.viewEl.querySelectorAll('[data-del]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      if (confirm('Удалить этот рецепт?')) {
+      if (confirm(t('recipeList.actions.confirmDelete'))) {
         window.state.recipes = window.state.recipes.filter(
           (r) => r.id !== (btn as HTMLElement).dataset.del
         );

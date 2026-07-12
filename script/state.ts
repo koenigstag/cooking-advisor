@@ -1,3 +1,5 @@
+import { LANG_DEFAULT } from './lang/index';
+
 export type Ingredient = {
   id: string;
   name: string;
@@ -23,9 +25,16 @@ export type Recipe = {
   items: RecipeItem[];
 };
 
-export type TabId = 'recipes' | 'fridge' | 'add';
+export type TabId = 'recipes' | 'fridge' | 'addRecipe';
 
 export type State = {
+  lang: string;
+  ingredients: Ingredient[];
+  fridge: {
+    [ingredientId: string]: FridgeEntry;
+  };
+  recipes: Recipe[];
+
   activeTab: TabId;
   editingRecipeId?: string | null;
   filterOpen: boolean;
@@ -40,16 +49,21 @@ export type State = {
   };
   draftName?: string;
   draftDesc?: string;
+};
 
-  ingredients: Ingredient[];
-  fridge: {
-    [ingredientId: string]: FridgeEntry;
-  };
-  recipes: Recipe[];
+export const defaultState = {
+  lang: LANG_DEFAULT,
+  ingredients: [],
+  fridge: {},
+  recipes: [],
 };
 
 window.state = {
-  activeTab: 'recipes',
+  ...defaultState,
+
+  activeTab:
+    (new URLSearchParams(window.location.search).get('tab') as TabId) ||
+    'recipes',
   editingRecipeId: null,
   filterOpen: true,
   recipeSearch: '',
@@ -60,8 +74,4 @@ window.state = {
     forId: 'new',
     items: [],
   },
-
-  ingredients: [],
-  fridge: {},
-  recipes: [],
 };
