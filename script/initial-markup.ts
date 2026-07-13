@@ -2,7 +2,7 @@ import { saveData } from './database';
 import { exportRecipes, importRecipesFromPayload } from './export-import';
 import { LANG_FLAGS, LANG_LABELS, t } from './lang/index';
 import { renderRootElement } from './render';
-import { TabId } from './state';
+import type { TabId } from './state';
 import { setActiveTab } from './tabs/index';
 import { el } from './utils';
 

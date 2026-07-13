@@ -1,4 +1,4 @@
-import { Recipe, RecipeItem } from './state';
+import type { Recipe, RecipeItem } from './state';
 import { uid } from './utils';
 
 export function findIngredientByName(name: string) {

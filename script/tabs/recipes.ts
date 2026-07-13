@@ -2,12 +2,12 @@ import { t } from '../lang/index';
 import { saveData } from '../database';
 import {
   evaluateRecipe,
-  EvaluateRecipeResult,
+  type EvaluateRecipeResult,
   fridgeEntry,
   ingredientName,
 } from '../ingredient';
 import { rerenderViewElement } from '../render';
-import { Recipe } from '../state';
+import { type Recipe } from '../state';
 import { el } from '../utils';
 import { setActiveTab } from './index';
 

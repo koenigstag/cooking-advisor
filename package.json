@@ -1,0 +1,23 @@
+{
+  "name": "cooking-advisor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./script/index.js",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/koenigstag/cooking-advisor.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/koenigstag/cooking-advisor/issues"
+  },
+  "homepage": "https://github.com/koenigstag/cooking-advisor#readme",
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}

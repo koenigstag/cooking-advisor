@@ -1,3 +1,4 @@
+import { t } from './lang';
 import { renderAddTab } from './tabs/create-recipe';
 import { renderFridgeTab } from './tabs/fridge';
 import { renderRecipesTab } from './tabs/recipes';
@@ -16,6 +17,8 @@ export function rerenderViewElement(...children: HTMLElement[]) {
 }
 
 export function render() {
+  window.document.title = t('title');
+
   if (window.state.activeTab === 'recipes') renderRecipesTab();
   else if (window.state.activeTab === 'fridge') renderFridgeTab();
   else if (window.state.activeTab === 'addRecipe') renderAddTab();

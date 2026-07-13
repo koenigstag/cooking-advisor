@@ -3,7 +3,7 @@ import { saveData } from '../database';
 import { getOrCreateIngredient, ingredientName } from '../ingredient';
 import { units } from '../options';
 import { rerenderViewElement } from '../render';
-import { Recipe, RecipeItem } from '../state';
+import type { Recipe, RecipeItem } from '../state';
 import { el, uid } from '../utils';
 
 export function startDraftFromRecipe(recipe?: Recipe) {

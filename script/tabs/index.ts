@@ -1,4 +1,4 @@
-import { TabId } from '../state';
+import { type TabId } from '../state';
 
 export function setActiveTab(tabId: TabId) {
   window.state.activeTab = tabId;
