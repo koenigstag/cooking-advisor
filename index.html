@@ -28,7 +28,6 @@
 
     <script type="module">
       import { loadModule } from 'ts-browser';
-      // language=file-reference
       const entryScriptPath = './script/index.ts';
       loadModule(entryScriptPath).then((indexModule) => {
         return indexModule.default(document.getElementById('app'));
