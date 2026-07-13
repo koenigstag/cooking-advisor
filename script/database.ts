@@ -1,4 +1,4 @@
-import { defaultState, type State } from './state';
+import { defaultState, type State } from './store/state';
 import { pick } from './utils';
 
 const DB_NAME = 'ChefFinderDB';

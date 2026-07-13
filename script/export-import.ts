@@ -1,6 +1,6 @@
 import { saveData } from './database';
 import { getOrCreateIngredient, ingredientName } from './ingredient';
-import type { RecipeItem, State } from './state';
+import type { RecipeItem, State } from './store/state';
 import { uid } from './utils';
 
 type ExportPayload = {

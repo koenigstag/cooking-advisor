@@ -12,15 +12,15 @@
     <link rel="stylesheet" href="./css/index.css" />
 
     <script type="importmap">
-    {
-      "imports": {
-        "ts-browser": "https://klesun.github.io/ts-browser/src/ts-browser.js",
-        "react": "https://esm.sh/react@19.2.4",
-        "react/jsx-runtime": "https://esm.sh/react@19.2.4/jsx-runtime",
-        "react/jsx-dev-runtime": "https://esm.sh/react@19.2.4/jsx-dev-runtime",
-        "react-dom/client": "https://esm.sh/react-dom@19.2.4/client"
+      {
+        "imports": {
+          "ts-browser": "https://klesun.github.io/ts-browser/src/ts-browser.js",
+          "react": "https://esm.sh/react@19.2.4",
+          "react/jsx-runtime": "https://esm.sh/react@19.2.4/jsx-runtime",
+          "react/jsx-dev-runtime": "https://esm.sh/react@19.2.4/jsx-dev-runtime",
+          "react-dom/client": "https://esm.sh/react-dom@19.2.4/client"
+        }
       }
-    }
     </script>
   </head>
   <body>
@@ -28,8 +28,8 @@
 
     <script type="module">
       import { loadModule } from 'ts-browser';
-      const entryScriptPath = './script/index.ts';
-      loadModule(entryScriptPath).then((indexModule) => {
+      const entryScriptPath = './script/index.tsx';
+      loadModule(entryScriptPath, { jsx: 2 }).then((indexModule) => {
         return indexModule.default(document.getElementById('app'));
       });
     </script>

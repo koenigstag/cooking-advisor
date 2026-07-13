@@ -1,0 +1,6 @@
+import React from 'react';
+import { stateStore } from '../store/store';
+
+export function useAppState() {
+  return React.useSyncExternalStore(stateStore.subscribe, stateStore.getState);
+}

@@ -1,11 +1,8 @@
-import { type TabId } from '../state';
+export type TabId = 'recipes' | 'fridge' | 'addRecipe';
 
-export function setActiveTab(tabId: TabId) {
-  window.state.activeTab = tabId;
+export const TABS = ['recipes', 'fridge', 'addRecipe'] as const;
 
-  if (window.state.activeTab !== 'addRecipe')
-    window.state.editingRecipeId = null;
-
+export function onActiveTabChange(tabId: TabId) {
   document
     .querySelectorAll('nav.tabs button')
     .forEach((b) =>
@@ -15,6 +12,4 @@ export function setActiveTab(tabId: TabId) {
   const newParams = new URLSearchParams(window.location.search);
   newParams.set('tab', tabId);
   window.history.pushState({}, '', `${window.location.pathname}?${newParams}`);
-
-  window.render();
 }
