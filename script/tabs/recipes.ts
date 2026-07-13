@@ -1,4 +1,4 @@
-import { t } from '../lang/index';
+import { LANG_CODES, t, type LANG } from '../lang/index';
 import { saveData } from '../database';
 import {
   evaluateRecipe,
@@ -46,7 +46,12 @@ export function renderRecipesTab() {
                   ? el('div', { className: 'chip-row', id: 'filterChips' }, [
                       ...window.state.ingredients
                         .slice()
-                        .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
+                        .sort((a, b) =>
+                          a.name.localeCompare(
+                            b.name,
+                            LANG_CODES[window.state.lang as LANG]
+                          )
+                        )
                         .map((ing) => {
                           const fe = fridgeEntry(ing.id);
                           return el(

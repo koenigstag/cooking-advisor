@@ -48,7 +48,7 @@ export function renderAddTab() {
         type: 'text',
         id: 'recName',
         placeholder: t('addRecipe.fields.name.placeholder'),
-        value: editing ? editing.name : draftName || '',
+        value: editing ? editing.name : window.state.draftName || '',
       }),
     ]),
     el('div', { className: 'field' }, [
@@ -56,7 +56,9 @@ export function renderAddTab() {
       el('textarea', {
         id: 'recDesc',
         placeholder: t('addRecipe.fields.description.placeholder'),
-        text: editing ? editing.description || '' : draftDesc || '',
+        text: editing
+          ? editing.description || ''
+          : window.state.draftDesc || '',
       }),
     ]),
     el('label', { text: t('addRecipe.fields.ingredients.label') }),
@@ -161,9 +163,7 @@ export function renderAddTab() {
                   }),
                 ]),
                 el('div', { className: 'rlc-actions' }, [
-                  el('button', { 'data-editc': r.id }, [
-                    t('common.edit'),
-                  ]),
+                  el('button', { 'data-editc': r.id }, [t('common.edit')]),
                   el('button', { className: 'danger', 'data-delc': r.id }, [
                     t('common.delete'),
                   ]),
@@ -177,8 +177,6 @@ export function renderAddTab() {
   bindAddTabEvents(editing);
 }
 
-let draftName = '';
-let draftDesc = '';
 export function draftItemsNeedsReset() {
   return false;
 }
@@ -186,11 +184,11 @@ export function draftItemsNeedsReset() {
 export function bindAddTabEvents(editing?: Recipe) {
   const nameInput = document.getElementById('recName') as HTMLInputElement;
   nameInput.addEventListener('input', () => {
-    draftName = nameInput.value;
+    window.state.draftName = nameInput.value;
   });
   const descInput = document.getElementById('recDesc') as HTMLInputElement;
   descInput.addEventListener('input', () => {
-    draftDesc = descInput.value;
+    window.state.draftDesc = descInput.value;
   });
 
   document.getElementById('addRowBtn')?.addEventListener('click', () => {
