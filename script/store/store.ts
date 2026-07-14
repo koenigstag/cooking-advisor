@@ -1,29 +1,21 @@
-import { defaultState, type State } from './state';
-import { onActiveTabChange, type TabId, TABS } from '../tabs/index';
-import type { LANG } from '../lang';
-
-const tabIdFromUrl = ((): TabId => {
-  const tabParam = new URLSearchParams(window.location.search).get(
-    'tab'
-  ) as TabId;
-  return TABS.includes(tabParam) ? tabParam : 'recipes';
-})();
+import { defaultState, type State } from './state.ts';
+import { onActiveTabChange, type TabId } from '../components/tabs/tabs.ts';
+import type { LANG } from '../lang/lang.ts';
+import { loadData } from '../database.ts';
 
 let state: State = {
   ...defaultState,
-
-  activeTab: tabIdFromUrl,
-  editingRecipeId: null,
 };
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
 export const stateStore = {
+  async initialize() {
+    const data = await loadData();
+    state = { ...state, ...data };
+  },
   getState(): State {
     return state;
-  },
-  initialize(initialState: Partial<State>) {
-    state = { ...state, ...initialState };
   },
   setState(patch: Partial<State>): void {
     state = { ...state, ...patch };
@@ -60,6 +52,18 @@ export const stateStore = {
     return (
       state.fridge[ingredientId] || { inStock: false, amount: null, unit: null }
     );
+  },
+  removeFridgeEntry(ingredientId: string) {
+    delete state.fridge[ingredientId];
+    emitChange();
+  },
+  addIngredient(ingredient: { id: string; name: string }) {
+    state.ingredients.push(ingredient);
+    emitChange();
+  },
+  setIngredients(ingredients: { id: string; name: string }[]) {
+    state.ingredients = ingredients;
+    emitChange();
   },
   setEditingRecipeId(recipeId: string | null) {
     state.editingRecipeId = recipeId;

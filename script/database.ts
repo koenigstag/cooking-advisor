@@ -1,5 +1,6 @@
-import { defaultState, type State } from './store/state';
-import { pick } from './utils';
+import { defaultState, type State } from './store/state.ts';
+import { stateStore } from './store/store.ts';
+import { pick } from './utils.ts';
 
 const DB_NAME = 'ChefFinderDB';
 const DB_VERSION = 1;
@@ -49,7 +50,7 @@ export async function loadData(): Promise<Pick<State, SaveStateKeys>> {
 }
 
 let saveQueued = false;
-export async function saveData(data: State = window.state) {
+export async function saveData(data: State = stateStore.getState()) {
   // fire-and-forget, but coalesce rapid successive calls onto one microtask
   if (saveQueued) return;
   saveQueued = true;

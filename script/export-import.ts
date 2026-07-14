@@ -1,7 +1,8 @@
-import { saveData } from './database';
-import { getOrCreateIngredient, ingredientName } from './ingredient';
-import type { RecipeItem, State } from './store/state';
-import { uid } from './utils';
+import { saveData } from './database.ts';
+import { getOrCreateIngredient, ingredientName } from './ingredient.ts';
+import type { RecipeItem } from './store/state.ts';
+import { stateStore } from './store/store.ts';
+import { uid } from './utils.ts';
 
 type ExportPayload = {
   format: 'chef-finder-recipes';
@@ -23,7 +24,7 @@ export async function exportRecipes(): Promise<{
   message?: string;
   click?: () => void;
 }> {
-  if (window.state.recipes.length === 0) {
+  if (stateStore.getState().recipes.length === 0) {
     return {
       success: false,
       message: 'No recipes available for export.',
@@ -33,7 +34,7 @@ export async function exportRecipes(): Promise<{
     format: 'chef-finder-recipes',
     version: 1,
     exportedAt: new Date().toISOString(),
-    recipes: window.state.recipes.map((r) => ({
+    recipes: stateStore.getState().recipes.map((r) => ({
       name: r.name,
       description: r.description || '',
       items: r.items.map((it) => ({
@@ -110,20 +111,23 @@ export async function importRecipesFromPayload(
       return;
     }
 
-    const existing = window.state.recipes.find(
-      (r) => r.name.toLowerCase() === name.toLowerCase()
-    );
+    const existing = stateStore
+      .getState()
+      .recipes.find((r) => r.name.toLowerCase() === name.toLowerCase());
     if (existing) {
       existing.description = raw.description || '';
       existing.items = items;
       replaced++;
     } else {
-      window.state.recipes.push({
-        id: uid(),
-        name,
-        description: raw.description || '',
-        items,
-      });
+      stateStore.setRecipes([
+        ...stateStore.getState().recipes,
+        {
+          id: uid(),
+          name,
+          description: raw.description || '',
+          items,
+        },
+      ]);
       added++;
     }
   });

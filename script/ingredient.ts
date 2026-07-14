@@ -1,9 +1,12 @@
-import type { Recipe, RecipeItem } from './store/state';
-import { uid } from './utils';
+import type { Recipe, RecipeItem } from './store/state.ts';
+import { stateStore } from './store/store.ts';
+import { uid } from './utils.ts';
 
 export function findIngredientByName(name: string) {
   const norm = name.trim().toLowerCase();
-  return window.state.ingredients.find((i) => i.name.toLowerCase() === norm);
+  return stateStore
+    .getState()
+    .ingredients.find((i) => i.name.toLowerCase() === norm);
 }
 
 export function getOrCreateIngredient(name: string) {
@@ -12,14 +15,14 @@ export function getOrCreateIngredient(name: string) {
   let ing = findIngredientByName(name);
   if (!ing) {
     ing = { id: uid(), name };
-    window.state.ingredients.push(ing);
+    stateStore.addIngredient(ing);
   }
   return ing;
 }
 
 export function fridgeEntry(ingredientId: string) {
   return (
-    window.state.fridge[ingredientId] || {
+    stateStore.getState().fridge[ingredientId] || {
       inStock: false,
       amount: null,
       unit: null,
@@ -28,7 +31,7 @@ export function fridgeEntry(ingredientId: string) {
 }
 
 export function ingredientName(id: string) {
-  const ing = window.state.ingredients.find((i) => i.id === id);
+  const ing = stateStore.getState().ingredients.find((i) => i.id === id);
   return ing ? ing.name : '—';
 }
 
@@ -38,7 +41,7 @@ export type EvaluateRecipeResult = {
   missingList: RecipeItem[];
   warnList: RecipeItem[];
   status: 'none' | 'partial' | 'full';
-}
+};
 
 export function evaluateRecipe(recipe: Recipe): EvaluateRecipeResult {
   const total = recipe.items.length;

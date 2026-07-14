@@ -1,15 +1,15 @@
 import React from 'react';
-import { LANG_CODES, t, type LANG } from '../lang/index';
-import { saveData } from '../database';
+import { LANG_CODES, t, type LANG } from '../../lang/lang.ts';
+import { saveData } from '../../database.ts';
 import {
   evaluateRecipe,
   type EvaluateRecipeResult,
   fridgeEntry,
   ingredientName,
-} from '../ingredient';
-import { type Recipe } from '../store/state';
-import { useAppState } from '../hooks/use-app-state';
-import { stateStore } from '../store/store';
+} from '../../ingredient.ts';
+import { type Recipe } from '../../store/state.ts';
+import { useAppState } from '../../hooks/use-app-state.ts';
+import { stateStore } from '../../store/store.ts';
 
 const RecipeCard = ({
   recipe,
@@ -56,7 +56,9 @@ const RecipeCard = ({
 
   const handleDeleteClick = (id: string) => {
     if (confirm(t('recipeList.actions.confirmDelete'))) {
-      window.state.recipes = window.state.recipes.filter((r) => r.id !== id);
+      stateStore.setRecipes(
+        stateStore.getState().recipes.filter((r) => r.id !== id)
+      );
       saveData();
     }
   };
@@ -136,11 +138,11 @@ export const RecipesTab = () => {
     if (!id) return;
 
     const fe = fridgeEntry(id);
-    window.state.fridge[id] = {
+    stateStore.setFridgeEntry(id, {
       inStock: !fe.inStock,
       amount: fe.amount,
       unit: fe.unit,
-    };
+    });
     saveData();
   };
 

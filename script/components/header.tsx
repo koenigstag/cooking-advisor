@@ -1,5 +1,6 @@
 import React from 'react';
-import { LANG_FLAGS, LANG_LABELS, t } from './lang';
+import { LANG_FLAGS, LANG_LABELS, t } from '../lang/lang.ts';
+import { useAppState } from '../hooks/use-app-state.ts';
 
 export interface HeaderProps {
   isMenuOpen: boolean;
@@ -14,6 +15,8 @@ export const Header = ({
   onExportModalOpen,
   onLangChange,
 }: HeaderProps) => {
+  const state = useAppState();
+
   return (
     <header className='top'>
       <div className='title-block'>
@@ -44,7 +47,7 @@ export const Header = ({
               key={lang}
               value={lang}
               title={label}
-              selected={window.state.lang === lang}
+              selected={state.lang === lang}
             >
               {LANG_FLAGS[lang as keyof typeof LANG_FLAGS]}
             </option>

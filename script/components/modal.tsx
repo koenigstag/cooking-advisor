@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from './lang/index';
+import { t } from '../lang/lang.ts';
 
 export interface ModalProps {
   open: boolean;

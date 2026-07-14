@@ -1,14 +1,22 @@
 import React from 'react';
-import { LANG_LABELS, t } from './lang';
-import { saveData } from './database';
-import { Modal } from './modal';
-import { Header } from './header';
-import { Navigation } from './nav';
-import { useAppState } from './hooks/use-app-state';
-import { stateStore } from './store/store';
-import { RecipesTab } from './tabs/recipes';
-import { FridgeTab } from './tabs/fridge';
-import { AddRecipeTab } from './tabs/create-recipe';
+import { LANG_LABELS, t } from '../lang/lang.ts';
+import { saveData } from '../database.ts';
+import { Modal } from './modal.tsx';
+import { Header } from './header.tsx';
+import { Navigation } from './nav.tsx';
+import { useAppState } from '../hooks/use-app-state.ts';
+import { stateStore } from '../store/store.ts';
+import { RecipesTab } from './tabs/recipes.tsx';
+import { FridgeTab } from './tabs/fridge.tsx';
+import { AddRecipeTab } from './tabs/create-recipe.tsx';
+import { TABS, type TabId } from './tabs/tabs.ts';
+
+const tabIdFromUrl = ((): TabId => {
+  const tabParam = new URLSearchParams(window.location.search).get(
+    'tab'
+  ) as TabId;
+  return TABS.includes(tabParam) ? tabParam : 'recipes';
+})();
 
 export const App = () => {
   const state = useAppState();
@@ -41,6 +49,10 @@ export const App = () => {
 
   React.useEffect(() => {
     window.document.title = t('title');
+
+    if (tabIdFromUrl && state.activeTab !== tabIdFromUrl) {
+      stateStore.setActiveTab(tabIdFromUrl);
+    }
   }, []);
 
   return (

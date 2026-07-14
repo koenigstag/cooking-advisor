@@ -1,49 +1,28 @@
-import { loadData } from './database';
-import { t } from './lang/index';
-import { LANG_EN_US } from './lang/en_US';
-import { defaultState } from './store/state';
-import { createRoot } from 'react-dom/client';
 import React from 'react';
-import { App } from './app';
-import { stateStore } from './store/store';
-
-/* ============================= INIT ============================= */
-
-function IndexedDBUnavailable() {
-  return (
-    <div className='empty-state'>
-      <div className='display'>{LANG_EN_US.indexedDB.unavailable}</div>
-      <p>{LANG_EN_US.indexedDB.unsupported}</p>
-    </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className='empty-state'>
-      <div className='display'>{t('loading')}</div>
-    </div>
-  );
-}
+import { createRoot } from 'react-dom/client';
+import { IndexedDBUnsupported } from './components/index-db-unsupported.tsx';
+import { LoadingState } from './components/loading.tsx';
+import { App } from './components/app.tsx';
+import { stateStore } from './store/store.ts';
 
 async function init(root: HTMLElement) {
   const reactRoot = createRoot(root);
 
-  if (!window.indexedDB) {
-    reactRoot.render(<IndexedDBUnavailable />);
+  if (
+    typeof window === 'undefined' ||
+    typeof window.indexedDB === 'undefined'
+  ) {
+    reactRoot.render(<IndexedDBUnsupported />);
     return;
   }
 
   try {
     reactRoot.render(<LoadingState />);
 
-    const data = await loadData();
-    stateStore.initialize(data);
+    await stateStore.initialize();
   } catch (e) {
-    const err = e as Error;
-    console.error(err);
-    alert(err.message);
-    stateStore.initialize(defaultState);
+    console.error(e);
+    alert((e as Error).message);
   }
 
   reactRoot.render(<App />);

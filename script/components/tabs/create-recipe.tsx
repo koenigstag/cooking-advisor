@@ -1,12 +1,12 @@
 import React from 'react';
-import { t } from '../lang/index';
-import { saveData } from '../database';
-import { getOrCreateIngredient, ingredientName } from '../ingredient';
-import { units } from '../options';
-import type { Recipe, RecipeItem } from '../store/state';
-import { uid } from '../utils';
-import { useAppState } from '../hooks/use-app-state';
-import { stateStore } from '../store/store';
+import { t } from '../../lang/lang.ts';
+import { saveData } from '../../database.ts';
+import { getOrCreateIngredient, ingredientName } from '../../ingredient.ts';
+import { units } from '../../options.ts';
+import type { Recipe, RecipeItem } from '../../store/state.ts';
+import { uid } from '../../utils.ts';
+import { useAppState } from '../../hooks/use-app-state.ts';
+import { stateStore } from '../../store/store.ts';
 
 const defaultDraftData = {
   forId: 'new',

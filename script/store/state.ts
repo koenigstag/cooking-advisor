@@ -1,5 +1,5 @@
-import { LANG_DEFAULT, type LANG } from '../lang/index';
-import type { TabId } from '../tabs';
+import { LANG_DEFAULT, type LANG } from '../lang/lang.ts';
+import type { TabId } from '../components/tabs/tabs.ts';
 
 export type Ingredient = {
   id: string;
@@ -38,9 +38,12 @@ export type State = {
   editingRecipeId?: string | null;
 };
 
-export const defaultState = {
+export const defaultState: State = {
   lang: LANG_DEFAULT,
   ingredients: [],
   fridge: {},
   recipes: [],
+
+  activeTab: 'recipes',
+  editingRecipeId: null,
 };

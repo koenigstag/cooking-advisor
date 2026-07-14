@@ -1,11 +1,14 @@
 import React from 'react';
-import { t } from '../lang/index';
-import { saveData } from '../database';
-import { fridgeEntry, getOrCreateIngredient } from '../ingredient';
-import { units } from '../options';
-import { stateStore } from '../store/store';
+import { t } from '../../lang/lang.ts';
+import { saveData } from '../../database.ts';
+import { fridgeEntry, getOrCreateIngredient } from '../../ingredient.ts';
+import { units } from '../../options.ts';
+import { stateStore } from '../../store/store.ts';
+import { useAppState } from '../../hooks/use-app-state.ts';
 
 export const FridgeTab = () => {
+  const state = useAppState();
+
   const [name, setName] = React.useState('');
   const [amount, setAmount] = React.useState('');
   const [unit, setUnit] = React.useState('');
@@ -48,7 +51,7 @@ export const FridgeTab = () => {
   };
 
   const handleRemoveProduct = (ingId: string) => {
-    const usedIn = window.state.recipes.filter((r) =>
+    const usedIn = state.recipes.filter((r) =>
       r.items.some((it) => it.ingredientId === ingId)
     );
     let msg = t('fridge.productsList.actions.confirmDelete');
@@ -58,13 +61,16 @@ export const FridgeTab = () => {
       });
     }
     if (confirm(msg)) {
-      window.state.ingredients = window.state.ingredients.filter(
-        (i) => i.id !== ingId
+      stateStore.setIngredients(
+        stateStore.getState().ingredients.filter((i) => i.id !== ingId)
       );
-      delete window.state.fridge[ingId];
-      window.state.recipes.forEach((r) => {
-        r.items = r.items.filter((it) => it.ingredientId !== ingId);
-      });
+      stateStore.removeFridgeEntry(ingId);
+      stateStore.setRecipes(
+        stateStore.getState().recipes.map((r) => ({
+          ...r,
+          items: r.items.filter((it) => it.ingredientId !== ingId),
+        }))
+      );
       saveData();
     }
   };
@@ -85,7 +91,7 @@ export const FridgeTab = () => {
               onChange={(e) => setName(e.target.value)}
             />
             <datalist id='ingSuggestList'>
-              {window.state.ingredients.map((i) => (
+              {state.ingredients.map((i) => (
                 <option key={i.id} value={i.name} />
               ))}
             </datalist>
@@ -125,10 +131,10 @@ export const FridgeTab = () => {
       </div>
       <div className='section-title'>
         {t('fridge.productsList.title', {
-          count: window.state.ingredients.length,
+          count: state.ingredients.length,
         })}
       </div>
-      {window.state.ingredients.length === 0 ? (
+      {state.ingredients.length === 0 ? (
         <div className='empty-state'>
           <div className='display'>
             {t('fridge.productsList.emptyState.title')}
@@ -137,7 +143,7 @@ export const FridgeTab = () => {
         </div>
       ) : (
         <div className='fridge-list'>
-          {window.state.ingredients
+          {state.ingredients
             .slice()
             .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
             .map((ing) => {
