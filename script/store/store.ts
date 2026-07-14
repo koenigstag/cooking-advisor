@@ -12,41 +12,46 @@ const listeners = new Set<Listener>();
 export const stateStore = {
   async initialize() {
     const data = await loadData();
-    state = { ...state, ...data };
+    this.setState(data);
   },
   getState(): State {
     return state;
   },
   setState(patch: Partial<State>): void {
     state = { ...state, ...patch };
-    emitChange();
   },
   mutate(fn: (state: State) => void): void {
     fn(state);
+    this.setState(state);
     emitChange();
   },
   subscribe(listener: () => void): () => void {
-    listeners.add(listener);
+    listeners.add(() => listener());
     return () => {
       listeners.delete(listener);
     };
   },
   setLocale(lang: LANG) {
-    state.lang = lang;
-    emitChange();
+    this.mutate((prev) => {
+      prev.lang = lang;
+    });
   },
   setActiveTab(tabId: TabId) {
-    state.activeTab = tabId;
-    if (state.activeTab !== 'addRecipe') state.editingRecipeId = null;
+    this.mutate((prev) => {
+      prev.activeTab = tabId;
+      if (tabId !== 'addRecipe') {
+        prev.editingRecipeId = null;
+      }
+    });
     onActiveTabChange(tabId);
-    emitChange();
   },
   setFridgeEntry(
     ingredientId: string,
     entry: { inStock: boolean; amount: number | null; unit: string | null }
   ) {
-    state.fridge[ingredientId] = entry;
-    emitChange();
+    this.mutate((prev) => {
+      prev.fridge[ingredientId] = entry;
+    });
   },
   getFridgeEntry(ingredientId: string) {
     return (
@@ -54,24 +59,30 @@ export const stateStore = {
     );
   },
   removeFridgeEntry(ingredientId: string) {
-    delete state.fridge[ingredientId];
-    emitChange();
+    const { [ingredientId]: _, ...rest } = state.fridge;
+    this.mutate((prev) => {
+      prev.fridge = rest;
+    });
   },
   addIngredient(ingredient: { id: string; name: string }) {
-    state.ingredients.push(ingredient);
-    emitChange();
+    this.mutate((prev) => {
+      prev.ingredients.push(ingredient);
+    });
   },
   setIngredients(ingredients: { id: string; name: string }[]) {
-    state.ingredients = ingredients;
-    emitChange();
+    this.mutate((prev) => {
+      prev.ingredients = ingredients;
+    });
   },
   setEditingRecipeId(recipeId: string | null) {
-    state.editingRecipeId = recipeId;
-    emitChange();
+    this.mutate((prev) => {
+      prev.editingRecipeId = recipeId;
+    });
   },
   setRecipes(recipes: State['recipes']) {
-    state.recipes = recipes;
-    emitChange();
+    this.mutate((prev) => {
+      prev.recipes = recipes;
+    });
   },
 };
 
@@ -81,4 +92,4 @@ function emitChange() {
   }
 }
 
-(window as any).__appState = stateStore.getState;
+window.__appState = stateStore.getState;

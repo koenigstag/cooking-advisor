@@ -1,6 +1,5 @@
 import { LANG_RU_RU } from './ru_RU.ts';
 import { LANG_EN_US } from './en_US.ts';
-import { stateStore } from '../store/store.ts';
 
 export type LANG = 'ru' | 'en';
 
@@ -42,7 +41,7 @@ export function translate(
 ): string {
   const parts = key.split('.');
 
-  const currentLang = (stateStore.getState().lang as LANG) || LANG_DEFAULT;
+  const currentLang = (window.__appState().lang as LANG) || LANG_DEFAULT;
 
   let dict: LangDictionary = LANGS[currentLang];
 

@@ -1,12 +1,12 @@
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import { createReactRoot } from './react-dom.ts';
 import { IndexedDBUnsupported } from './components/index-db-unsupported.tsx';
 import { LoadingState } from './components/loading.tsx';
 import { App } from './components/app.tsx';
 import { stateStore } from './store/store.ts';
 
 async function init(root: HTMLElement) {
-  const reactRoot = createRoot(root);
+  const reactRoot = createReactRoot(root);
 
   if (
     typeof window === 'undefined' ||
