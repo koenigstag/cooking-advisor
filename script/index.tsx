@@ -20,6 +20,7 @@ async function init(root: HTMLElement) {
     reactRoot.render(<LoadingState />);
 
     await stateStore.initialize();
+    console.debug('stateStore initialized', stateStore);
   } catch (e) {
     console.error(e);
     alert((e as Error).message);
