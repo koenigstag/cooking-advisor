@@ -74,6 +74,7 @@ header.top .tagline {
 /* ---------- Kebab menu ---------- */
 .menu-wrap {
   position: relative;
+  margin-left: auto;
 }
 .kebab-btn {
   width: 38px;
@@ -258,6 +259,10 @@ nav.tabs button:not(.active):hover {
 .chip.on .dot {
   background: var(--green);
 }
+.chip.warn {
+  background: var(--gold-pale);
+  border-color: #c5a266;
+}
 .chip.missing {
   background: var(--rust-pale);
   border-color: #e0b6a8;
@@ -283,11 +288,13 @@ nav.tabs button:not(.active):hover {
 }
 .filter-panel .fp-head {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 12px;
+  gap: 10px;
 }
 .filter-panel .fp-head h3 {
+  flex-shrink: 0;
   margin: 0;
   font-size: 16px;
 }
@@ -296,11 +303,13 @@ nav.tabs button:not(.active):hover {
   color: var(--ink-soft);
   cursor: pointer;
   text-decoration: underline;
+  align-self: flex-start;
 }
 .chip-row {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  flex-grow: 1;
 }
 .empty-hint {
   font-size: 13.5px;

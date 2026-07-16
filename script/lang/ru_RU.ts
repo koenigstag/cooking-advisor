@@ -52,10 +52,11 @@ export const LANG_RU_RU = {
     whatIHave: 'Что у меня есть',
     collapse: 'Свернуть',
     expand: 'Развернуть',
+    ingredients: 'ингредиентов',
     noIngredientsHint:
       'Продуктов пока нет. Добавьте их во вкладке «Мои продукты» или прямо при создании рецепта.',
     searchPlaceholder: 'Поиск по названию…',
-    recipesEnding: 'рец.',
+    recipesEnding: 'рецептов',
     noRecipesTitle: 'Пока нет ни одного рецепта',
     noRecipesHint:
       'Добавьте первый рецепт во вкладке «Добавить рецепт» — и он появится здесь.',

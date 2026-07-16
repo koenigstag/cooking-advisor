@@ -1,5 +1,6 @@
 import { LANG_RU_RU } from './ru_RU.ts';
 import { LANG_EN_US } from './en_US.ts';
+import { preferedLanguage } from '../constants/index.ts';
 
 export type LANG = 'ru' | 'en';
 
@@ -31,7 +32,7 @@ export const LANGS: Record<LANG, LangDictionary> = {
   en: LANG_EN_US,
 };
 
-export const LANG_DEFAULT: LANG = window.navigator.language.startsWith('ru')
+export const LANG_DEFAULT: LANG = preferedLanguage.startsWith('ru')
   ? 'ru'
   : 'en';
 

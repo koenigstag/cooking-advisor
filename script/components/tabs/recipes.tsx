@@ -11,6 +11,7 @@ import {
 import { type Recipe } from '../../store/state.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
+import { isMobile } from '../../constants/index.ts';
 
 const RecipeCard = ({
   recipe,
@@ -81,7 +82,7 @@ const RecipeCard = ({
           return (
             <span
               key={item.ingredientId}
-              className={`chip readonly ${isMissing ? 'missing' : 'on'}`}
+              className={`chip readonly ${isMissing ? 'missing' : isWarn ? 'warn' : 'on'}`}
             >
               <span className='dot'></span>
               {ingredientName(item.ingredientId)}
@@ -124,7 +125,7 @@ const RecipeCard = ({
 };
 
 export const RecipesTab = () => {
-  const [filterOpen, setFilterOpen] = React.useState(true);
+  const [filterOpen, setFilterOpen] = React.useState(isMobile ? false : true);
   const [recipeSearch, setRecipeSearch] = React.useState('');
 
   const state = useAppState();
@@ -175,9 +176,9 @@ export const RecipesTab = () => {
               minHeight: '30px',
             }}
           >
-            {filterOpen && (
-              <div className='chip-row' id='filterChips'>
-                {state.ingredients
+            <div className='chip-row' id='filterChips'>
+              {filterOpen ? (
+                state.ingredients
                   .slice()
                   .sort((a, b) =>
                     a.name.localeCompare(b.name, LANG_CODES[state.lang as LANG])
@@ -195,9 +196,13 @@ export const RecipesTab = () => {
                         {ing.name}
                       </span>
                     );
-                  })}
-              </div>
-            )}
+                  })
+              ) : (
+                <span className={`chip`}>
+                  {state.ingredients.length} {t('recipeList.ingredients')}
+                </span>
+              )}
+            </div>
             <a id='toggleFilter' onClick={handleToggleFilter}>
               {filterOpen ? t('recipeList.collapse') : t('recipeList.expand')}
             </a>

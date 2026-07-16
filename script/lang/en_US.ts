@@ -52,6 +52,7 @@ export const LANG_EN_US = {
     whatIHave: 'What I have',
     collapse: 'Collapse',
     expand: 'Expand',
+    ingredients: 'ingredients',
     noIngredientsHint:
       'No ingredients yet. Add them in the "My Ingredients" tab or directly when creating a recipe.',
     searchPlaceholder: 'Search by name…',
@@ -164,6 +165,11 @@ export const LANG_EN_US = {
     ingredientsCount: '{count} ingredients',
     recipesCount: 'All Recipes ({count})',
     noRecipes: 'No recipes yet.',
+  },
+
+  theme: {
+    switchToLight: 'Switch to light theme',
+    switchToDark: 'Switch to dark theme',
   },
 
   exampleData: {
