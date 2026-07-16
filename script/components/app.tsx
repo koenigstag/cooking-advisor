@@ -25,7 +25,7 @@ export const App = () => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const handleKebabOpen = () => {
-    setIsMenuOpen(true);
+    setIsMenuOpen(s => !s);
   };
 
   const handleKebabClose = () => {
