@@ -11,12 +11,14 @@
     />
     <link rel="stylesheet" href="./css/index.css" />
 
+    <script type="module" src="./libs/react/setup.js"></script>
+
     <script type="importmap">
       {
         "imports": {
           "ts-browser": "https://koenigstag.github.io/ts-browser/src/ts-browser.js",
-          "react": "./libs/react-umd/react.js",
-          "react-dom/client": "./libs/react-umd/react-dom.js"
+          "react": "./libs/react/react.js",
+          "react-dom/client": "./libs/react/react-dom.js"
         }
       }
     </script>
@@ -25,6 +27,7 @@
     <div id="app" class="app"></div>
 
     <script type="module">
+      // load entry .tsx script
       import { loadModule } from 'ts-browser';
       const entryScriptPath = './script/index.tsx';
       loadModule(entryScriptPath, { jsx: 2 }).then((indexModule) => {
