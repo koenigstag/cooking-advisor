@@ -1,6 +1,7 @@
 import React from 'react';
 import { t } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
+import { loadExampleData } from '../../example-data.ts';
 import { fridgeEntry, getOrCreateIngredient } from '../../ingredient.ts';
 import { units } from '../../options.ts';
 import { stateStore } from '../../store/store.ts';
@@ -75,6 +76,15 @@ export const FridgeTab = () => {
     }
   };
 
+  const handleUseExampleData = async () => {
+    const { addedRecipes } = await loadExampleData(state.lang);
+    if (addedRecipes > 0) {
+      alert(t('exampleData.successMessage', { added: addedRecipes }));
+    } else {
+      alert(t('exampleData.alreadyLoaded'));
+    }
+  };
+
   return (
     <React.Fragment>
       <div className='card'>
@@ -140,6 +150,14 @@ export const FridgeTab = () => {
             {t('fridge.productsList.emptyState.title')}
           </div>
           <p>{t('fridge.productsList.emptyState.hint')}</p>
+          <p>{t('exampleData.hint')}</p>
+          <button
+            className='btn'
+            id='useExampleDataBtn'
+            onClick={handleUseExampleData}
+          >
+            {t('exampleData.useBtn')}
+          </button>
         </div>
       ) : (
         <div className='fridge-list'>

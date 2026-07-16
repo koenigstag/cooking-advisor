@@ -1,6 +1,7 @@
 import React from 'react';
 import { LANG_CODES, t, type LANG } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
+import { loadExampleData } from '../../example-data.ts';
 import {
   evaluateRecipe,
   type EvaluateRecipeResult,
@@ -150,6 +151,15 @@ export const RecipesTab = () => {
     setRecipeSearch(e.target.value);
   };
 
+  const handleUseExampleData = async () => {
+    const { addedRecipes } = await loadExampleData(state.lang);
+    if (addedRecipes > 0) {
+      alert(t('exampleData.successMessage', { added: addedRecipes }));
+    } else {
+      alert(t('exampleData.alreadyLoaded'));
+    }
+  };
+
   return (
     <div className='filter-panel'>
       <div className='fp-head'>
@@ -226,6 +236,14 @@ export const RecipesTab = () => {
         <div className='empty-state'>
           <div className='display'>{t('recipeList.noRecipesTitle')}</div>
           <p>{t('recipeList.noRecipesHint')}</p>
+          <p>{t('exampleData.hint')}</p>
+          <button
+            className='btn'
+            id='useExampleDataBtn'
+            onClick={handleUseExampleData}
+          >
+            {t('exampleData.useBtn')}
+          </button>
         </div>
       ) : (
         <div className='recipe-grid'>

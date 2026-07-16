@@ -166,6 +166,14 @@ export const LANG_EN_US = {
     noRecipes: 'No recipes yet.',
   },
 
+  exampleData: {
+    useBtn: 'Use example data',
+    hint: 'Add a few sample recipes and products to see how the app works.',
+    successMessage:
+      'Added {added} example recipes and filled your fridge with sample products.',
+    alreadyLoaded: 'Example recipes are already in your list.',
+  },
+
   exportImport: {
     openModalBtn: 'Export / Import Recipes',
     modalTitle: 'Export / Import Recipes',
