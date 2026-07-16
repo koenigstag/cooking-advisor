@@ -1,5 +1,6 @@
 import { saveData } from './database.ts';
 import { getOrCreateIngredient } from './ingredient.ts';
+import { guessIconId } from './icons/icon-map.ts';
 import { t, type LANG } from './lang/lang.ts';
 import type { Unit } from './options.ts';
 import type { Recipe, RecipeItem } from './store/state.ts';
@@ -144,7 +145,8 @@ export async function loadExampleData(
     if (existingNames.has(name.trim().toLowerCase())) return;
 
     const items: RecipeItem[] = r.items.map((it) => {
-      const ing = getOrCreateIngredient(it.ingredient[lang])!;
+      const ingName = it.ingredient[lang];
+      const ing = getOrCreateIngredient(ingName, guessIconId(ingName))!;
       return {
         ingredientId: ing.id,
         name: ing.name,
@@ -166,7 +168,8 @@ export async function loadExampleData(
   }
 
   EXAMPLE_FRIDGE.forEach((it) => {
-    const ing = getOrCreateIngredient(it.ingredient[lang]);
+    const ingName = it.ingredient[lang];
+    const ing = getOrCreateIngredient(ingName, guessIconId(ingName));
     if (!ing) return;
     const existing = stateStore.getState().fridge[ing.id];
     if (existing?.inStock) return;

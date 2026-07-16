@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaXmark } from 'react-icons/fa6';
 import { t } from '../lang/lang.ts';
 
 export interface ModalProps {
@@ -23,7 +24,7 @@ export const Modal = ({ open, onClose }: ModalProps) => {
             aria-label={t('common.close')}
             onClick={onClose}
           >
-            ✕
+            <FaXmark />
           </button>
         </div>
         <div className='modal-body'>

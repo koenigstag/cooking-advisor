@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaEllipsisVertical } from 'react-icons/fa6';
 import { LANG_FLAGS, LANG_LABELS, t } from '../lang/lang.ts';
 import { useAppState } from '../hooks/use-app-state.ts';
 
@@ -61,7 +62,7 @@ export const Header = ({
           aria-expanded={isMenuOpen}
           onClick={onKebabClick}
         >
-          ⋮
+          <FaEllipsisVertical color='inherit' />
         </button>
         <div className='dropdown-menu' id='dropdownMenu' hidden={!isMenuOpen}>
           <button id='openIOModalBtn' onClick={onExportModalOpen}>

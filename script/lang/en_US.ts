@@ -91,6 +91,9 @@ export const LANG_EN_US = {
         label: 'Unit',
         placeholder: 'g, pcs, l…',
       },
+      icon: {
+        label: 'Icon',
+      },
     },
     productsList: {
       title: 'My Products ({count})',

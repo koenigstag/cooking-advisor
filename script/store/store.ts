@@ -93,3 +93,8 @@ function emitChange() {
 }
 
 window.__appState = stateStore.getState;
+
+(window as any).__clearAppState = () => {
+  state = { ...defaultState };
+  emitChange();
+};

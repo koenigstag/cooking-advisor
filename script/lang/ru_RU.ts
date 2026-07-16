@@ -91,6 +91,9 @@ export const LANG_RU_RU = {
         label: 'Ед. изм.',
         placeholder: 'г, шт, л…',
       },
+      icon: {
+        label: 'Иконка',
+      },
     },
     productsList: {
       title: 'Мои продукты ({count})',

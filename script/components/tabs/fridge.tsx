@@ -3,6 +3,9 @@ import { t } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import { loadExampleData } from '../../example-data.ts';
 import { fridgeEntry, getOrCreateIngredient } from '../../ingredient.ts';
+import { Icon } from '../../icons/icon.tsx';
+import { IconPicker } from '../../icons/icon-picker.tsx';
+import { guessIconId, type IconId } from '../../icons/icon-map.ts';
 import { units } from '../../options.ts';
 import { stateStore } from '../../store/store.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
@@ -13,9 +16,21 @@ export const FridgeTab = () => {
   const [name, setName] = React.useState('');
   const [amount, setAmount] = React.useState('');
   const [unit, setUnit] = React.useState('');
+  const [iconId, setIconId] = React.useState<IconId | undefined>(undefined);
+  const [iconTouched, setIconTouched] = React.useState(false);
+
+  React.useEffect(() => {
+    if (iconTouched) return;
+    setIconId(guessIconId(name));
+  }, [name, iconTouched]);
+
+  const handleIconChange = (id: IconId | undefined) => {
+    setIconTouched(true);
+    setIconId(id);
+  };
 
   const handleAddProduct = () => {
-    const ing = getOrCreateIngredient(name);
+    const ing = getOrCreateIngredient(name, iconId);
     if (!ing) return;
 
     const amountValue = amount !== '' ? parseFloat(amount) : null;
@@ -26,6 +41,12 @@ export const FridgeTab = () => {
       unit: unitValue,
     });
     saveData();
+
+    setName('');
+    setAmount('');
+    setUnit('');
+    setIconId(undefined);
+    setIconTouched(false);
   };
 
   const handleInStockChange = (ingId: string) => {
@@ -90,6 +111,14 @@ export const FridgeTab = () => {
       <div className='card'>
         <h3 style={{ marginTop: '0' }}>{t('fridge.title')}</h3>
         <div className='field-row'>
+          <div className='field' style={{ flex: '0 0 auto' }}>
+            <label>{t('fridge.fields.icon.label')}</label>
+            <IconPicker
+              value={iconId}
+              onChange={handleIconChange}
+              title={t('fridge.fields.icon.label')}
+            />
+          </div>
           <div className='field' style={{ flex: '2' }}>
             <label>{t('fridge.fields.name.label')}</label>
             <input
@@ -173,6 +202,11 @@ export const FridgeTab = () => {
                     checked={fe.inStock}
                     onChange={() => handleInStockChange(ing.id)}
                   />
+                  {ing.iconId && (
+                    <span className='ing-icon'>
+                      <Icon id={ing.iconId} />
+                    </span>
+                  )}
                   <span className='name'>{ing.name}</span>
                   <div className='qty-inputs'>
                     <input

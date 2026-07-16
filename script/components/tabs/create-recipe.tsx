@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaXmark } from 'react-icons/fa6';
 import { t } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import { getOrCreateIngredient, ingredientName } from '../../ingredient.ts';
@@ -240,7 +241,7 @@ export const AddRecipeTab = () => {
               title={t('addRecipe.fields.ingredients.actions.removeRow')}
               onClick={() => handleRemoveRow(idx)}
             >
-              ✕
+              <FaXmark />
             </button>
           </div>
         ))}

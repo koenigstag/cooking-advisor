@@ -1,3 +1,4 @@
+import type { IconId } from './icons/icon-map.ts';
 import type { Recipe, RecipeItem } from './store/state.ts';
 import { stateStore } from './store/store.ts';
 import { uid } from './utils.ts';
@@ -9,12 +10,12 @@ export function findIngredientByName(name: string) {
     .ingredients.find((i) => i.name.toLowerCase() === norm);
 }
 
-export function getOrCreateIngredient(name: string) {
+export function getOrCreateIngredient(name: string, iconId?: IconId) {
   name = name.trim();
   if (!name) return null;
   let ing = findIngredientByName(name);
   if (!ing) {
-    ing = { id: uid(), name };
+    ing = { id: uid(), name, iconId };
     stateStore.addIngredient(ing);
   }
   return ing;
