@@ -75,7 +75,6 @@ export const LANG_RU_RU = {
     myRecipes: 'Мои рецепты',
     library: 'Библиотека рецептов',
     addToMyRecipes: 'Добавить в мои рецепты',
-    addedToMyRecipes: 'Добавлено в ваши рецепты.',
     libraryLoading: 'Загрузка библиотеки рецептов…',
     libraryEmpty: 'Библиотека рецептов пока пуста.',
     libraryLoadError: 'Не удалось загрузить библиотеку рецептов.',

@@ -73,7 +73,6 @@ export const LANG_EN_US = {
     myRecipes: 'My Recipes',
     library: 'Recipe Library',
     addToMyRecipes: 'Add to My Recipes',
-    addedToMyRecipes: 'Added to your recipes.',
     libraryLoading: 'Loading recipe library…',
     libraryEmpty: 'The recipe library is empty.',
     libraryLoadError: 'Could not load the recipe library.',

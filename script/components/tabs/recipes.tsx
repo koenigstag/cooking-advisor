@@ -17,7 +17,7 @@ import { MealTypePills } from '../meal-type-pills.tsx';
 import { Accordion } from '../accordion.tsx';
 import { fetchLibraryRecipes, type LibraryRecipe } from '../../server-api.ts';
 
-function addLibraryRecipeToMine(libRecipe: LibraryRecipe) {
+function addLibraryRecipeToMine(libRecipe: LibraryRecipe): Recipe {
   const items = libRecipe.items.map((item) => {
     const ing = getOrCreateIngredient(item.name, guessIconId(item.name))!;
     return {
@@ -38,7 +38,7 @@ function addLibraryRecipeToMine(libRecipe: LibraryRecipe) {
 
   stateStore.setRecipes([...stateStore.getState().recipes, newRecipe]);
   saveData();
-  alert(t('recipeList.addedToMyRecipes'));
+  return newRecipe;
 }
 
 const MANY_RECIPES_THRESHOLD = 6;
@@ -146,11 +146,35 @@ const MyRecipeCard = ({
 
 const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [addedRecipe, setAddedRecipe] = React.useState<Recipe | null>(null);
+
+  const handleModalClose = () => setIsModalOpen(false);
 
   const handleAddToMyRecipes = () => {
-    addLibraryRecipeToMine(recipe);
-    setIsModalOpen(false);
+    setAddedRecipe(addLibraryRecipeToMine(recipe));
   };
+
+  const handleEditClick = () => {
+    if (!addedRecipe) return;
+    stateStore.setEditingRecipeId(addedRecipe.id);
+    stateStore.setActiveTab('addRecipe');
+  };
+
+  const handleDeleteClick = () => {
+    if (!addedRecipe) return;
+    if (confirm(t('recipeList.actions.confirmDelete'))) {
+      stateStore.setRecipes(
+        stateStore.getState().recipes.filter((r) => r.id !== addedRecipe.id)
+      );
+      saveData();
+      setAddedRecipe(null);
+      handleModalClose();
+    }
+  };
+
+  const modalSource = addedRecipe
+    ? { kind: 'mine' as const, recipe: addedRecipe, ev: evaluateRecipe(addedRecipe) }
+    : { kind: 'library' as const, recipe };
 
   return (
     <React.Fragment>
@@ -162,9 +186,11 @@ const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
         {recipe.description && <p className='rc-desc'>{recipe.description}</p>}
       </div>
       <RecipeModal
-        source={{ kind: 'library', recipe }}
+        source={modalSource}
         open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleModalClose}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
         onAddToMyRecipes={handleAddToMyRecipes}
       />
     </React.Fragment>
