@@ -194,10 +194,9 @@ export const LANG_EN_US = {
 
   exampleData: {
     useBtn: 'Use example data',
-    hint: 'Add a few sample recipes and products to see how the app works.',
-    successMessage:
-      'Added {added} example recipes and filled your fridge with sample products.',
-    alreadyLoaded: 'Example recipes are already in your list.',
+    hint: 'Fill your fridge with a few sample products to see how the app works.',
+    successMessage: 'Added {added} sample products to your fridge.',
+    alreadyLoaded: 'Sample products are already in your list.',
   },
 
   exportImport: {

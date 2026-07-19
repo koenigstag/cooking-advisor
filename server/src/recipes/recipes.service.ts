@@ -3,6 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { CreateRecipeDto } from './recipe-item.dto';
+import { EXAMPLE_RECIPES_SEED } from './example-recipes.seed';
 import { LibraryRecipe } from './recipe.entity';
 
 const DATA_FILE = join(__dirname, '..', '..', 'data', 'recipes.json');
@@ -10,12 +11,16 @@ const DATA_FILE = join(__dirname, '..', '..', 'data', 'recipes.json');
 @Injectable()
 export class RecipesService {
   private writeQueue: Promise<unknown> = Promise.resolve();
+  private ensureSeededPromise: Promise<void> | null = null;
 
   async findAll(): Promise<LibraryRecipe[]> {
+    await this.ensureSeeded();
     return this.readAll();
   }
 
   async create(dto: CreateRecipeDto): Promise<LibraryRecipe> {
+    await this.ensureSeeded();
+
     const recipe: LibraryRecipe = {
       id: randomUUID(),
       name: dto.name.trim(),
@@ -36,6 +41,25 @@ export class RecipesService {
     });
 
     return recipe;
+  }
+
+  private ensureSeeded(): Promise<void> {
+    if (!this.ensureSeededPromise) {
+      this.ensureSeededPromise = this.enqueueWrite(async () => {
+        try {
+          await readFile(DATA_FILE, 'utf-8');
+        } catch (e) {
+          if ((e as NodeJS.ErrnoException).code !== 'ENOENT') throw e;
+          const seeded: LibraryRecipe[] = EXAMPLE_RECIPES_SEED.map((r) => ({
+            ...r,
+            id: randomUUID(),
+            createdAt: new Date().toISOString(),
+          }));
+          await this.writeAll(seeded);
+        }
+      });
+    }
+    return this.ensureSeededPromise;
   }
 
   private enqueueWrite(fn: () => Promise<void>): Promise<void> {

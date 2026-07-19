@@ -98,9 +98,9 @@ export const FridgeTab = () => {
   };
 
   const handleUseExampleData = async () => {
-    const { addedRecipes } = await loadExampleData(state.lang);
-    if (addedRecipes > 0) {
-      alert(t('exampleData.successMessage', { added: addedRecipes }));
+    const { addedProducts } = await loadExampleData(state.lang);
+    if (addedProducts > 0) {
+      alert(t('exampleData.successMessage', { added: addedProducts }));
     } else {
       alert(t('exampleData.alreadyLoaded'));
     }
