@@ -21,11 +21,14 @@ export type RecipeItem = {
   unit: string | null;
 };
 
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
+
 export type Recipe = {
   id: string;
   name: string;
   description: string;
   items: RecipeItem[];
+  mealTypes?: MealType[];
 };
 
 export type State = {

@@ -3,7 +3,7 @@ import { getOrCreateIngredient } from './ingredient.ts';
 import { guessIconId } from './icons/icon-map.ts';
 import { t, type LANG } from './lang/lang.ts';
 import type { Unit } from './options.ts';
-import type { Recipe, RecipeItem } from './store/state.ts';
+import type { MealType, Recipe, RecipeItem } from './store/state.ts';
 import { stateStore } from './store/store.ts';
 import { uid } from './utils.ts';
 
@@ -19,6 +19,7 @@ type ExampleRecipe = {
   name: LocalizedText;
   description: LocalizedText;
   items: ExampleItem[];
+  mealTypes: MealType[];
 };
 
 const eggs: LocalizedText = { ru: 'Яйца', en: 'Eggs' };
@@ -58,6 +59,7 @@ const EXAMPLE_RECIPES: ExampleRecipe[] = [
       { ingredient: salt, amount: null, unit: 'fortaste' },
       { ingredient: vegetableOil, amount: 1, unit: 'tablespoon' },
     ],
+    mealTypes: ['breakfast'],
   },
   {
     name: { ru: 'Паста Карбонара', en: 'Pasta Carbonara' },
@@ -72,6 +74,7 @@ const EXAMPLE_RECIPES: ExampleRecipe[] = [
       { ingredient: parmesan, amount: 50, unit: 'gram' },
       { ingredient: blackPepper, amount: null, unit: 'fortaste' },
     ],
+    mealTypes: ['lunch', 'dinner'],
   },
   {
     name: { ru: 'Греческий салат', en: 'Greek Salad' },
@@ -87,6 +90,7 @@ const EXAMPLE_RECIPES: ExampleRecipe[] = [
       { ingredient: redOnion, amount: 1, unit: 'piece' },
       { ingredient: oliveOil, amount: 2, unit: 'tablespoon' },
     ],
+    mealTypes: ['lunch', 'dinner'],
   },
   {
     name: { ru: 'Жареная картошка с луком', en: 'Fried Potatoes with Onion' },
@@ -100,6 +104,7 @@ const EXAMPLE_RECIPES: ExampleRecipe[] = [
       { ingredient: vegetableOil, amount: 3, unit: 'tablespoon' },
       { ingredient: salt, amount: null, unit: 'fortaste' },
     ],
+    mealTypes: ['lunch', 'dinner'],
   },
   {
     name: {
@@ -116,6 +121,7 @@ const EXAMPLE_RECIPES: ExampleRecipe[] = [
       { ingredient: tomato, amount: 1, unit: 'piece' },
       { ingredient: butter, amount: 10, unit: 'gram' },
     ],
+    mealTypes: ['snack'],
   },
 ];
 
@@ -160,6 +166,7 @@ export async function loadExampleData(
       name,
       description: r.description[lang],
       items,
+      mealTypes: r.mealTypes,
     });
   });
 

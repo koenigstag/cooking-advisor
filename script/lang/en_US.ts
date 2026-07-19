@@ -43,6 +43,13 @@ export const LANG_EN_US = {
     addRecipe: 'Add Recipe',
   },
 
+  mealTypes: {
+    breakfast: 'Breakfast',
+    lunch: 'Lunch',
+    dinner: 'Dinner',
+    snack: 'Snack',
+  },
+
   root: {
     title: 'What to Cook',
     tagline: 'Find recipes based on what you have in your fridge',
@@ -134,6 +141,9 @@ export const LANG_EN_US = {
       description: {
         label: 'Description / Cooking Method',
         placeholder: 'Short description or cooking steps…',
+      },
+      mealTypes: {
+        label: 'Meal Type',
       },
       ingredients: {
         label: 'Ingredients',

@@ -4,10 +4,12 @@ import { t } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import { getOrCreateIngredient, ingredientName } from '../../ingredient.ts';
 import { units } from '../../options.ts';
-import type { Recipe, RecipeItem } from '../../store/state.ts';
+import type { MealType, Recipe, RecipeItem } from '../../store/state.ts';
 import { uid } from '../../utils.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
+
+const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
 const defaultDraftData = {
   forId: 'new',
@@ -21,6 +23,7 @@ const defaultDraftData = {
       unit: null,
     } as unknown as RecipeItem,
   ],
+  mealTypes: [] as MealType[],
 };
 
 export const AddRecipeTab = () => {
@@ -30,6 +33,7 @@ export const AddRecipeTab = () => {
     name: string;
     description: string;
     items: RecipeItem[];
+    mealTypes: MealType[];
   }>(defaultDraftData);
 
   const editing = state.editingRecipeId
@@ -48,6 +52,7 @@ export const AddRecipeTab = () => {
           amount: it.amount,
           unit: it.unit,
         })),
+        mealTypes: recipe.mealTypes || [],
       });
     } else {
       setDraftData(defaultDraftData);
@@ -70,6 +75,15 @@ export const AddRecipeTab = () => {
       }
       return { ...prev, items: newItems };
     });
+  };
+
+  const handleToggleMealType = (mealType: MealType) => {
+    setDraftData((prev) => ({
+      ...prev,
+      mealTypes: prev.mealTypes.includes(mealType)
+        ? prev.mealTypes.filter((mt) => mt !== mealType)
+        : [...prev.mealTypes, mealType],
+    }));
   };
 
   const handleEditIngredient = (idx: number, newData: Partial<RecipeItem>) => {
@@ -107,12 +121,14 @@ export const AddRecipeTab = () => {
       editing.name = name;
       editing.description = draftData.description.trim();
       editing.items = items;
+      editing.mealTypes = draftData.mealTypes;
     } else {
       state.recipes.push({
         id: uid(),
         name,
         description: draftData.description.trim(),
         items,
+        mealTypes: draftData.mealTypes,
       });
     }
     saveData();
@@ -171,6 +187,21 @@ export const AddRecipeTab = () => {
           value={draftData.name}
           onChange={(e) => setDraftData({ ...draftData, name: e.target.value })}
         />
+      </div>
+      <div className='field'>
+        <label>{t('addRecipe.fields.mealTypes.label')}</label>
+        <div className='mt-pills mt-pills-select'>
+          {MEAL_TYPES.map((mealType) => (
+            <span
+              key={mealType}
+              className={`mt-pill mt-${mealType} selectable ${draftData.mealTypes.includes(mealType) ? 'active' : ''}`}
+              onClick={() => handleToggleMealType(mealType)}
+            >
+              <span className='dot'></span>
+              {t(`mealTypes.${mealType}`)}
+            </span>
+          ))}
+        </div>
       </div>
       <div className='field'>
         <label>{t('addRecipe.fields.description.label')}</label>

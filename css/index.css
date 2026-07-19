@@ -10,6 +10,8 @@
   --gold-pale: #f2e3c4;
   --rust: #b5533c;
   --rust-pale: #f3dfd8;
+  --plum: #7d5a6e;
+  --plum-pale: #ecdde4;
   --line: #e2d9c2;
   --radius: 14px;
 }
@@ -197,6 +199,19 @@ header.top .tagline {
   color: var(--ink-soft);
   line-height: 1.5;
 }
+.recipe-modal-card {
+  max-width: 560px;
+}
+.modal-body .mt-pills {
+  margin-bottom: 10px;
+}
+.recipe-modal-desc {
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0 0 16px;
+  white-space: pre-wrap;
+}
 nav.tabs {
   display: flex;
   gap: 6px;
@@ -337,6 +352,7 @@ nav.tabs button:not(.active):hover {
   gap: 10px;
   position: relative;
   box-shadow: 0 1px 0 rgba(43, 42, 34, 0.03);
+  cursor: pointer;
 }
 .recipe-card.full-match {
   border-color: var(--green);
@@ -352,37 +368,83 @@ nav.tabs button:not(.active):hover {
   margin: 0;
   font-size: 18px;
   line-height: 1.25;
-}
-.readiness {
-  flex: none;
-  display: flex;
-  gap: 3px;
-  align-items: center;
-  margin-top: 4px;
-}
-.readiness .pip {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #e3ddc7;
-}
-.readiness .pip.filled {
-  background: var(--green);
-}
-.readiness .pip.filled.warn {
-  background: var(--gold);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 .rc-desc {
   font-size: 13.5px;
   color: var(--ink-soft);
   line-height: 1.5;
   margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 .rc-ingredients {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 2px;
+}
+.mt-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px 3px 8px;
+  border-radius: 999px;
+  background: var(--mt-bg);
+  color: var(--mt-c);
+  line-height: 1.5;
+}
+.mt-pill .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--mt-c);
+  flex: none;
+}
+.mt-breakfast {
+  --mt-c: var(--gold);
+  --mt-bg: var(--gold-pale);
+}
+.mt-lunch {
+  --mt-c: var(--green-dark);
+  --mt-bg: var(--green-pale);
+}
+.mt-dinner {
+  --mt-c: var(--plum);
+  --mt-bg: var(--plum-pale);
+}
+.mt-snack {
+  --mt-c: var(--ink-soft);
+  --mt-bg: var(--line);
+}
+.mt-pill.selectable {
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.45;
+  border: 1.5px solid transparent;
+  transition: opacity 0.12s;
+}
+.mt-pill.selectable:hover {
+  opacity: 0.75;
+}
+.mt-pill.selectable.active {
+  opacity: 1;
+  border-color: var(--mt-c);
+}
+.mt-pill.selectable.active:hover {
+  opacity: 1;
 }
 .rc-footer {
   margin-top: auto;
