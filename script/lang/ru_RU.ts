@@ -59,11 +59,13 @@ export const LANG_RU_RU = {
     whatIHave: 'Что у меня есть',
     collapse: 'Свернуть',
     expand: 'Развернуть',
-    ingredients: 'ингредиентов',
+    ingredients: {
+      single: 'ингредиент',
+      plural: 'ингредиентов',
+    },
     noIngredientsHint:
       'Продуктов пока нет. Добавьте их во вкладке «Мои продукты» или прямо при создании рецепта.',
     searchPlaceholder: 'Поиск по названию или ингредиенту…',
-    recipesEnding: 'рецептов',
     noRecipesTitle: 'Пока нет ни одного рецепта',
     noRecipesHint:
       'Добавьте первый рецепт во вкладке «Добавить рецепт» — и он появится здесь.',
@@ -131,8 +133,12 @@ export const LANG_RU_RU = {
       actions: {
         remove: 'Удалить',
         confirmDelete: 'Вы уверены, что хотите удалить этот продукт?',
-        confirmDeleteWhenUsed:
-          'Этот продукт используется в {count} рецепт(ах). При удалении он также будет убран из них. Вы уверены?',
+        confirmDeleteWhenUsed: {
+          single:
+            'Этот продукт используется в {count} рецепте. При удалении он также будет убран из него. Вы уверены?',
+          plural:
+            'Этот продукт используется в {count} рецептах. При удалении он также будет убран из них. Вы уверены?',
+        },
       },
     },
   },
@@ -182,7 +188,10 @@ export const LANG_RU_RU = {
         noIngredients: 'Добавьте хотя бы один ингредиент.',
       },
     },
-    ingredientsCount: '{count} ингредиентов',
+    ingredientsCount: {
+      single: '{count} ингредиент',
+      plural: '{count} ингредиентов',
+    },
     recipesCount: 'Все рецепты ({count})',
     noRecipes: 'Рецептов пока нет.',
   },
@@ -190,7 +199,10 @@ export const LANG_RU_RU = {
   exampleData: {
     useBtn: 'Добавить начальные данные',
     hint: 'Заполните холодильник несколькими примерами продуктов, чтобы посмотреть, как работает приложение.',
-    successMessage: 'Добавлено примерных продуктов: {added}.',
+    successMessage: {
+      single: 'Добавлен {added} примерный продукт.',
+      plural: 'Добавлено примерных продуктов: {added}.',
+    },
     alreadyLoaded: 'Примерные продукты уже есть в вашем списке.',
   },
 

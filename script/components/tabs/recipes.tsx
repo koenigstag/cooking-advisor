@@ -1,5 +1,5 @@
 import React from 'react';
-import { LANG_CODES, t, type LANG } from '../../lang/lang.ts';
+import { LANG_CODES, t, tc, type LANG } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import {
   evaluateRecipe,
@@ -285,7 +285,8 @@ export const RecipesTab = () => {
                   })
               ) : (
                 <span className={`chip`}>
-                  {state.ingredients.length} {t('recipeList.ingredients')}
+                  {state.ingredients.length}{' '}
+                  {tc('recipeList.ingredients', state.ingredients.length)}
                 </span>
               )}
             </div>

@@ -59,11 +59,13 @@ export const LANG_EN_US = {
     whatIHave: 'What I have',
     collapse: 'Collapse',
     expand: 'Expand',
-    ingredients: 'ingredients',
+    ingredients: {
+      single: 'ingredient',
+      plural: 'ingredients',
+    },
     noIngredientsHint:
       'No ingredients yet. Add them in the "My Ingredients" tab or directly when creating a recipe.',
     searchPlaceholder: 'Search by name or ingredient…',
-    recipesEnding: 'recipes',
     noRecipesTitle: 'No recipes yet',
     noRecipesHint:
       'Add your first recipe in the "Add Recipe" tab — it will appear here.',
@@ -131,8 +133,12 @@ export const LANG_EN_US = {
       actions: {
         remove: 'Remove',
         confirmDelete: 'Are you sure you want to delete this product?',
-        confirmDeleteWhenUsed:
-          'This product is used in {count} recipe(s). Deleting it will also remove it from those recipes. Are you sure?',
+        confirmDeleteWhenUsed: {
+          single:
+            'This product is used in {count} recipe. Deleting it will also remove it from that recipe. Are you sure?',
+          plural:
+            'This product is used in {count} recipes. Deleting it will also remove it from those recipes. Are you sure?',
+        },
       },
     },
   },
@@ -182,7 +188,10 @@ export const LANG_EN_US = {
         noIngredients: 'Please add at least one ingredient.',
       },
     },
-    ingredientsCount: '{count} ingredients',
+    ingredientsCount: {
+      single: '{count} ingredient',
+      plural: '{count} ingredients',
+    },
     recipesCount: 'All Recipes ({count})',
     noRecipes: 'No recipes yet.',
   },
@@ -195,7 +204,10 @@ export const LANG_EN_US = {
   exampleData: {
     useBtn: 'Use example data',
     hint: 'Fill your fridge with a few sample products to see how the app works.',
-    successMessage: 'Added {added} sample products to your fridge.',
+    successMessage: {
+      single: 'Added {added} sample product to your fridge.',
+      plural: 'Added {added} sample products to your fridge.',
+    },
     alreadyLoaded: 'Sample products are already in your list.',
   },
 

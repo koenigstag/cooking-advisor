@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
-import { t } from '../../lang/lang.ts';
+import { t, tc } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import { getOrCreateIngredient, ingredientName } from '../../ingredient.ts';
 import { units } from '../../options.ts';
@@ -334,7 +334,7 @@ export const AddRecipeTab = () => {
                 <div>
                   <div className='rname'>{r.name}</div>
                   <div className='rmeta'>
-                    {t('addRecipe.ingredientsCount', { count: r.items.length })}
+                    {tc('addRecipe.ingredientsCount', r.items.length)}
                   </div>
                 </div>
                 <div className='rlc-actions'>

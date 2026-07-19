@@ -72,3 +72,14 @@ export function translate(
 }
 
 export const t = translate;
+
+export function translatePlural(
+  key: string,
+  count: number,
+  params?: { [key: string]: string | number | boolean | null | undefined }
+): string {
+  const form = count === 1 ? 'single' : 'plural';
+  return translate(`${key}.${form}`, { count, ...params });
+}
+
+export const tc = translatePlural;
