@@ -187,7 +187,8 @@ export const RecipesTab = () => {
 
   React.useEffect(() => {
     let cancelled = false;
-    fetchLibraryRecipes()
+    setLibraryStatus('loading');
+    fetchLibraryRecipes(state.lang)
       .then((recipes) => {
         if (cancelled) return;
         setLibraryRecipes(recipes);
@@ -200,7 +201,7 @@ export const RecipesTab = () => {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [state.lang]);
 
   const handleToggleFilter = () => {
     setFilterOpen(!filterOpen);

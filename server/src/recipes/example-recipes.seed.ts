@@ -15,6 +15,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Масло растительное', amount: 1, unit: 'ст. л.' },
     ],
     mealTypes: ['breakfast'],
+    lang: 'ru',
   },
   {
     name: 'Паста Карбонара',
@@ -27,6 +28,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Чёрный перец', amount: null, unit: 'по вкусу' },
     ],
     mealTypes: ['lunch', 'dinner'],
+    lang: 'ru',
   },
   {
     name: 'Греческий салат',
@@ -40,6 +42,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Оливковое масло', amount: 2, unit: 'ст. л.' },
     ],
     mealTypes: ['lunch', 'dinner'],
+    lang: 'ru',
   },
   {
     name: 'Жареная картошка с луком',
@@ -51,6 +54,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Соль', amount: null, unit: 'по вкусу' },
     ],
     mealTypes: ['lunch', 'dinner'],
+    lang: 'ru',
   },
   {
     name: 'Бутерброд с сыром и помидором',
@@ -62,6 +66,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Масло сливочное', amount: 10, unit: 'г' },
     ],
     mealTypes: ['snack'],
+    lang: 'ru',
   },
   // English
   {
@@ -75,6 +80,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Vegetable oil', amount: 1, unit: 'tbsp' },
     ],
     mealTypes: ['breakfast'],
+    lang: 'en',
   },
   {
     name: 'Pasta Carbonara',
@@ -87,6 +93,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Black pepper', amount: null, unit: 'to taste' },
     ],
     mealTypes: ['lunch', 'dinner'],
+    lang: 'en',
   },
   {
     name: 'Greek Salad',
@@ -100,6 +107,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Olive oil', amount: 2, unit: 'tbsp' },
     ],
     mealTypes: ['lunch', 'dinner'],
+    lang: 'en',
   },
   {
     name: 'Fried Potatoes with Onion',
@@ -111,6 +119,7 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Salt', amount: null, unit: 'to taste' },
     ],
     mealTypes: ['lunch', 'dinner'],
+    lang: 'en',
   },
   {
     name: 'Cheese and Tomato Sandwich',
@@ -122,5 +131,6 @@ export const EXAMPLE_RECIPES_SEED: SeedRecipe[] = [
       { name: 'Butter', amount: 10, unit: 'g' },
     ],
     mealTypes: ['snack'],
+    lang: 'en',
   },
 ];

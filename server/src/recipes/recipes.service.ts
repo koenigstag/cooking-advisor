@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { CreateRecipeDto } from './recipe-item.dto';
 import { EXAMPLE_RECIPES_SEED } from './example-recipes.seed';
-import { LibraryRecipe } from './recipe.entity';
+import { LibraryRecipe, SupportedLang } from './recipe.entity';
 
 const DATA_FILE = join(__dirname, '..', '..', 'data', 'recipes.json');
 
@@ -13,9 +13,12 @@ export class RecipesService {
   private writeQueue: Promise<unknown> = Promise.resolve();
   private ensureSeededPromise: Promise<void> | null = null;
 
-  async findAll(): Promise<LibraryRecipe[]> {
+  async findAll(lang?: SupportedLang): Promise<LibraryRecipe[]> {
     await this.ensureSeeded();
-    return this.readAll();
+    const recipes = await this.readAll();
+    if (!lang) return recipes;
+    // Recipes without a lang tag (legacy data) are shown regardless of filter.
+    return recipes.filter((r) => !r.lang || r.lang === lang);
   }
 
   async create(dto: CreateRecipeDto): Promise<LibraryRecipe> {
@@ -31,6 +34,7 @@ export class RecipesService {
         unit: item.unit ?? null,
       })),
       mealTypes: dto.mealTypes,
+      lang: dto.lang,
       createdAt: new Date().toISOString(),
     };
 

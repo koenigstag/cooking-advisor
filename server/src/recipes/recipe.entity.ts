@@ -1,3 +1,5 @@
+export type SupportedLang = 'ru' | 'en';
+
 export type LibraryRecipeItem = {
   name: string;
   amount: number | null;
@@ -10,5 +12,6 @@ export type LibraryRecipe = {
   description: string;
   items: LibraryRecipeItem[];
   mealTypes?: string[];
+  lang?: SupportedLang;
   createdAt: string;
 };

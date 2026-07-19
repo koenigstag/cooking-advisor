@@ -132,7 +132,7 @@ export const AddRecipeTab = () => {
         mealTypes: draftData.mealTypes,
       };
       state.recipes.push(newRecipe);
-      publishRecipeToLibrary(newRecipe).catch((e) => {
+      publishRecipeToLibrary(newRecipe, state.lang).catch((e) => {
         console.warn('Failed to publish recipe to the library', e);
       });
     }
