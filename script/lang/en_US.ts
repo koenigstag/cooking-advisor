@@ -10,6 +10,7 @@ export const LANG_EN_US = {
     hint: 'Your saved data could not be read or migrated safely, so the app has been stopped to avoid making things worse. Try reloading, or clearing this site’s data if the problem persists.',
     copyStateBtn: 'Copy state JSON',
     copied: 'Copied!',
+    stackTraceLabel: 'Stack trace',
   },
 
   title: 'What to Cook — Find Recipes Based on Ingredients',

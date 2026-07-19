@@ -1,6 +1,7 @@
 import React from 'react';
 import { LANG_EN_US } from '../lang/en_US.ts';
 import { DB_NAME, STORE_NAME, RECORD_KEY } from '../database/index.ts';
+import { Accordion } from './accordion.tsx';
 
 // Opens its own fresh connection rather than reusing getDB()/dbInstance —
 // this runs from the fallback error state, so it shouldn't assume anything
@@ -71,6 +72,13 @@ export function AppError({
       <button className='btn secondary' onClick={handleCopy}>
         {copied ? LANG_EN_US.appError.copied : LANG_EN_US.appError.copyStateBtn}
       </button>
+      {error instanceof Error && error.stack && (
+        <div className='app-error-accordion-wrap'>
+          <Accordion title={LANG_EN_US.appError.stackTraceLabel} defaultOpen={false}>
+            <pre className='app-error-stack'>{error.stack}</pre>
+          </Accordion>
+        </div>
+      )}
     </div>
   );
 }
