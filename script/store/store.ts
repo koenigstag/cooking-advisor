@@ -6,7 +6,7 @@ import {
 } from './state.ts';
 import { onActiveTabChange, type TabId } from '../components/tabs/tabs.ts';
 import type { LANG } from '../lang/lang.ts';
-import { loadData } from '../database.ts';
+import { loadData } from '../database/index.ts';
 
 let state: State = {
   ...defaultState,

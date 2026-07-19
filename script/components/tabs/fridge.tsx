@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { t, tc } from '../../lang/lang.ts';
-import { saveData } from '../../database.ts';
+import { saveData } from '../../database/index.ts';
 import {
   fridgeEntry,
   getOrCreateIngredient,

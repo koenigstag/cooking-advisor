@@ -1,6 +1,6 @@
 import React from 'react';
 import { LANG_CODES, t, tc, type LANG } from '../../lang/lang.ts';
-import { saveData } from '../../database.ts';
+import { saveData } from '../../database/index.ts';
 import {
   blockedIngredientNames,
   evaluateRecipe,

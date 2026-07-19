@@ -5,6 +5,12 @@ export const LANG_EN_US = {
       'This browser does not support IndexedDB, the application will not be able to save data.',
   },
   loading: 'Loading…',
+  appError: {
+    title: 'Could not start the app',
+    hint: 'Your saved data could not be read or migrated safely, so the app has been stopped to avoid making things worse. Try reloading, or clearing this site’s data if the problem persists.',
+    copyStateBtn: 'Copy state JSON',
+    copied: 'Copied!',
+  },
 
   title: 'What to Cook — Find Recipes Based on Ingredients',
 

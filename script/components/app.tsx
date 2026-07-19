@@ -1,6 +1,6 @@
 import React from 'react';
 import { LANG_LABELS, t } from '../lang/lang.ts';
-import { saveData } from '../database.ts';
+import { saveData } from '../database/index.ts';
 import { Modal } from './modal.tsx';
 import { SettingsModal } from './settings-modal.tsx';
 import { Header } from './header.tsx';
