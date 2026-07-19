@@ -6,7 +6,8 @@ export type DietaryPresetId =
   | 'gluten-free'
   | 'halal'
   | 'kosher'
-  | 'no-beef';
+  | 'no-beef'
+  | 'lent';
 
 export type DietaryPreset = {
   id: DietaryPresetId;
@@ -23,6 +24,7 @@ export const DIETARY_PRESETS: DietaryPreset[] = [
   { id: 'halal', blockTags: ['pork', 'alcohol'] },
   { id: 'kosher', blockTags: ['pork', 'shellfish'] },
   { id: 'no-beef', blockTags: ['beef'] },
+  { id: 'lent', blockTags: ['dairy', 'egg', 'meat', 'poultry', 'fish', 'shellfish'] },
 ];
 
 // A preset is "active" once every one of its tags is already blocked —

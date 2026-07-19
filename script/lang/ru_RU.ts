@@ -263,6 +263,7 @@ export const LANG_RU_RU = {
         halal: 'Халяль',
         kosher: 'Кошерное',
         'no-beef': 'Без говядины',
+        lent: 'Пост',
         confirmApply: 'Будут заблокированы все ингредиенты с тегами: {list}. Продолжить?',
       },
       blockByTag: {

@@ -262,6 +262,7 @@ export const LANG_EN_US = {
         halal: 'Halal',
         kosher: 'Kosher',
         'no-beef': 'No Beef',
+        lent: 'Lent',
         confirmApply: 'This will block all ingredients tagged: {list}. Continue?',
       },
       blockByTag: {
