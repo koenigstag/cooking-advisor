@@ -11,6 +11,7 @@ import {
 import { type Recipe, type RecipeItem } from '../store/state.ts';
 import { type LibraryRecipe, type LibraryRecipeItem } from '../server-api.ts';
 import { MealTypePills } from './meal-type-pills.tsx';
+import { ErrorBoundary } from './error-boundary.tsx';
 
 export type RecipeModalSource =
   | { kind: 'mine'; recipe: Recipe; ev: EvaluateRecipeResult }
@@ -62,47 +63,49 @@ export const RecipeModal = ({
           </button>
         </div>
         <div className='modal-body'>
-          <MealTypePills mealTypes={recipe.mealTypes} />
-          <div className='rc-ingredients'>
-            {recipe.items.map((item, idx) => {
-              const mine = isMineItem(item);
-              const displayName = mine ? ingredientName(item.ingredientId) : item.name;
-              const isMissing = mine ? !fridgeEntry(item.ingredientId).inStock : false;
-              const isWarn =
-                mine && ev
-                  ? ev.warnList.some((w) => w.ingredientId === item.ingredientId)
-                  : false;
-              const resolvedId = resolveIngredientId(item);
-              const isDietBlocked = resolvedId ? isIngredientBlocked(resolvedId) : false;
-              const statusClass = mine
-                ? isMissing
-                  ? 'missing'
-                  : isWarn
-                    ? 'warn'
-                    : 'on'
-                : '';
-              return (
-                <span
-                  key={mine ? item.ingredientId : `${item.name}-${idx}`}
-                  className={`chip readonly ${statusClass} ${isDietBlocked ? 'diet-blocked' : ''}`}
-                >
-                  <span className='dot'></span>
-                  {displayName}
-                  {item.amount != null && (
-                    <small>
-                      {item.amount}
-                      {item.unit ? ' ' + item.unit : ''}
-                    </small>
-                  )}
-                  {isWarn && <small>{t('recipeList.status.warnLowStock')}</small>}
-                  {isDietBlocked && <small>{t('recipeList.status.dietBlockedTag')}</small>}
-                </span>
-              );
-            })}
-          </div>
-          {recipe.description && (
-            <p className='recipe-modal-desc'>{recipe.description}</p>
-          )}
+          <ErrorBoundary title={t('tabError.title')} hint={t('tabError.hint')}>
+            <MealTypePills mealTypes={recipe.mealTypes} />
+            <div className='rc-ingredients'>
+              {recipe.items.map((item, idx) => {
+                const mine = isMineItem(item);
+                const displayName = mine ? ingredientName(item.ingredientId) : item.name;
+                const isMissing = mine ? !fridgeEntry(item.ingredientId).inStock : false;
+                const isWarn =
+                  mine && ev
+                    ? ev.warnList.some((w) => w.ingredientId === item.ingredientId)
+                    : false;
+                const resolvedId = resolveIngredientId(item);
+                const isDietBlocked = resolvedId ? isIngredientBlocked(resolvedId) : false;
+                const statusClass = mine
+                  ? isMissing
+                    ? 'missing'
+                    : isWarn
+                      ? 'warn'
+                      : 'on'
+                  : '';
+                return (
+                  <span
+                    key={mine ? item.ingredientId : `${item.name}-${idx}`}
+                    className={`chip readonly ${statusClass} ${isDietBlocked ? 'diet-blocked' : ''}`}
+                  >
+                    <span className='dot'></span>
+                    {displayName}
+                    {item.amount != null && (
+                      <small>
+                        {item.amount}
+                        {item.unit ? ' ' + item.unit : ''}
+                      </small>
+                    )}
+                    {isWarn && <small>{t('recipeList.status.warnLowStock')}</small>}
+                    {isDietBlocked && <small>{t('recipeList.status.dietBlockedTag')}</small>}
+                  </span>
+                );
+              })}
+            </div>
+            {recipe.description && (
+              <p className='recipe-modal-desc'>{recipe.description}</p>
+            )}
+          </ErrorBoundary>
         </div>
         <div className='modal-footer'>
           {source.kind === 'mine' ? (
