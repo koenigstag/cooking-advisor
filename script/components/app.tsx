@@ -1,10 +1,11 @@
 import React from 'react';
 import { LANG_LABELS, t } from '../lang/lang.ts';
-import { saveData } from '../database.ts';
+import { saveData } from '../database/index.ts';
 import { Modal } from './modal.tsx';
 import { SettingsModal } from './settings-modal.tsx';
 import { Header } from './header.tsx';
 import { Navigation } from './nav.tsx';
+import { ErrorBoundary } from './error-boundary.tsx';
 import { useAppState } from '../hooks/use-app-state.ts';
 import { stateStore } from '../store/store.ts';
 import { RecipesTab } from './tabs/recipes.tsx';
@@ -82,9 +83,21 @@ export const App = () => {
       />
       <Navigation />
       <main id='view'>
-        {state.activeTab === 'recipes' && <RecipesTab />}
-        {state.activeTab === 'fridge' && <FridgeTab />}
-        {state.activeTab === 'addRecipe' && <AddRecipeTab />}
+        {state.activeTab === 'recipes' && (
+          <ErrorBoundary title={t('tabError.title')} hint={t('tabError.hint')}>
+            <RecipesTab />
+          </ErrorBoundary>
+        )}
+        {state.activeTab === 'fridge' && (
+          <ErrorBoundary title={t('tabError.title')} hint={t('tabError.hint')}>
+            <FridgeTab />
+          </ErrorBoundary>
+        )}
+        {state.activeTab === 'addRecipe' && (
+          <ErrorBoundary title={t('tabError.title')} hint={t('tabError.hint')}>
+            <AddRecipeTab />
+          </ErrorBoundary>
+        )}
       </main>
     </React.Fragment>
   );

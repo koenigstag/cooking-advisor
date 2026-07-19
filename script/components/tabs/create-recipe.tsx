@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { t, tc } from '../../lang/lang.ts';
-import { saveData } from '../../database.ts';
+import { saveData } from '../../database/index.ts';
 import {
   getOrCreateIngredient,
   ingredientDisplayName,
@@ -14,6 +14,7 @@ import { uid } from '../../utils.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
 import { publishRecipeToLibrary } from '../../server-api.ts';
+import { ErrorBoundary } from '../error-boundary.tsx';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
@@ -185,147 +186,149 @@ export const AddRecipeTab = () => {
 
   return (
     <div className='card'>
-      <h3 style={{ marginTop: '0' }}>
-        {editing ? t('addRecipe.editRecipe') : t('addRecipe.addRecipe')}
-      </h3>
-      <div className='field'>
-        <label>{t('addRecipe.fields.name.label')}</label>
-        <input
-          type='text'
-          id='recName'
-          placeholder={t('addRecipe.fields.name.placeholder')}
-          value={draftData.name}
-          onChange={(e) => setDraftData({ ...draftData, name: e.target.value })}
-        />
-      </div>
-      <div className='field'>
-        <label>{t('addRecipe.fields.mealTypes.label')}</label>
-        <div className='mt-pills mt-pills-select'>
-          {MEAL_TYPES.map((mealType) => (
-            <span
-              key={mealType}
-              className={`mt-pill mt-${mealType} selectable ${draftData.mealTypes.includes(mealType) ? 'active' : ''}`}
-              onClick={() => handleToggleMealType(mealType)}
-            >
-              <span className='dot'></span>
-              {t(`mealTypes.${mealType}`)}
-            </span>
+      <ErrorBoundary title={t('tabError.title')} hint={t('tabError.hint')}>
+        <h3 style={{ marginTop: '0' }}>
+          {editing ? t('addRecipe.editRecipe') : t('addRecipe.addRecipe')}
+        </h3>
+        <div className='field'>
+          <label>{t('addRecipe.fields.name.label')}</label>
+          <input
+            type='text'
+            id='recName'
+            placeholder={t('addRecipe.fields.name.placeholder')}
+            value={draftData.name}
+            onChange={(e) => setDraftData({ ...draftData, name: e.target.value })}
+          />
+        </div>
+        <div className='field'>
+          <label>{t('addRecipe.fields.mealTypes.label')}</label>
+          <div className='mt-pills mt-pills-select'>
+            {MEAL_TYPES.map((mealType) => (
+              <span
+                key={mealType}
+                className={`mt-pill mt-${mealType} selectable ${draftData.mealTypes.includes(mealType) ? 'active' : ''}`}
+                onClick={() => handleToggleMealType(mealType)}
+              >
+                <span className='dot'></span>
+                {t(`mealTypes.${mealType}`)}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className='field'>
+          <label>{t('addRecipe.fields.description.label')}</label>
+          <textarea
+            id='recDesc'
+            placeholder={t('addRecipe.fields.description.placeholder')}
+            value={draftData.description}
+            onChange={(e) =>
+              setDraftData({ ...draftData, description: e.target.value })
+            }
+          />
+        </div>
+        <label>{t('addRecipe.fields.ingredients.label')}</label>
+        <div id='ingRows'>
+          {draftData.items.map((item, idx) => (
+            <div className='ing-row' data-idx={idx.toString()} key={idx}>
+              <div className='field'>
+                <input
+                  type='text'
+                  placeholder={t(
+                    'addRecipe.fields.ingredients.fields.name.placeholder'
+                  )}
+                  value={item.name}
+                  data-role='name'
+                  list='ingSuggestList2'
+                  onChange={(e) => {
+                    handleEditIngredient(idx, { name: e.target.value });
+                  }}
+                />
+              </div>
+              <div className='field'>
+                <input
+                  type='number'
+                  min={0}
+                  step='any'
+                  placeholder={t(
+                    'addRecipe.fields.ingredients.fields.quantity.placeholder'
+                  )}
+                  value={item.amount != null ? item.amount.toString() : ''}
+                  data-role='amount'
+                  onChange={(e) => {
+                    handleEditIngredient(idx, {
+                      amount:
+                        e.target.value !== '' ? parseFloat(e.target.value) : null,
+                    });
+                  }}
+                />
+              </div>
+              <div className='field'>
+                <input
+                  type='text'
+                  placeholder={t(
+                    'addRecipe.fields.ingredients.fields.unit.placeholder'
+                  )}
+                  value={item.unit || ''}
+                  data-role='unit'
+                  list='unitSuggestList2'
+                  onChange={(e) => {
+                    handleEditIngredient(idx, {
+                      unit: e.target.value.trim() || null,
+                    });
+                  }}
+                />
+              </div>
+              <button
+                className='icon-btn'
+                data-remove={idx.toString()}
+                title={t('addRecipe.fields.ingredients.actions.removeRow')}
+                onClick={() => handleRemoveRow(idx)}
+              >
+                <FaXmark />
+              </button>
+            </div>
           ))}
         </div>
-      </div>
-      <div className='field'>
-        <label>{t('addRecipe.fields.description.label')}</label>
-        <textarea
-          id='recDesc'
-          placeholder={t('addRecipe.fields.description.placeholder')}
-          value={draftData.description}
-          onChange={(e) =>
-            setDraftData({ ...draftData, description: e.target.value })
-          }
-        />
-      </div>
-      <label>{t('addRecipe.fields.ingredients.label')}</label>
-      <div id='ingRows'>
-        {draftData.items.map((item, idx) => (
-          <div className='ing-row' data-idx={idx.toString()} key={idx}>
-            <div className='field'>
-              <input
-                type='text'
-                placeholder={t(
-                  'addRecipe.fields.ingredients.fields.name.placeholder'
-                )}
-                value={item.name}
-                data-role='name'
-                list='ingSuggestList2'
-                onChange={(e) => {
-                  handleEditIngredient(idx, { name: e.target.value });
-                }}
-              />
-            </div>
-            <div className='field'>
-              <input
-                type='number'
-                min={0}
-                step='any'
-                placeholder={t(
-                  'addRecipe.fields.ingredients.fields.quantity.placeholder'
-                )}
-                value={item.amount != null ? item.amount.toString() : ''}
-                data-role='amount'
-                onChange={(e) => {
-                  handleEditIngredient(idx, {
-                    amount:
-                      e.target.value !== '' ? parseFloat(e.target.value) : null,
-                  });
-                }}
-              />
-            </div>
-            <div className='field'>
-              <input
-                type='text'
-                placeholder={t(
-                  'addRecipe.fields.ingredients.fields.unit.placeholder'
-                )}
-                value={item.unit || ''}
-                data-role='unit'
-                list='unitSuggestList2'
-                onChange={(e) => {
-                  handleEditIngredient(idx, {
-                    unit: e.target.value.trim() || null,
-                  });
-                }}
-              />
-            </div>
-            <button
-              className='icon-btn'
-              data-remove={idx.toString()}
-              title={t('addRecipe.fields.ingredients.actions.removeRow')}
-              onClick={() => handleRemoveRow(idx)}
-            >
-              <FaXmark />
-            </button>
-          </div>
-        ))}
-      </div>
-      <datalist id='ingSuggestList2'>
-        {state.ingredients
-          .filter((i) => !isIngredientBlocked(i.id))
-          .map((i) => (
-            <option key={i.id} value={ingredientDisplayName(i.name, state.lang)} />
+        <datalist id='ingSuggestList2'>
+          {state.ingredients
+            .filter((i) => !isIngredientBlocked(i.id))
+            .map((i) => (
+              <option key={i.id} value={ingredientDisplayName(i.name, state.lang)} />
+            ))}
+        </datalist>
+        <datalist id='unitSuggestList2'>
+          {units.map((u) => (
+            <option key={u} value={t(`units.${u}`)} />
           ))}
-      </datalist>
-      <datalist id='unitSuggestList2'>
-        {units.map((u) => (
-          <option key={u} value={t(`units.${u}`)} />
-        ))}
-      </datalist>
-      <button
-        className={['btn', 'ghost'].join(' ')}
-        id='addRowBtn'
-        onClick={handleAddRow}
-      >
-        {t('addRecipe.fields.ingredients.actions.addRow')}
-      </button>
-      <div
-        style={{
-          marginTop: '18px',
-          display: 'flex',
-          gap: '10px',
-        }}
-      >
-        <button className='btn' id='saveRecipeBtn' onClick={handleSaveRecipe}>
-          {editing ? t('common.change') : t('addRecipe.actions.addRecipe')}
+        </datalist>
+        <button
+          className={['btn', 'ghost'].join(' ')}
+          id='addRowBtn'
+          onClick={handleAddRow}
+        >
+          {t('addRecipe.fields.ingredients.actions.addRow')}
         </button>
-        {editing && (
-          <button
-            className={['btn', 'secondary'].join(' ')}
-            id='cancelEditBtn'
-            onClick={handleCancelEdit}
-          >
-            {t('common.cancel')}
+        <div
+          style={{
+            marginTop: '18px',
+            display: 'flex',
+            gap: '10px',
+          }}
+        >
+          <button className='btn' id='saveRecipeBtn' onClick={handleSaveRecipe}>
+            {editing ? t('common.change') : t('addRecipe.actions.addRecipe')}
           </button>
-        )}
-      </div>
+          {editing && (
+            <button
+              className={['btn', 'secondary'].join(' ')}
+              id='cancelEditBtn'
+              onClick={handleCancelEdit}
+            >
+              {t('common.cancel')}
+            </button>
+          )}
+        </div>
+      </ErrorBoundary>
       <div className='section-title'>
         {t('addRecipe.recipesCount', { count: state.recipes.length })}
       </div>

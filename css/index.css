@@ -1003,6 +1003,39 @@ textarea {
   font-size: 20px;
   margin-bottom: 6px;
 }
+.app-error-accordion-wrap {
+  text-align: left;
+  max-width: 560px;
+  margin: 16px auto 0;
+}
+.app-error-stack {
+  text-align: left;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 0;
+}
+
+.card-error {
+  background: var(--card);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  text-align: center;
+}
+.card-error-detail {
+  opacity: 0.75;
+  font-style: italic;
+}
 
 ::placeholder {
   color: #b3ab91;

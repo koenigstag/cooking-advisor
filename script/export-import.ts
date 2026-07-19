@@ -1,4 +1,4 @@
-import { saveData } from './database.ts';
+import { saveData } from './database/index.ts';
 import {
   getOrCreateIngredient,
   ingredientDisplayName,

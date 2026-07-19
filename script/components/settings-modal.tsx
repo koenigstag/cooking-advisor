@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { t } from '../lang/lang.ts';
-import { saveData } from '../database.ts';
+import { saveData } from '../database/index.ts';
 import { stateStore } from '../store/store.ts';
 import { useAppState } from '../hooks/use-app-state.ts';
 import { validateServerBaseUrl } from '../validate-server-url.ts';
