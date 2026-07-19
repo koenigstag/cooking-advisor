@@ -15,6 +15,7 @@ export const LANG_RU_RU = {
     cancel: 'Отменить',
     delete: 'Удалить',
     close: 'Закрыть',
+    save: 'Сохранить',
   },
 
   units: {
@@ -78,6 +79,7 @@ export const LANG_RU_RU = {
     libraryLoading: 'Загрузка библиотеки рецептов…',
     libraryEmpty: 'Библиотека рецептов пока пуста.',
     libraryLoadError: 'Не удалось загрузить библиотеку рецептов.',
+    libraryDisabled: 'Укажите адрес сервера в Настройках, чтобы использовать библиотеку рецептов.',
     status: {
       canCook: 'Можно готовить',
       missingIngredients: 'Не хватает {count}',
@@ -200,16 +202,28 @@ export const LANG_RU_RU = {
     noRecipes: 'Рецептов пока нет.',
   },
 
-  exampleData: {
-    useBtn: 'Добавить начальные данные',
-    hint: 'Заполните холодильник несколькими примерами продуктов, чтобы посмотреть, как работает приложение.',
-    successMessage: {
-      one: 'Добавлен {added} примерный продукт.',
-      few: 'Добавлено {added} примерных продукта.',
-      many: 'Добавлено примерных продуктов: {added}.',
-      other: 'Добавлено {added} примерных продукта.',
+  settings: {
+    openMenuBtn: 'Настройки',
+    title: 'Настройки',
+    tabs: {
+      dietary: 'Пищевые ограничения',
+      sync: 'Синхронизация',
     },
-    alreadyLoaded: 'Примерные продукты уже есть в вашем списке.',
+    dietary: {
+      comingSoon: 'Пищевые ограничения появятся позже.',
+    },
+    sync: {
+      serverBaseUrl: {
+        label: 'Адрес сервера (Base URL)',
+        placeholder: 'https://example.com',
+      },
+      saved: 'Сохранено.',
+      errors: {
+        invalidUrl: 'Введите корректный URL, например https://example.com.',
+        httpsRequired:
+          'Эта страница загружена по HTTPS, поэтому адрес сервера тоже должен быть на HTTPS.',
+      },
+    },
   },
 
   exportImport: {

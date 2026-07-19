@@ -1,5 +1,9 @@
 import { saveData } from './database.ts';
-import { getOrCreateIngredient, ingredientName } from './ingredient.ts';
+import {
+  getOrCreateIngredient,
+  ingredientDisplayName,
+  ingredientName,
+} from './ingredient.ts';
 import type { RecipeItem } from './store/state.ts';
 import { stateStore } from './store/store.ts';
 import { uid } from './utils.ts';
@@ -98,7 +102,7 @@ export async function importRecipesFromPayload(
 
       items.push({
         ingredientId: ing.id,
-        name: ing.name,
+        name: ingredientDisplayName(ing.name),
         amount:
           it.amount === undefined || it.amount === null || it.amount === 0
             ? null

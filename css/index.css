@@ -202,6 +202,25 @@ header.top .tagline {
 .recipe-modal-card {
   max-width: 560px;
 }
+.settings-modal-card {
+  max-width: 520px;
+}
+.settings-tabs {
+  margin-bottom: 18px;
+}
+.settings-panel {
+  min-height: 80px;
+}
+.field-error {
+  color: var(--rust);
+  font-size: 13px;
+  margin: -6px 0 14px;
+}
+.field-success {
+  color: var(--green-dark);
+  font-size: 13px;
+  margin: -6px 0 14px;
+}
 .modal-body .mt-pills {
   margin-bottom: 10px;
 }

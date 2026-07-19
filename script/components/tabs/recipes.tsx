@@ -6,6 +6,7 @@ import {
   type EvaluateRecipeResult,
   fridgeEntry,
   getOrCreateIngredient,
+  ingredientDisplayName,
 } from '../../ingredient.ts';
 import { guessIconId } from '../../icons/icon-map.ts';
 import { type Recipe } from '../../store/state.ts';
@@ -15,14 +16,19 @@ import { uid } from '../../utils.ts';
 import { RecipeModal } from '../recipe-modal.tsx';
 import { MealTypePills } from '../meal-type-pills.tsx';
 import { Accordion } from '../accordion.tsx';
-import { fetchLibraryRecipes, type LibraryRecipe } from '../../server-api.ts';
+import {
+  fetchLibraryRecipes,
+  getServerBaseUrl,
+  type LibraryRecipe,
+} from '../../server-api.ts';
 
 function addLibraryRecipeToMine(libRecipe: LibraryRecipe): Recipe {
+  const lang = libRecipe.lang ?? (stateStore.getState().lang as LANG);
   const items = libRecipe.items.map((item) => {
-    const ing = getOrCreateIngredient(item.name, guessIconId(item.name))!;
+    const ing = getOrCreateIngredient(item.name, guessIconId(item.name), lang)!;
     return {
       ingredientId: ing.id,
-      name: ing.name,
+      name: ingredientDisplayName(ing.name, lang),
       amount: item.amount,
       unit: item.unit,
     };
@@ -204,7 +210,7 @@ export const RecipesTab = () => {
     []
   );
   const [libraryStatus, setLibraryStatus] = React.useState<
-    'loading' | 'ready' | 'error'
+    'loading' | 'ready' | 'error' | 'disabled'
   >('loading');
 
   const state = useAppState();
@@ -212,6 +218,11 @@ export const RecipesTab = () => {
   const hasRecipes = state.recipes.length > 0;
 
   React.useEffect(() => {
+    if (!getServerBaseUrl()) {
+      setLibraryRecipes([]);
+      setLibraryStatus('disabled');
+      return;
+    }
     let cancelled = false;
     setLibraryStatus('loading');
     fetchLibraryRecipes(state.lang)
@@ -227,7 +238,7 @@ export const RecipesTab = () => {
     return () => {
       cancelled = true;
     };
-  }, [state.lang]);
+  }, [state.lang, state.serverBaseUrl]);
 
   const handleToggleFilter = () => {
     setFilterOpen(!filterOpen);
@@ -294,7 +305,10 @@ export const RecipesTab = () => {
                 state.ingredients
                   .slice()
                   .sort((a, b) =>
-                    a.name.localeCompare(b.name, LANG_CODES[state.lang as LANG])
+                    ingredientDisplayName(a.name, state.lang).localeCompare(
+                      ingredientDisplayName(b.name, state.lang),
+                      LANG_CODES[state.lang as LANG]
+                    )
                   )
                   .map((ing) => {
                     const fe = fridgeEntry(ing.id);
@@ -306,7 +320,7 @@ export const RecipesTab = () => {
                         onClick={() => handleChipClick(ing.id)}
                       >
                         <span className='dot'></span>
-                        {ing.name}
+                        {ingredientDisplayName(ing.name, state.lang)}
                       </span>
                     );
                   })
@@ -373,6 +387,9 @@ export const RecipesTab = () => {
         open={libraryOpen}
         onToggle={setLibraryOpen}
       >
+        {libraryStatus === 'disabled' && (
+          <div className='library-status'>{t('recipeList.libraryDisabled')}</div>
+        )}
         {libraryStatus === 'loading' && (
           <div className='library-status'>{t('recipeList.libraryLoading')}</div>
         )}

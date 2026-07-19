@@ -15,6 +15,7 @@ export const LANG_EN_US = {
     cancel: 'Cancel',
     delete: 'Delete',
     close: 'Close',
+    save: 'Save',
   },
 
   units: {
@@ -76,6 +77,7 @@ export const LANG_EN_US = {
     libraryLoading: 'Loading recipe library…',
     libraryEmpty: 'The recipe library is empty.',
     libraryLoadError: 'Could not load the recipe library.',
+    libraryDisabled: 'Set a Server Base URL in Settings to use the recipe library.',
     status: {
       canCook: 'Can cook',
       missingIngredients: 'Missing {count}',
@@ -199,14 +201,28 @@ export const LANG_EN_US = {
     switchToDark: 'Switch to dark theme',
   },
 
-  exampleData: {
-    useBtn: 'Use example data',
-    hint: 'Fill your fridge with a few sample products to see how the app works.',
-    successMessage: {
-      one: 'Added {added} sample product to your fridge.',
-      other: 'Added {added} sample products to your fridge.',
+  settings: {
+    openMenuBtn: 'Settings',
+    title: 'Settings',
+    tabs: {
+      dietary: 'Dietary Restrictions',
+      sync: 'Sync',
     },
-    alreadyLoaded: 'Sample products are already in your list.',
+    dietary: {
+      comingSoon: 'Dietary restrictions are coming soon.',
+    },
+    sync: {
+      serverBaseUrl: {
+        label: 'Server Base URL',
+        placeholder: 'https://example.com',
+      },
+      saved: 'Saved.',
+      errors: {
+        invalidUrl: 'Enter a valid URL, e.g. https://example.com.',
+        httpsRequired:
+          'This page is loaded over HTTPS, so the server URL must use HTTPS too.',
+      },
+    },
   },
 
   exportImport: {

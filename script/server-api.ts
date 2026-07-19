@@ -1,7 +1,27 @@
 import type { LANG } from './lang/lang.ts';
-import type { MealType, Recipe } from './store/state.ts';
+import type { IconId } from './icons/icon-map.ts';
+import type { IngredientName, MealType, Recipe } from './store/state.ts';
+import { stateStore } from './store/store.ts';
 
-export const SERVER_BASE_URL = 'http://localhost:3001';
+export function getServerBaseUrl(): string {
+  return stateStore.getState().serverBaseUrl;
+}
+
+export type ServerIngredient = {
+  id: string;
+  name: IngredientName;
+  iconId?: IconId;
+  updatedAt: string;
+};
+
+export async function fetchIngredients(): Promise<ServerIngredient[]> {
+  const baseUrl = getServerBaseUrl();
+  if (!baseUrl) return [];
+  const res = await fetch(`${baseUrl}/ingredients`);
+  if (!res.ok)
+    throw new Error(`Failed to load ingredient catalog (${res.status})`);
+  return res.json();
+}
 
 export type LibraryRecipeItem = {
   name: string;
@@ -20,8 +40,10 @@ export type LibraryRecipe = {
 };
 
 export async function fetchLibraryRecipes(lang: LANG): Promise<LibraryRecipe[]> {
+  const baseUrl = getServerBaseUrl();
+  if (!baseUrl) return [];
   const res = await fetch(
-    `${SERVER_BASE_URL}/recipes?lang=${encodeURIComponent(lang)}`
+    `${baseUrl}/recipes?lang=${encodeURIComponent(lang)}`
   );
   if (!res.ok) throw new Error(`Failed to load recipe library (${res.status})`);
   return res.json();
@@ -30,8 +52,10 @@ export async function fetchLibraryRecipes(lang: LANG): Promise<LibraryRecipe[]> 
 export async function publishRecipeToLibrary(
   recipe: Recipe,
   lang: LANG
-): Promise<LibraryRecipe> {
-  const res = await fetch(`${SERVER_BASE_URL}/recipes`, {
+): Promise<LibraryRecipe | null> {
+  const baseUrl = getServerBaseUrl();
+  if (!baseUrl) return null;
+  const res = await fetch(`${baseUrl}/recipes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({

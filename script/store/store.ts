@@ -1,4 +1,4 @@
-import { defaultState, type State } from './state.ts';
+import { defaultState, type Ingredient, type State } from './state.ts';
 import { onActiveTabChange, type TabId } from '../components/tabs/tabs.ts';
 import type { LANG } from '../lang/lang.ts';
 import { loadData } from '../database.ts';
@@ -64,12 +64,12 @@ export const stateStore = {
       prev.fridge = rest;
     });
   },
-  addIngredient(ingredient: { id: string; name: string }) {
+  addIngredient(ingredient: Ingredient) {
     this.mutate((prev) => {
       prev.ingredients.push(ingredient);
     });
   },
-  setIngredients(ingredients: { id: string; name: string }[]) {
+  setIngredients(ingredients: Ingredient[]) {
     this.mutate((prev) => {
       prev.ingredients = ingredients;
     });
@@ -82,6 +82,11 @@ export const stateStore = {
   setRecipes(recipes: State['recipes']) {
     this.mutate((prev) => {
       prev.recipes = recipes;
+    });
+  },
+  setServerBaseUrl(url: string) {
+    this.mutate((prev) => {
+      prev.serverBaseUrl = url;
     });
   },
 };

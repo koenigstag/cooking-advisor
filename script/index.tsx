@@ -4,6 +4,7 @@ import { IndexedDBUnsupported } from './components/index-db-unsupported.tsx';
 import { LoadingState } from './components/loading.tsx';
 import { App } from './components/app.tsx';
 import { stateStore } from './store/store.ts';
+import { syncIngredientCatalog } from './ingredient-catalog.ts';
 
 async function init(root: HTMLElement) {
   const reactRoot = ReactDOM.createRoot(root);
@@ -21,6 +22,8 @@ async function init(root: HTMLElement) {
 
     await stateStore.initialize();
     console.debug('stateStore initialized', stateStore);
+
+    await syncIngredientCatalog();
   } catch (e) {
     console.error(e);
     alert((e as Error).message);

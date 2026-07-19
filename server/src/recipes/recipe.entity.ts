@@ -1,4 +1,5 @@
-export type SupportedLang = 'ru' | 'en';
+export type { SupportedLang } from '../common/lang';
+import type { SupportedLang } from '../common/lang';
 
 export type LibraryRecipeItem = {
   name: string;

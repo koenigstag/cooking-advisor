@@ -1,8 +1,11 @@
 import React from 'react';
 import { t, tc } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
-import { loadExampleData } from '../../example-data.ts';
-import { fridgeEntry, getOrCreateIngredient } from '../../ingredient.ts';
+import {
+  fridgeEntry,
+  getOrCreateIngredient,
+  ingredientDisplayName,
+} from '../../ingredient.ts';
 import { Icon } from '../../icons/icon.tsx';
 import { IconPicker } from '../../icons/icon-picker.tsx';
 import { guessIconId, type IconId } from '../../icons/icon-map.ts';
@@ -30,7 +33,7 @@ export const FridgeTab = () => {
   };
 
   const handleAddProduct = () => {
-    const ing = getOrCreateIngredient(name, iconId);
+    const ing = getOrCreateIngredient(name, iconId, state.lang);
     if (!ing) return;
 
     const amountValue = amount !== '' ? parseFloat(amount) : null;
@@ -98,15 +101,6 @@ export const FridgeTab = () => {
     }
   };
 
-  const handleUseExampleData = async () => {
-    const { addedProducts } = await loadExampleData(state.lang);
-    if (addedProducts > 0) {
-      alert(tc('exampleData.successMessage', addedProducts, { added: addedProducts }));
-    } else {
-      alert(t('exampleData.alreadyLoaded'));
-    }
-  };
-
   return (
     <React.Fragment>
       <div className='card'>
@@ -132,7 +126,7 @@ export const FridgeTab = () => {
             />
             <datalist id='ingSuggestList'>
               {state.ingredients.map((i) => (
-                <option key={i.id} value={i.name} />
+                <option key={i.id} value={ingredientDisplayName(i.name, state.lang)} />
               ))}
             </datalist>
           </div>
@@ -180,20 +174,17 @@ export const FridgeTab = () => {
             {t('fridge.productsList.emptyState.title')}
           </div>
           <p>{t('fridge.productsList.emptyState.hint')}</p>
-          <p>{t('exampleData.hint')}</p>
-          <button
-            className='btn'
-            id='useExampleDataBtn'
-            onClick={handleUseExampleData}
-          >
-            {t('exampleData.useBtn')}
-          </button>
         </div>
       ) : (
         <div className='fridge-list'>
           {state.ingredients
             .slice()
-            .sort((a, b) => a.name.localeCompare(b.name, 'ru'))
+            .sort((a, b) =>
+              ingredientDisplayName(a.name, state.lang).localeCompare(
+                ingredientDisplayName(b.name, state.lang),
+                'ru'
+              )
+            )
             .map((ing) => {
               const fe = fridgeEntry(ing.id);
               return (
@@ -208,7 +199,9 @@ export const FridgeTab = () => {
                       <Icon id={ing.iconId} />
                     </span>
                   )}
-                  <span className='name'>{ing.name}</span>
+                  <span className='name'>
+                    {ingredientDisplayName(ing.name, state.lang)}
+                  </span>
                   <div className='qty-inputs'>
                     <input
                       type='number'

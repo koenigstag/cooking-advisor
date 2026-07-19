@@ -1,24 +1,62 @@
 import type { IconId } from './icons/icon-map.ts';
-import type { Recipe, RecipeItem } from './store/state.ts';
+import type { LANG } from './lang/lang.ts';
+import type { Ingredient, IngredientName, Recipe, RecipeItem } from './store/state.ts';
 import { stateStore } from './store/store.ts';
 import { uid } from './utils.ts';
+
+export function ingredientDisplayName(
+  name: IngredientName,
+  lang: LANG = stateStore.getState().lang as LANG
+): string {
+  return name[lang] ?? name.en ?? name.ru ?? '';
+}
 
 export function findIngredientByName(name: string) {
   const norm = name.trim().toLowerCase();
   return stateStore
     .getState()
-    .ingredients.find((i) => i.name.toLowerCase() === norm);
+    .ingredients.find((i) =>
+      Object.values(i.name).some((v) => v && v.toLowerCase() === norm)
+    );
 }
 
-export function getOrCreateIngredient(name: string, iconId?: IconId) {
+export function getOrCreateIngredient(
+  name: string,
+  iconId?: IconId,
+  lang: LANG = stateStore.getState().lang as LANG
+) {
   name = name.trim();
   if (!name) return null;
   let ing = findIngredientByName(name);
   if (!ing) {
-    ing = { id: uid(), name, iconId };
+    ing = { id: uid(), name: { [lang]: name }, iconId };
     stateStore.addIngredient(ing);
   }
   return ing;
+}
+
+// Inserts an ingredient sourced from the server catalog if it isn't known
+// locally yet. If it's already known, only refreshes name/icon when the
+// server's copy is newer (server-dictated fields only — fridge amount/unit
+// stay purely local and are never touched here).
+export function upsertIngredientFromCatalog(entry: Ingredient): Ingredient {
+  const ingredients = stateStore.getState().ingredients;
+  const existing = ingredients.find((i) => i.id === entry.id);
+  if (existing) {
+    const isNewer =
+      entry.updatedAt != null &&
+      (existing.updatedAt == null ||
+        new Date(entry.updatedAt) > new Date(existing.updatedAt));
+    if (isNewer) {
+      existing.name = entry.name;
+      existing.iconId = entry.iconId as IconId | undefined;
+      existing.updatedAt = entry.updatedAt;
+      stateStore.setIngredients([...ingredients]);
+    }
+    return existing;
+  }
+  stateStore.addIngredient(entry);
+  return entry;
 }
 
 export function fridgeEntry(ingredientId: string) {
@@ -33,7 +71,7 @@ export function fridgeEntry(ingredientId: string) {
 
 export function ingredientName(id: string) {
   const ing = stateStore.getState().ingredients.find((i) => i.id === id);
-  return ing ? ing.name : '—';
+  return ing ? ingredientDisplayName(ing.name) : '—';
 }
 
 export type EvaluateRecipeResult = {
