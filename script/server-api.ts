@@ -1,6 +1,6 @@
 import type { LANG } from './lang/lang.ts';
 import type { IconId } from './icons/icon-map.ts';
-import type { IngredientName, MealType, Recipe } from './store/state.ts';
+import type { IngredientName, IngredientTag, MealType, Recipe } from './store/state.ts';
 import { stateStore } from './store/store.ts';
 
 export function getServerBaseUrl(): string {
@@ -11,6 +11,7 @@ export type ServerIngredient = {
   id: string;
   name: IngredientName;
   iconId?: IconId;
+  tags?: IngredientTag[];
   updatedAt: string;
 };
 

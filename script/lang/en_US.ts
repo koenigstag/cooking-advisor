@@ -84,6 +84,8 @@ export const LANG_EN_US = {
       noIngredients: 'No ingredients',
       matchedIngredients: ' · {matched}/{total} available',
       warnLowStock: '(low stock)',
+      dietBlocked: '⚠ Contains blocked: {list}',
+      dietBlockedTag: '(blocked)',
     },
     actions: {
       confirmDelete: 'Are you sure you want to delete this recipe?',
@@ -111,6 +113,11 @@ export const LANG_EN_US = {
       icon: {
         label: 'Icon',
       },
+      tags: {
+        label: 'Tags (optional)',
+        addBtn: 'Add tag',
+        pick: 'Pick a tag…',
+      },
     },
     productsList: {
       title: 'My Products ({count})',
@@ -130,6 +137,10 @@ export const LANG_EN_US = {
             placeholder: 'unit',
           },
         },
+      },
+      dietBlockedTag: '(blocked)',
+      blockedAccordion: {
+        title: 'Blocked products',
       },
       actions: {
         remove: 'Remove',
@@ -201,6 +212,26 @@ export const LANG_EN_US = {
     switchToDark: 'Switch to dark theme',
   },
 
+  ingredientTags: {
+    dairy: 'Dairy',
+    egg: 'Egg',
+    gluten: 'Gluten',
+    vegetable: 'Vegetable',
+    meat: 'Meat',
+    pork: 'Pork',
+    beef: 'Beef',
+    poultry: 'Poultry',
+    fish: 'Fish',
+    shellfish: 'Shellfish',
+    nuts: 'Nuts',
+    peanut: 'Peanut',
+    soy: 'Soy',
+    sesame: 'Sesame',
+    alcohol: 'Alcohol',
+    honey: 'Honey',
+    citrus: 'Citrus',
+  },
+
   settings: {
     openMenuBtn: 'Settings',
     title: 'Settings',
@@ -209,7 +240,36 @@ export const LANG_EN_US = {
       sync: 'Sync',
     },
     dietary: {
-      comingSoon: 'Dietary restrictions are coming soon.',
+      suggestionTitle: 'Suggestion. Click to activate.',
+      action: {
+        label: 'When a recipe contains a blocked ingredient',
+        warn: 'Warn',
+        hide: 'Hide the recipe',
+      },
+      blocklistHeading: 'Blocklist',
+      blocklist: {
+        label: 'Blocked ingredients',
+        caption: 'One-off exceptions not covered by a tag.',
+        addPlaceholder: 'Ingredient name…',
+        addBtn: 'Add',
+        unknownIngredient: 'No matching ingredient found.',
+      },
+      presets: {
+        label: 'Presets',
+        vegan: 'Vegan',
+        vegetarian: 'Vegetarian',
+        'gluten-free': 'Gluten-free',
+        halal: 'Halal',
+        kosher: 'Kosher',
+        'no-beef': 'No Beef',
+        confirmApply: 'This will block all ingredients tagged: {list}. Continue?',
+      },
+      blockByTag: {
+        label: 'Block by tag',
+        caption: 'Blocks every ingredient with this tag, now and in the future.',
+        addBtn: 'Add tag',
+        pick: 'Pick a tag…',
+      },
     },
     sync: {
       serverBaseUrl: {
