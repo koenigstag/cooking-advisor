@@ -1,10 +1,12 @@
 import React from 'react';
+import { FaXmark } from 'react-icons/fa6';
 import { t, tc } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import {
   fridgeEntry,
   getOrCreateIngredient,
   ingredientDisplayName,
+  isIngredientBlocked,
 } from '../../ingredient.ts';
 import { Icon } from '../../icons/icon.tsx';
 import { IconPicker } from '../../icons/icon-picker.tsx';
@@ -12,6 +14,8 @@ import { guessIconId, type IconId } from '../../icons/icon-map.ts';
 import { units } from '../../options.ts';
 import { stateStore } from '../../store/store.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
+import { INGREDIENT_TAGS, type IngredientTag } from '../../store/state.ts';
+import { Accordion } from '../accordion.tsx';
 
 export const FridgeTab = () => {
   const state = useAppState();
@@ -21,6 +25,9 @@ export const FridgeTab = () => {
   const [unit, setUnit] = React.useState('');
   const [iconId, setIconId] = React.useState<IconId | undefined>(undefined);
   const [iconTouched, setIconTouched] = React.useState(false);
+  const [tags, setTags] = React.useState<IngredientTag[]>([]);
+  const [addingTag, setAddingTag] = React.useState(false);
+  const [blockedOpen, setBlockedOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (iconTouched) return;
@@ -32,8 +39,14 @@ export const FridgeTab = () => {
     setIconId(id);
   };
 
+  const handleToggleTag = (tag: IngredientTag) => {
+    setTags((prev) =>
+      prev.includes(tag) ? prev.filter((tg) => tg !== tag) : [...prev, tag]
+    );
+  };
+
   const handleAddProduct = () => {
-    const ing = getOrCreateIngredient(name, iconId, state.lang);
+    const ing = getOrCreateIngredient(name, iconId, state.lang, tags);
     if (!ing) return;
 
     const amountValue = amount !== '' ? parseFloat(amount) : null;
@@ -50,6 +63,8 @@ export const FridgeTab = () => {
     setUnit('');
     setIconId(undefined);
     setIconTouched(false);
+    setTags([]);
+    setAddingTag(false);
   };
 
   const handleInStockChange = (ingId: string) => {
@@ -125,9 +140,14 @@ export const FridgeTab = () => {
               onChange={(e) => setName(e.target.value)}
             />
             <datalist id='ingSuggestList'>
-              {state.ingredients.map((i) => (
-                <option key={i.id} value={ingredientDisplayName(i.name, state.lang)} />
-              ))}
+              {state.ingredients
+                .filter((i) => !isIngredientBlocked(i.id))
+                .map((i) => (
+                  <option
+                    key={i.id}
+                    value={ingredientDisplayName(i.name, state.lang)}
+                  />
+                ))}
             </datalist>
           </div>
           <div className='field'>
@@ -159,6 +179,72 @@ export const FridgeTab = () => {
             </datalist>
           </div>
         </div>
+        <div className='field'>
+          <label>{t('fridge.fields.tags.label')}</label>
+          <div className='pill-row' id='newIngTagsRow'>
+            {tags.map((tag) => (
+              <span key={tag} className='pill'>
+                {t(`ingredientTags.${tag}`)}
+                <button
+                  type='button'
+                  className='pill-remove'
+                  aria-label={t('common.delete')}
+                  onClick={() => handleToggleTag(tag)}
+                >
+                  <FaXmark />
+                </button>
+              </span>
+            ))}
+            {(() => {
+              const remainingTags = INGREDIENT_TAGS.filter(
+                (tag) => !tags.includes(tag)
+              );
+              if (remainingTags.length === 0) return null;
+              if (!addingTag) {
+                return (
+                  <button
+                    type='button'
+                    className='pill-add-btn'
+                    aria-label={t('fridge.fields.tags.addBtn')}
+                    onClick={() => setAddingTag(true)}
+                  >
+                    +
+                  </button>
+                );
+              }
+              return (
+                <span className='pill-add-inline'>
+                  <select
+                    autoFocus
+                    value=''
+                    onChange={(e) => {
+                      const tag = e.target.value as IngredientTag;
+                      if (tag) setTags((prev) => [...prev, tag]);
+                      setAddingTag(false);
+                    }}
+                  >
+                    <option value='' disabled>
+                      {t('fridge.fields.tags.pick')}
+                    </option>
+                    {remainingTags.map((tag) => (
+                      <option key={tag} value={tag}>
+                        {t(`ingredientTags.${tag}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type='button'
+                    className='pill-add-cancel'
+                    aria-label={t('common.cancel')}
+                    onClick={() => setAddingTag(false)}
+                  >
+                    <FaXmark />
+                  </button>
+                </span>
+              );
+            })()}
+          </div>
+        </div>
         <button className='btn' id='addIngBtn' onClick={handleAddProduct}>
           {t('fridge.actions.addProduct')}
         </button>
@@ -176,65 +262,97 @@ export const FridgeTab = () => {
           <p>{t('fridge.productsList.emptyState.hint')}</p>
         </div>
       ) : (
-        <div className='fridge-list'>
-          {state.ingredients
-            .slice()
-            .sort((a, b) =>
-              ingredientDisplayName(a.name, state.lang).localeCompare(
-                ingredientDisplayName(b.name, state.lang),
-                'ru'
-              )
-            )
-            .map((ing) => {
-              const fe = fridgeEntry(ing.id);
-              return (
-                <div className='fridge-row' data-row={ing.id} key={ing.id}>
-                  <input
-                    type='checkbox'
-                    checked={fe.inStock}
-                    onChange={() => handleInStockChange(ing.id)}
-                  />
-                  {ing.iconId && (
-                    <span className='ing-icon'>
-                      <Icon id={ing.iconId} />
-                    </span>
-                  )}
-                  <span className='name'>
-                    {ingredientDisplayName(ing.name, state.lang)}
+        (() => {
+          const sortByName = (a: (typeof state.ingredients)[number], b: (typeof state.ingredients)[number]) =>
+            ingredientDisplayName(a.name, state.lang).localeCompare(
+              ingredientDisplayName(b.name, state.lang),
+              'ru'
+            );
+          const visibleIngredients = state.ingredients
+            .filter((i) => !isIngredientBlocked(i.id))
+            .sort(sortByName);
+          const blockedIngredients = state.ingredients
+            .filter((i) => isIngredientBlocked(i.id))
+            .sort(sortByName);
+
+          const renderRow = (ing: (typeof state.ingredients)[number]) => {
+            const fe = fridgeEntry(ing.id);
+            const isBlocked = isIngredientBlocked(ing.id);
+            return (
+              <div
+                className={`fridge-row ${isBlocked ? 'diet-blocked' : ''}`}
+                data-row={ing.id}
+                key={ing.id}
+              >
+                <input
+                  type='checkbox'
+                  checked={fe.inStock}
+                  onChange={() => handleInStockChange(ing.id)}
+                />
+                {ing.iconId && (
+                  <span className='ing-icon'>
+                    <Icon id={ing.iconId} />
                   </span>
-                  <div className='qty-inputs'>
-                    <input
-                      type='number'
-                      min={0}
-                      step='any'
-                      placeholder={t(
-                        'fridge.productsList.ingredient.fields.quantity.placeholder'
-                      )}
-                      value={fe.amount != null ? fe.amount : ''}
-                      onChange={(e) =>
-                        handleAmountChange(ing.id, e.target.value)
-                      }
-                    />
-                    <input
-                      type='text'
-                      placeholder={t(
-                        'fridge.productsList.ingredient.fields.unit.placeholder'
-                      )}
-                      value={fe.unit ? fe.unit : ''}
-                      onChange={(e) => handleUnitChange(ing.id, e.target.value)}
-                    />
-                  </div>
-                  <button
-                    className='del'
-                    data-deling={ing.id}
-                    onClick={() => handleRemoveProduct(ing.id)}
-                  >
-                    {t('fridge.productsList.actions.remove')}
-                  </button>
+                )}
+                <span className='name'>
+                  {ingredientDisplayName(ing.name, state.lang)}
+                  {isBlocked && (
+                    <small className='diet-blocked-tag'>
+                      {t('fridge.productsList.dietBlockedTag')}
+                    </small>
+                  )}
+                </span>
+                <div className='qty-inputs'>
+                  <input
+                    type='number'
+                    min={0}
+                    step='any'
+                    placeholder={t(
+                      'fridge.productsList.ingredient.fields.quantity.placeholder'
+                    )}
+                    value={fe.amount != null ? fe.amount : ''}
+                    onChange={(e) => handleAmountChange(ing.id, e.target.value)}
+                  />
+                  <input
+                    type='text'
+                    placeholder={t(
+                      'fridge.productsList.ingredient.fields.unit.placeholder'
+                    )}
+                    value={fe.unit ? fe.unit : ''}
+                    onChange={(e) => handleUnitChange(ing.id, e.target.value)}
+                  />
                 </div>
-              );
-            })}
-        </div>
+                <button
+                  className='del'
+                  data-deling={ing.id}
+                  onClick={() => handleRemoveProduct(ing.id)}
+                >
+                  {t('fridge.productsList.actions.remove')}
+                </button>
+              </div>
+            );
+          };
+
+          return (
+            <React.Fragment>
+              <div className='fridge-list'>
+                {visibleIngredients.map(renderRow)}
+              </div>
+              {blockedIngredients.length > 0 && (
+                <Accordion
+                  title={t('fridge.productsList.blockedAccordion.title')}
+                  count={blockedIngredients.length}
+                  open={blockedOpen}
+                  onToggle={setBlockedOpen}
+                >
+                  <div className='fridge-list'>
+                    {blockedIngredients.map(renderRow)}
+                  </div>
+                </Accordion>
+              )}
+            </React.Fragment>
+          );
+        })()
       )}
     </React.Fragment>
   );

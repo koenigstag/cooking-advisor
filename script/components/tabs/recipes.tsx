@@ -2,11 +2,13 @@ import React from 'react';
 import { LANG_CODES, t, tc, type LANG } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import {
+  blockedIngredientNames,
   evaluateRecipe,
   type EvaluateRecipeResult,
   fridgeEntry,
   getOrCreateIngredient,
   ingredientDisplayName,
+  isIngredientBlocked,
 } from '../../ingredient.ts';
 import { guessIconId } from '../../icons/icon-map.ts';
 import { type Recipe } from '../../store/state.ts';
@@ -69,6 +71,9 @@ const MyRecipeCard = ({
 }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
 
+  const dietary = stateStore.getState().dietary;
+  const blockedNames = blockedIngredientNames(recipe.items);
+
   const fullMatch = ev.status === 'full';
   let statusLabelEl: React.ReactNode;
   if (ev.status === 'full')
@@ -130,6 +135,11 @@ const MyRecipeCard = ({
             })}
           </div>
         </div>
+        {dietary.action === 'warn' && blockedNames.length > 0 && (
+          <div className='status-label diet-warn' style={{ marginTop: '6px' }}>
+            {t('recipeList.status.dietBlocked', { list: blockedNames.join(', ') })}
+          </div>
+        )}
         <div className='rc-actions'>
           <button data-edit={recipe.id} onClick={handleEditClick}>
             {t('common.edit')}
@@ -153,6 +163,9 @@ const MyRecipeCard = ({
 const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [addedRecipe, setAddedRecipe] = React.useState<Recipe | null>(null);
+
+  const dietary = stateStore.getState().dietary;
+  const blockedNames = blockedIngredientNames(recipe.items);
 
   const handleModalClose = () => setIsModalOpen(false);
 
@@ -190,6 +203,11 @@ const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
         </div>
         <MealTypePills mealTypes={recipe.mealTypes} />
         {recipe.description && <p className='rc-desc'>{recipe.description}</p>}
+        {dietary.action === 'warn' && blockedNames.length > 0 && (
+          <div className='status-label diet-warn' style={{ marginTop: '6px' }}>
+            {t('recipeList.status.dietBlocked', { list: blockedNames.join(', ') })}
+          </div>
+        )}
       </div>
       <RecipeModal
         source={modalSource}
@@ -214,7 +232,10 @@ export const RecipesTab = () => {
   >('loading');
 
   const state = useAppState();
-  const hasIngredients = state.ingredients.length > 0;
+  const visibleIngredients = state.ingredients.filter(
+    (i) => !isIngredientBlocked(i.id)
+  );
+  const hasIngredients = visibleIngredients.length > 0;
   const hasRecipes = state.recipes.length > 0;
 
   React.useEffect(() => {
@@ -260,11 +281,14 @@ export const RecipesTab = () => {
     setRecipeSearch(e.target.value);
   };
 
-  const filteredMyRecipes = state.recipes.filter((r) =>
-    matchesSearch(r.name, r.items, recipeSearch)
+  const passesDietFilter = (items: { ingredientId?: string; name: string }[]) =>
+    state.dietary.action !== 'hide' || blockedIngredientNames(items).length === 0;
+
+  const filteredMyRecipes = state.recipes.filter(
+    (r) => matchesSearch(r.name, r.items, recipeSearch) && passesDietFilter(r.items)
   );
-  const filteredLibraryRecipes = libraryRecipes.filter((r) =>
-    matchesSearch(r.name, r.items, recipeSearch)
+  const filteredLibraryRecipes = libraryRecipes.filter(
+    (r) => matchesSearch(r.name, r.items, recipeSearch) && passesDietFilter(r.items)
   );
 
   const hasVisibleMyRecipes = filteredMyRecipes.length > 0;
@@ -302,7 +326,7 @@ export const RecipesTab = () => {
           >
             <div className='chip-row' id='filterChips'>
               {filterOpen ? (
-                state.ingredients
+                visibleIngredients
                   .slice()
                   .sort((a, b) =>
                     ingredientDisplayName(a.name, state.lang).localeCompare(
@@ -326,8 +350,8 @@ export const RecipesTab = () => {
                   })
               ) : (
                 <span className={`chip`}>
-                  {state.ingredients.length}{' '}
-                  {tc('recipeList.ingredients', state.ingredients.length)}
+                  {visibleIngredients.length}{' '}
+                  {tc('recipeList.ingredients', visibleIngredients.length)}
                 </span>
               )}
             </div>

@@ -221,6 +221,33 @@ header.top .tagline {
   font-size: 13px;
   margin: -6px 0 14px;
 }
+.dietary-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dietary-heading {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-soft);
+  margin: 22px 0 12px;
+}
+.dietary-heading:first-child {
+  margin-top: 0;
+}
+.dietary-subheading {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green-dark);
+  margin: 14px 0 6px;
+}
+.dietary-caption {
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
 .modal-body .mt-pills {
   margin-bottom: 10px;
 }
@@ -314,6 +341,110 @@ nav.tabs button:not(.active):hover {
 .chip small {
   color: var(--ink-soft);
   font-weight: 400;
+}
+.chip.diet-blocked {
+  background: var(--rust-pale);
+  border-color: var(--rust);
+  border-style: dashed;
+}
+
+/* ---------- Pills (removable tag/ingredient rows) ---------- */
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 6px 6px 12px;
+  border-radius: 999px;
+  background: var(--green-pale);
+  border: 1.5px solid var(--green);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.pill-suggestion {
+  padding: 6px 12px;
+  background: var(--gold-pale);
+  border-style: dashed;
+  border-color: var(--gold);
+  color: #8a6417;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pill-suggestion:hover {
+  background: var(--green-pale);
+  border-color: var(--green);
+  color: var(--green-dark);
+}
+.pill-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: var(--green-dark);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+}
+.pill-remove:hover {
+  background: rgba(0, 0, 0, 0.08);
+  color: var(--rust);
+}
+.pill-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--line);
+  background: var(--card);
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+}
+.pill-add-btn:hover {
+  border-color: var(--green);
+  color: var(--green-dark);
+}
+.pill-add-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.pill-add-inline select,
+.pill-add-inline input {
+  padding: 5px 10px;
+  font-size: 13.5px;
+  border-radius: 999px;
+}
+.pill-add-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+}
+.pill-add-cancel:hover {
+  color: var(--rust);
 }
 
 /* ---------- Filter panel ---------- */
@@ -491,6 +622,15 @@ nav.tabs button:not(.active):hover {
   background: var(--rust-pale);
   color: var(--rust);
 }
+.status-label.diet-warn {
+  display: block;
+  background: none;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+  color: var(--rust);
+}
 .rc-actions {
   display: flex;
   gap: 10px;
@@ -639,6 +779,15 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px 14px;
+}
+.fridge-row.diet-blocked {
+  opacity: 0.65;
+}
+.diet-blocked-tag {
+  margin-left: 6px;
+  color: var(--rust);
+  font-weight: 400;
+  font-size: 12px;
 }
 .fridge-row input[type='checkbox'] {
   width: 18px;
@@ -797,6 +946,9 @@ textarea {
 }
 .accordion:last-child {
   margin-bottom: 0;
+}
+.fridge-list + .accordion {
+  margin-top: 18px;
 }
 .accordion-head {
   display: flex;

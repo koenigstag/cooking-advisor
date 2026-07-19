@@ -6,6 +6,7 @@ import {
   getOrCreateIngredient,
   ingredientDisplayName,
   ingredientName,
+  isIngredientBlocked,
 } from '../../ingredient.ts';
 import { units } from '../../options.ts';
 import type { MealType, Recipe, RecipeItem } from '../../store/state.ts';
@@ -287,9 +288,11 @@ export const AddRecipeTab = () => {
         ))}
       </div>
       <datalist id='ingSuggestList2'>
-        {state.ingredients.map((i) => (
-          <option key={i.id} value={ingredientDisplayName(i.name, state.lang)} />
-        ))}
+        {state.ingredients
+          .filter((i) => !isIngredientBlocked(i.id))
+          .map((i) => (
+            <option key={i.id} value={ingredientDisplayName(i.name, state.lang)} />
+          ))}
       </datalist>
       <datalist id='unitSuggestList2'>
         {units.map((u) => (
