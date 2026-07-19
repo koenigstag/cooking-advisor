@@ -7,6 +7,7 @@ export interface HeaderProps {
   isMenuOpen: boolean;
   onKebabClick: () => void;
   onExportModalOpen: () => void;
+  onSettingsModalOpen: () => void;
   onLangChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
@@ -14,6 +15,7 @@ export const Header = ({
   isMenuOpen,
   onKebabClick,
   onExportModalOpen,
+  onSettingsModalOpen,
   onLangChange,
 }: HeaderProps) => {
   const state = useAppState();
@@ -67,6 +69,9 @@ export const Header = ({
         <div className='dropdown-menu' id='dropdownMenu' hidden={!isMenuOpen}>
           <button id='openIOModalBtn' onClick={onExportModalOpen}>
             {t('exportImport.openModalBtn')}
+          </button>
+          <button id='openSettingsModalBtn' onClick={onSettingsModalOpen}>
+            {t('settings.openMenuBtn')}
           </button>
         </div>
       </div>

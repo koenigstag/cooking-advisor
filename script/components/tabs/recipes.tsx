@@ -2,10 +2,13 @@ import React from 'react';
 import { LANG_CODES, t, tc, type LANG } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import {
+  blockedIngredientNames,
   evaluateRecipe,
   type EvaluateRecipeResult,
   fridgeEntry,
   getOrCreateIngredient,
+  ingredientDisplayName,
+  isIngredientBlocked,
 } from '../../ingredient.ts';
 import { guessIconId } from '../../icons/icon-map.ts';
 import { type Recipe } from '../../store/state.ts';
@@ -15,14 +18,19 @@ import { uid } from '../../utils.ts';
 import { RecipeModal } from '../recipe-modal.tsx';
 import { MealTypePills } from '../meal-type-pills.tsx';
 import { Accordion } from '../accordion.tsx';
-import { fetchLibraryRecipes, type LibraryRecipe } from '../../server-api.ts';
+import {
+  fetchLibraryRecipes,
+  getServerBaseUrl,
+  type LibraryRecipe,
+} from '../../server-api.ts';
 
-function addLibraryRecipeToMine(libRecipe: LibraryRecipe) {
+function addLibraryRecipeToMine(libRecipe: LibraryRecipe): Recipe {
+  const lang = libRecipe.lang ?? (stateStore.getState().lang as LANG);
   const items = libRecipe.items.map((item) => {
-    const ing = getOrCreateIngredient(item.name, guessIconId(item.name))!;
+    const ing = getOrCreateIngredient(item.name, guessIconId(item.name), lang)!;
     return {
       ingredientId: ing.id,
-      name: ing.name,
+      name: ingredientDisplayName(ing.name, lang),
       amount: item.amount,
       unit: item.unit,
     };
@@ -38,7 +46,7 @@ function addLibraryRecipeToMine(libRecipe: LibraryRecipe) {
 
   stateStore.setRecipes([...stateStore.getState().recipes, newRecipe]);
   saveData();
-  alert(t('recipeList.addedToMyRecipes'));
+  return newRecipe;
 }
 
 const MANY_RECIPES_THRESHOLD = 6;
@@ -62,6 +70,9 @@ const MyRecipeCard = ({
   ev: EvaluateRecipeResult;
 }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const dietary = stateStore.getState().dietary;
+  const blockedNames = blockedIngredientNames(recipe.items);
 
   const fullMatch = ev.status === 'full';
   let statusLabelEl: React.ReactNode;
@@ -124,6 +135,11 @@ const MyRecipeCard = ({
             })}
           </div>
         </div>
+        {dietary.action === 'warn' && blockedNames.length > 0 && (
+          <div className='status-label diet-warn' style={{ marginTop: '6px' }}>
+            {t('recipeList.status.dietBlocked', { list: blockedNames.join(', ') })}
+          </div>
+        )}
         <div className='rc-actions'>
           <button data-edit={recipe.id} onClick={handleEditClick}>
             {t('common.edit')}
@@ -146,11 +162,38 @@ const MyRecipeCard = ({
 
 const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [addedRecipe, setAddedRecipe] = React.useState<Recipe | null>(null);
+
+  const dietary = stateStore.getState().dietary;
+  const blockedNames = blockedIngredientNames(recipe.items);
+
+  const handleModalClose = () => setIsModalOpen(false);
 
   const handleAddToMyRecipes = () => {
-    addLibraryRecipeToMine(recipe);
-    setIsModalOpen(false);
+    setAddedRecipe(addLibraryRecipeToMine(recipe));
   };
+
+  const handleEditClick = () => {
+    if (!addedRecipe) return;
+    stateStore.setEditingRecipeId(addedRecipe.id);
+    stateStore.setActiveTab('addRecipe');
+  };
+
+  const handleDeleteClick = () => {
+    if (!addedRecipe) return;
+    if (confirm(t('recipeList.actions.confirmDelete'))) {
+      stateStore.setRecipes(
+        stateStore.getState().recipes.filter((r) => r.id !== addedRecipe.id)
+      );
+      saveData();
+      setAddedRecipe(null);
+      handleModalClose();
+    }
+  };
+
+  const modalSource = addedRecipe
+    ? { kind: 'mine' as const, recipe: addedRecipe, ev: evaluateRecipe(addedRecipe) }
+    : { kind: 'library' as const, recipe };
 
   return (
     <React.Fragment>
@@ -160,11 +203,18 @@ const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
         </div>
         <MealTypePills mealTypes={recipe.mealTypes} />
         {recipe.description && <p className='rc-desc'>{recipe.description}</p>}
+        {dietary.action === 'warn' && blockedNames.length > 0 && (
+          <div className='status-label diet-warn' style={{ marginTop: '6px' }}>
+            {t('recipeList.status.dietBlocked', { list: blockedNames.join(', ') })}
+          </div>
+        )}
       </div>
       <RecipeModal
-        source={{ kind: 'library', recipe }}
+        source={modalSource}
         open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={handleModalClose}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
         onAddToMyRecipes={handleAddToMyRecipes}
       />
     </React.Fragment>
@@ -178,14 +228,22 @@ export const RecipesTab = () => {
     []
   );
   const [libraryStatus, setLibraryStatus] = React.useState<
-    'loading' | 'ready' | 'error'
+    'loading' | 'ready' | 'error' | 'disabled'
   >('loading');
 
   const state = useAppState();
-  const hasIngredients = state.ingredients.length > 0;
+  const visibleIngredients = state.ingredients.filter(
+    (i) => !isIngredientBlocked(i.id)
+  );
+  const hasIngredients = visibleIngredients.length > 0;
   const hasRecipes = state.recipes.length > 0;
 
   React.useEffect(() => {
+    if (!getServerBaseUrl()) {
+      setLibraryRecipes([]);
+      setLibraryStatus('disabled');
+      return;
+    }
     let cancelled = false;
     setLibraryStatus('loading');
     fetchLibraryRecipes(state.lang)
@@ -201,7 +259,7 @@ export const RecipesTab = () => {
     return () => {
       cancelled = true;
     };
-  }, [state.lang]);
+  }, [state.lang, state.serverBaseUrl]);
 
   const handleToggleFilter = () => {
     setFilterOpen(!filterOpen);
@@ -223,11 +281,14 @@ export const RecipesTab = () => {
     setRecipeSearch(e.target.value);
   };
 
-  const filteredMyRecipes = state.recipes.filter((r) =>
-    matchesSearch(r.name, r.items, recipeSearch)
+  const passesDietFilter = (items: { ingredientId?: string; name: string }[]) =>
+    state.dietary.action !== 'hide' || blockedIngredientNames(items).length === 0;
+
+  const filteredMyRecipes = state.recipes.filter(
+    (r) => matchesSearch(r.name, r.items, recipeSearch) && passesDietFilter(r.items)
   );
-  const filteredLibraryRecipes = libraryRecipes.filter((r) =>
-    matchesSearch(r.name, r.items, recipeSearch)
+  const filteredLibraryRecipes = libraryRecipes.filter(
+    (r) => matchesSearch(r.name, r.items, recipeSearch) && passesDietFilter(r.items)
   );
 
   const hasVisibleMyRecipes = filteredMyRecipes.length > 0;
@@ -265,10 +326,13 @@ export const RecipesTab = () => {
           >
             <div className='chip-row' id='filterChips'>
               {filterOpen ? (
-                state.ingredients
+                visibleIngredients
                   .slice()
                   .sort((a, b) =>
-                    a.name.localeCompare(b.name, LANG_CODES[state.lang as LANG])
+                    ingredientDisplayName(a.name, state.lang).localeCompare(
+                      ingredientDisplayName(b.name, state.lang),
+                      LANG_CODES[state.lang as LANG]
+                    )
                   )
                   .map((ing) => {
                     const fe = fridgeEntry(ing.id);
@@ -280,14 +344,14 @@ export const RecipesTab = () => {
                         onClick={() => handleChipClick(ing.id)}
                       >
                         <span className='dot'></span>
-                        {ing.name}
+                        {ingredientDisplayName(ing.name, state.lang)}
                       </span>
                     );
                   })
               ) : (
                 <span className={`chip`}>
-                  {state.ingredients.length}{' '}
-                  {tc('recipeList.ingredients', state.ingredients.length)}
+                  {visibleIngredients.length}{' '}
+                  {tc('recipeList.ingredients', visibleIngredients.length)}
                 </span>
               )}
             </div>
@@ -347,6 +411,9 @@ export const RecipesTab = () => {
         open={libraryOpen}
         onToggle={setLibraryOpen}
       >
+        {libraryStatus === 'disabled' && (
+          <div className='library-status'>{t('recipeList.libraryDisabled')}</div>
+        )}
         {libraryStatus === 'loading' && (
           <div className='library-status'>{t('recipeList.libraryLoading')}</div>
         )}

@@ -1,4 +1,9 @@
-import { defaultState, type State } from './state.ts';
+import {
+  defaultState,
+  type Ingredient,
+  type IngredientTag,
+  type State,
+} from './state.ts';
 import { onActiveTabChange, type TabId } from '../components/tabs/tabs.ts';
 import type { LANG } from '../lang/lang.ts';
 import { loadData } from '../database.ts';
@@ -64,12 +69,12 @@ export const stateStore = {
       prev.fridge = rest;
     });
   },
-  addIngredient(ingredient: { id: string; name: string }) {
+  addIngredient(ingredient: Ingredient) {
     this.mutate((prev) => {
       prev.ingredients.push(ingredient);
     });
   },
-  setIngredients(ingredients: { id: string; name: string }[]) {
+  setIngredients(ingredients: Ingredient[]) {
     this.mutate((prev) => {
       prev.ingredients = ingredients;
     });
@@ -82,6 +87,45 @@ export const stateStore = {
   setRecipes(recipes: State['recipes']) {
     this.mutate((prev) => {
       prev.recipes = recipes;
+    });
+  },
+  setServerBaseUrl(url: string) {
+    this.mutate((prev) => {
+      prev.serverBaseUrl = url;
+    });
+  },
+  setDietaryAction(action: State['dietary']['action']) {
+    this.mutate((prev) => {
+      prev.dietary.action = action;
+    });
+  },
+  addToDietaryBlocklist(ingredientIds: string[]) {
+    this.mutate((prev) => {
+      const set = new Set(prev.dietary.blocklist);
+      ingredientIds.forEach((id) => set.add(id));
+      prev.dietary.blocklist = [...set];
+    });
+  },
+  removeFromDietaryBlocklist(ingredientId: string) {
+    this.mutate((prev) => {
+      prev.dietary.blocklist = prev.dietary.blocklist.filter(
+        (id) => id !== ingredientId
+      );
+    });
+  },
+  addDietaryBlockedTags(tags: IngredientTag[]) {
+    this.mutate((prev) => {
+      const set = new Set(prev.dietary.blockedTags);
+      tags.forEach((tag) => set.add(tag));
+      prev.dietary.blockedTags = [...set];
+    });
+  },
+  toggleDietaryBlockedTag(tag: IngredientTag) {
+    this.mutate((prev) => {
+      const set = new Set(prev.dietary.blockedTags);
+      if (set.has(tag)) set.delete(tag);
+      else set.add(tag);
+      prev.dietary.blockedTags = [...set];
     });
   },
 };

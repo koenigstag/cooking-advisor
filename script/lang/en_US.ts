@@ -15,6 +15,7 @@ export const LANG_EN_US = {
     cancel: 'Cancel',
     delete: 'Delete',
     close: 'Close',
+    save: 'Save',
   },
 
   units: {
@@ -73,16 +74,18 @@ export const LANG_EN_US = {
     myRecipes: 'My Recipes',
     library: 'Recipe Library',
     addToMyRecipes: 'Add to My Recipes',
-    addedToMyRecipes: 'Added to your recipes.',
     libraryLoading: 'Loading recipe library…',
     libraryEmpty: 'The recipe library is empty.',
     libraryLoadError: 'Could not load the recipe library.',
+    libraryDisabled: 'Set a Server Base URL in Settings to use the recipe library.',
     status: {
       canCook: 'Can cook',
       missingIngredients: 'Missing {count}',
       noIngredients: 'No ingredients',
       matchedIngredients: ' · {matched}/{total} available',
       warnLowStock: '(low stock)',
+      dietBlocked: '⚠ Contains blocked: {list}',
+      dietBlockedTag: '(blocked)',
     },
     actions: {
       confirmDelete: 'Are you sure you want to delete this recipe?',
@@ -110,6 +113,11 @@ export const LANG_EN_US = {
       icon: {
         label: 'Icon',
       },
+      tags: {
+        label: 'Tags (optional)',
+        addBtn: 'Add tag',
+        pick: 'Pick a tag…',
+      },
     },
     productsList: {
       title: 'My Products ({count})',
@@ -129,6 +137,10 @@ export const LANG_EN_US = {
             placeholder: 'unit',
           },
         },
+      },
+      dietBlockedTag: '(blocked)',
+      blockedAccordion: {
+        title: 'Blocked products',
       },
       actions: {
         remove: 'Remove',
@@ -200,14 +212,78 @@ export const LANG_EN_US = {
     switchToDark: 'Switch to dark theme',
   },
 
-  exampleData: {
-    useBtn: 'Use example data',
-    hint: 'Fill your fridge with a few sample products to see how the app works.',
-    successMessage: {
-      one: 'Added {added} sample product to your fridge.',
-      other: 'Added {added} sample products to your fridge.',
+  ingredientTags: {
+    dairy: 'Dairy',
+    egg: 'Egg',
+    gluten: 'Gluten',
+    vegetable: 'Vegetable',
+    meat: 'Meat',
+    pork: 'Pork',
+    beef: 'Beef',
+    poultry: 'Poultry',
+    fish: 'Fish',
+    shellfish: 'Shellfish',
+    nuts: 'Nuts',
+    peanut: 'Peanut',
+    soy: 'Soy',
+    sesame: 'Sesame',
+    alcohol: 'Alcohol',
+    honey: 'Honey',
+    citrus: 'Citrus',
+  },
+
+  settings: {
+    openMenuBtn: 'Settings',
+    title: 'Settings',
+    tabs: {
+      dietary: 'Dietary Restrictions',
+      sync: 'Sync',
     },
-    alreadyLoaded: 'Sample products are already in your list.',
+    dietary: {
+      suggestionTitle: 'Suggestion. Click to activate.',
+      action: {
+        label: 'When a recipe contains a blocked ingredient',
+        warn: 'Warn',
+        hide: 'Hide the recipe',
+      },
+      blocklistHeading: 'Blocklist',
+      blocklist: {
+        label: 'Blocked ingredients',
+        caption: 'One-off exceptions not covered by a tag.',
+        addPlaceholder: 'Ingredient name…',
+        addBtn: 'Add',
+        unknownIngredient: 'No matching ingredient found.',
+      },
+      presets: {
+        label: 'Presets',
+        vegan: 'Vegan',
+        vegetarian: 'Vegetarian',
+        'gluten-free': 'Gluten-free',
+        halal: 'Halal',
+        kosher: 'Kosher',
+        'no-beef': 'No Beef',
+        lent: 'Lent',
+        confirmApply: 'This will block all ingredients tagged: {list}. Continue?',
+      },
+      blockByTag: {
+        label: 'Block by tag',
+        caption: 'Blocks every ingredient with this tag, now and in the future.',
+        addBtn: 'Add tag',
+        pick: 'Pick a tag…',
+      },
+    },
+    sync: {
+      serverBaseUrl: {
+        label: 'Server Base URL',
+        placeholder: 'https://example.com',
+      },
+      saved: 'Saved.',
+      errors: {
+        invalidUrl: 'Enter a valid URL, e.g. https://example.com.',
+        httpsRequired:
+          'This page is loaded over HTTPS, so the server URL must use HTTPS too.',
+      },
+    },
   },
 
   exportImport: {

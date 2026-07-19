@@ -2,7 +2,12 @@ import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { t, tc } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
-import { getOrCreateIngredient, ingredientName } from '../../ingredient.ts';
+import {
+  getOrCreateIngredient,
+  ingredientDisplayName,
+  ingredientName,
+  isIngredientBlocked,
+} from '../../ingredient.ts';
 import { units } from '../../options.ts';
 import type { MealType, Recipe, RecipeItem } from '../../store/state.ts';
 import { uid } from '../../utils.ts';
@@ -105,7 +110,7 @@ export const AddRecipeTab = () => {
     draftData.items.forEach((it) => {
       const n = (it.name || '').trim();
       if (!n) return;
-      const ing = getOrCreateIngredient(n);
+      const ing = getOrCreateIngredient(n, undefined, state.lang);
       if (!ing) return;
       items.push({
         ingredientId: ing.id,
@@ -283,9 +288,11 @@ export const AddRecipeTab = () => {
         ))}
       </div>
       <datalist id='ingSuggestList2'>
-        {state.ingredients.map((i) => (
-          <option key={i.id} value={i.name} />
-        ))}
+        {state.ingredients
+          .filter((i) => !isIngredientBlocked(i.id))
+          .map((i) => (
+            <option key={i.id} value={ingredientDisplayName(i.name, state.lang)} />
+          ))}
       </datalist>
       <datalist id='unitSuggestList2'>
         {units.map((u) => (

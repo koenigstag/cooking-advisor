@@ -5,6 +5,8 @@ import {
   type EvaluateRecipeResult,
   fridgeEntry,
   ingredientName,
+  isIngredientBlocked,
+  resolveIngredientId,
 } from '../ingredient.ts';
 import { type Recipe, type RecipeItem } from '../store/state.ts';
 import { type LibraryRecipe, type LibraryRecipeItem } from '../server-api.ts';
@@ -70,6 +72,8 @@ export const RecipeModal = ({
                 mine && ev
                   ? ev.warnList.some((w) => w.ingredientId === item.ingredientId)
                   : false;
+              const resolvedId = resolveIngredientId(item);
+              const isDietBlocked = resolvedId ? isIngredientBlocked(resolvedId) : false;
               const statusClass = mine
                 ? isMissing
                   ? 'missing'
@@ -80,7 +84,7 @@ export const RecipeModal = ({
               return (
                 <span
                   key={mine ? item.ingredientId : `${item.name}-${idx}`}
-                  className={`chip readonly ${statusClass}`}
+                  className={`chip readonly ${statusClass} ${isDietBlocked ? 'diet-blocked' : ''}`}
                 >
                   <span className='dot'></span>
                   {displayName}
@@ -91,6 +95,7 @@ export const RecipeModal = ({
                     </small>
                   )}
                   {isWarn && <small>{t('recipeList.status.warnLowStock')}</small>}
+                  {isDietBlocked && <small>{t('recipeList.status.dietBlockedTag')}</small>}
                 </span>
               );
             })}

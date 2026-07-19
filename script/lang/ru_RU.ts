@@ -15,6 +15,7 @@ export const LANG_RU_RU = {
     cancel: 'Отменить',
     delete: 'Удалить',
     close: 'Закрыть',
+    save: 'Сохранить',
   },
 
   units: {
@@ -75,16 +76,18 @@ export const LANG_RU_RU = {
     myRecipes: 'Мои рецепты',
     library: 'Библиотека рецептов',
     addToMyRecipes: 'Добавить в мои рецепты',
-    addedToMyRecipes: 'Добавлено в ваши рецепты.',
     libraryLoading: 'Загрузка библиотеки рецептов…',
     libraryEmpty: 'Библиотека рецептов пока пуста.',
     libraryLoadError: 'Не удалось загрузить библиотеку рецептов.',
+    libraryDisabled: 'Укажите адрес сервера в Настройках, чтобы использовать библиотеку рецептов.',
     status: {
       canCook: 'Можно готовить',
       missingIngredients: 'Не хватает {count}',
       noIngredients: 'Нет продуктов',
       matchedIngredients: ' · {matched}/{total} есть в наличии',
       warnLowStock: '(мало)',
+      dietBlocked: '⚠ Содержит запрещённое: {list}',
+      dietBlockedTag: '(запрещено)',
     },
     actions: {
       confirmDelete: 'Вы уверены, что хотите удалить этот рецепт?',
@@ -112,6 +115,11 @@ export const LANG_RU_RU = {
       icon: {
         label: 'Иконка',
       },
+      tags: {
+        label: 'Теги (необязательно)',
+        addBtn: 'Добавить тег',
+        pick: 'Выберите тег…',
+      },
     },
     productsList: {
       title: 'Мои продукты ({count})',
@@ -131,6 +139,10 @@ export const LANG_RU_RU = {
             placeholder: 'ед.',
           },
         },
+      },
+      dietBlockedTag: '(запрещено)',
+      blockedAccordion: {
+        title: 'Запрещённые продукты',
       },
       actions: {
         remove: 'Удалить',
@@ -201,16 +213,78 @@ export const LANG_RU_RU = {
     noRecipes: 'Рецептов пока нет.',
   },
 
-  exampleData: {
-    useBtn: 'Добавить начальные данные',
-    hint: 'Заполните холодильник несколькими примерами продуктов, чтобы посмотреть, как работает приложение.',
-    successMessage: {
-      one: 'Добавлен {added} примерный продукт.',
-      few: 'Добавлено {added} примерных продукта.',
-      many: 'Добавлено примерных продуктов: {added}.',
-      other: 'Добавлено {added} примерных продукта.',
+  ingredientTags: {
+    dairy: 'Молочное',
+    egg: 'Яйца',
+    gluten: 'Глютен',
+    vegetable: 'Овощи',
+    meat: 'Мясо',
+    pork: 'Свинина',
+    beef: 'Говядина',
+    poultry: 'Птица',
+    fish: 'Рыба',
+    shellfish: 'Раки и моллюски',
+    nuts: 'Орехи',
+    peanut: 'Арахис',
+    soy: 'Соя',
+    sesame: 'Кунжут',
+    alcohol: 'Алкоголь',
+    honey: 'Мёд',
+    citrus: 'Цитрусовые',
+  },
+
+  settings: {
+    openMenuBtn: 'Настройки',
+    title: 'Настройки',
+    tabs: {
+      dietary: 'Пищевые ограничения',
+      sync: 'Синхронизация',
     },
-    alreadyLoaded: 'Примерные продукты уже есть в вашем списке.',
+    dietary: {
+      suggestionTitle: 'Подсказка. Нажмите, чтобы активировать.',
+      action: {
+        label: 'Если рецепт содержит запрещённый ингредиент',
+        warn: 'Предупреждать',
+        hide: 'Скрывать рецепт',
+      },
+      blocklistHeading: 'Блок-лист',
+      blocklist: {
+        label: 'Запрещённые ингредиенты',
+        caption: 'Отдельные исключения, не покрытые тегом.',
+        addPlaceholder: 'Название ингредиента…',
+        addBtn: 'Добавить',
+        unknownIngredient: 'Подходящий ингредиент не найден.',
+      },
+      presets: {
+        label: 'Пресеты',
+        vegan: 'Веганское',
+        vegetarian: 'Вегетарианское',
+        'gluten-free': 'Без глютена',
+        halal: 'Халяль',
+        kosher: 'Кошерное',
+        'no-beef': 'Без говядины',
+        lent: 'Пост',
+        confirmApply: 'Будут заблокированы все ингредиенты с тегами: {list}. Продолжить?',
+      },
+      blockByTag: {
+        label: 'Блокировка по тегу',
+        caption: 'Блокирует все ингредиенты с этим тегом — сейчас и в будущем.',
+        addBtn: 'Добавить тег',
+        pick: 'Выберите тег…',
+      },
+    },
+    sync: {
+      serverBaseUrl: {
+        label: 'Адрес сервера (Base URL)',
+        placeholder: 'https://example.com',
+      },
+      saved: 'Сохранено.',
+      errors: {
+        invalidUrl: 'Введите корректный URL, например https://example.com.',
+        httpsRequired:
+          'Эта страница загружена по HTTPS, поэтому адрес сервера тоже должен быть на HTTPS.',
+      },
+    },
   },
 
   exportImport: {

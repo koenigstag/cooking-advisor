@@ -2,6 +2,7 @@ import React from 'react';
 import { LANG_LABELS, t } from '../lang/lang.ts';
 import { saveData } from '../database.ts';
 import { Modal } from './modal.tsx';
+import { SettingsModal } from './settings-modal.tsx';
 import { Header } from './header.tsx';
 import { Navigation } from './nav.tsx';
 import { useAppState } from '../hooks/use-app-state.ts';
@@ -23,6 +24,7 @@ export const App = () => {
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = React.useState(false);
 
   const handleKebabOpen = () => {
     setIsMenuOpen(s => !s);
@@ -39,6 +41,15 @@ export const App = () => {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+  };
+
+  const handleSettingsModalOpen = () => {
+    setIsSettingsModalOpen(true);
+    handleKebabClose();
+  };
+
+  const handleSettingsModalClose = () => {
+    setIsSettingsModalOpen(false);
   };
 
   const handleLangChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -61,9 +72,14 @@ export const App = () => {
         isMenuOpen={isMenuOpen}
         onKebabClick={handleKebabOpen}
         onExportModalOpen={handleModalOpen}
+        onSettingsModalOpen={handleSettingsModalOpen}
         onLangChange={handleLangChange}
       />
       <Modal open={isModalOpen} onClose={handleModalClose} />
+      <SettingsModal
+        open={isSettingsModalOpen}
+        onClose={handleSettingsModalClose}
+      />
       <Navigation />
       <main id='view'>
         {state.activeTab === 'recipes' && <RecipesTab />}
