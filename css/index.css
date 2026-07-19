@@ -197,6 +197,16 @@ header.top .tagline {
   color: var(--ink-soft);
   line-height: 1.5;
 }
+.recipe-modal-card {
+  max-width: 560px;
+}
+.recipe-modal-desc {
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0 0 16px;
+  white-space: pre-wrap;
+}
 nav.tabs {
   display: flex;
   gap: 6px;
@@ -337,6 +347,7 @@ nav.tabs button:not(.active):hover {
   gap: 10px;
   position: relative;
   box-shadow: 0 1px 0 rgba(43, 42, 34, 0.03);
+  cursor: pointer;
 }
 .recipe-card.full-match {
   border-color: var(--green);
@@ -352,31 +363,20 @@ nav.tabs button:not(.active):hover {
   margin: 0;
   font-size: 18px;
   line-height: 1.25;
-}
-.readiness {
-  flex: none;
-  display: flex;
-  gap: 3px;
-  align-items: center;
-  margin-top: 4px;
-}
-.readiness .pip {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #e3ddc7;
-}
-.readiness .pip.filled {
-  background: var(--green);
-}
-.readiness .pip.filled.warn {
-  background: var(--gold);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 .rc-desc {
   font-size: 13.5px;
   color: var(--ink-soft);
   line-height: 1.5;
   margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 .rc-ingredients {
   display: flex;

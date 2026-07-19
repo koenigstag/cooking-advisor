@@ -6,12 +6,12 @@ import {
   evaluateRecipe,
   type EvaluateRecipeResult,
   fridgeEntry,
-  ingredientName,
 } from '../../ingredient.ts';
 import { type Recipe } from '../../store/state.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
 import { isMobile } from '../../constants/index.ts';
+import { RecipeModal } from '../recipe-modal.tsx';
 
 const RecipeCard = ({
   recipe,
@@ -20,7 +20,8 @@ const RecipeCard = ({
   recipe: Recipe;
   ev: EvaluateRecipeResult;
 }) => {
-  // const pct = ev.total ? ev.matched / ev.total : 0;
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   const fullMatch = ev.status === 'full';
   let statusLabelEl: React.ReactNode;
   if (ev.status === 'full')
@@ -42,21 +43,21 @@ const RecipeCard = ({
       </span>
     );
 
-  // readiness pips (max 8 shown, else compress)
-  let pipsEls: React.ReactNode[] = [];
-  const maxPips = 10;
-  const n = Math.min(ev.total, maxPips);
-  for (let i = 0; i < n; i++) {
-    const filled = i < ev.matched;
-    // const warn = filled && ev.warnList.length > 0 && i >= ev.matched - 0; // simple fill, no per-item warn distinction here
-    pipsEls.push(<span className={`pip ${filled ? 'filled' : ''}`}></span>);
-  }
+  const handleCardClick = () => {
+    setIsModalOpen(true);
+  };
 
-  const handleEditClick = (id: string) => {
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleEditClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     stateStore.setActiveTab('addRecipe');
   };
 
-  const handleDeleteClick = (id: string) => {
+  const handleDeleteClick = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     if (confirm(t('recipeList.actions.confirmDelete'))) {
       stateStore.setRecipes(
         stateStore.getState().recipes.filter((r) => r.id !== id)
@@ -66,61 +67,48 @@ const RecipeCard = ({
   };
 
   return (
-    <div className={`recipe-card ${fullMatch ? 'full-match' : ''}`}>
-      <div className='rc-head'>
-        <h3>{recipe.name}</h3>
-        <div className='readiness'>{pipsEls}</div>
-      </div>
-      {recipe.description && <p className='rc-desc'>{recipe.description}</p>}
-      <div className='rc-ingredients'>
-        {recipe.items.map((item) => {
-          const fe = fridgeEntry(item.ingredientId);
-          const isMissing = !fe.inStock;
-          const isWarn = ev.warnList.some(
-            (w) => w.ingredientId === item.ingredientId
-          );
-          return (
-            <span
-              key={item.ingredientId}
-              className={`chip readonly ${isMissing ? 'missing' : isWarn ? 'warn' : 'on'}`}
-            >
-              <span className='dot'></span>
-              {ingredientName(item.ingredientId)}
-              {item.amount != null && (
-                <small>
-                  {item.amount}
-                  {item.unit ? ' ' + item.unit : ''}
-                </small>
-              )}
-              {isWarn && <small>{t('recipeList.status.warnLowStock')}</small>}
-            </span>
-          );
-        })}
-      </div>
-      <div className='rc-footer'>
-        {statusLabelEl}
-        <div style={{ marginTop: '5px' }}>
-          {t('recipeList.status.matchedIngredients', {
-            matched: ev.matched,
-            total: ev.total,
-          })}
+    <React.Fragment>
+      <div
+        className={`recipe-card ${fullMatch ? 'full-match' : ''}`}
+        onClick={handleCardClick}
+      >
+        <div className='rc-head'>
+          <h3>{recipe.name}</h3>
+        </div>
+        {recipe.description && (
+          <p className='rc-desc'>{recipe.description}</p>
+        )}
+        <div className='rc-footer'>
+          {statusLabelEl}
+          <div style={{ marginTop: '5px' }}>
+            {t('recipeList.status.matchedIngredients', {
+              matched: ev.matched,
+              total: ev.total,
+            })}
+          </div>
+        </div>
+        <div className='rc-actions'>
+          <button
+            data-edit={recipe.id}
+            onClick={(e) => handleEditClick(e, recipe.id)}
+          >
+            {t('common.edit')}
+          </button>
+          <button
+            data-del={recipe.id}
+            onClick={(e) => handleDeleteClick(e, recipe.id)}
+          >
+            {t('common.delete')}
+          </button>
         </div>
       </div>
-      <div className='rc-actions'>
-        <button
-          data-edit={recipe.id}
-          onClick={() => handleEditClick(recipe.id)}
-        >
-          {t('common.edit')}
-        </button>
-        <button
-          data-del={recipe.id}
-          onClick={() => handleDeleteClick(recipe.id)}
-        >
-          {t('common.delete')}
-        </button>
-      </div>
-    </div>
+      <RecipeModal
+        recipe={recipe}
+        ev={ev}
+        open={isModalOpen}
+        onClose={handleModalClose}
+      />
+    </React.Fragment>
   );
 };
 
