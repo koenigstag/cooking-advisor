@@ -43,6 +43,13 @@ export const LANG_EN_US = {
     addRecipe: 'Add Recipe',
   },
 
+  mealTypes: {
+    breakfast: 'Breakfast',
+    lunch: 'Lunch',
+    dinner: 'Dinner',
+    snack: 'Snack',
+  },
+
   root: {
     title: 'What to Cook',
     tagline: 'Find recipes based on what you have in your fridge',

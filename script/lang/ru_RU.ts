@@ -43,6 +43,13 @@ export const LANG_RU_RU = {
     addRecipe: 'Добавить рецепт',
   },
 
+  mealTypes: {
+    breakfast: 'Завтрак',
+    lunch: 'Обед',
+    dinner: 'Ужин',
+    snack: 'Перекус',
+  },
+
   root: {
     title: 'Что приготовить',
     tagline: 'подбор рецептов по тому, что есть в холодильнике',

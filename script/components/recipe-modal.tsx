@@ -3,6 +3,7 @@ import { FaXmark } from 'react-icons/fa6';
 import { t } from '../lang/lang.ts';
 import { type EvaluateRecipeResult, fridgeEntry, ingredientName } from '../ingredient.ts';
 import { type Recipe } from '../store/state.ts';
+import { MealTypePills } from './meal-type-pills.tsx';
 
 export interface RecipeModalProps {
   recipe: Recipe;
@@ -32,6 +33,7 @@ export const RecipeModal = ({ recipe, ev, open, onClose }: RecipeModalProps) => 
           </button>
         </div>
         <div className='modal-body'>
+          <MealTypePills mealTypes={recipe.mealTypes} />
           {recipe.description && (
             <p className='recipe-modal-desc'>{recipe.description}</p>
           )}

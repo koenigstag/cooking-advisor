@@ -12,6 +12,7 @@ import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
 import { isMobile } from '../../constants/index.ts';
 import { RecipeModal } from '../recipe-modal.tsx';
+import { MealTypePills } from '../meal-type-pills.tsx';
 
 const RecipeCard = ({
   recipe,
@@ -75,6 +76,7 @@ const RecipeCard = ({
         <div className='rc-head'>
           <h3>{recipe.name}</h3>
         </div>
+        <MealTypePills mealTypes={recipe.mealTypes} />
         {recipe.description && (
           <p className='rc-desc'>{recipe.description}</p>
         )}
