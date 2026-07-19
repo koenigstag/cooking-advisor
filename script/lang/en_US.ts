@@ -60,8 +60,8 @@ export const LANG_EN_US = {
     collapse: 'Collapse',
     expand: 'Expand',
     ingredients: {
-      single: 'ingredient',
-      plural: 'ingredients',
+      one: 'ingredient',
+      other: 'ingredients',
     },
     noIngredientsHint:
       'No ingredients yet. Add them in the "My Ingredients" tab or directly when creating a recipe.',
@@ -134,9 +134,8 @@ export const LANG_EN_US = {
         remove: 'Remove',
         confirmDelete: 'Are you sure you want to delete this product?',
         confirmDeleteWhenUsed: {
-          single:
-            'This product is used in {count} recipe. Deleting it will also remove it from that recipe. Are you sure?',
-          plural:
+          one: 'This product is used in {count} recipe. Deleting it will also remove it from that recipe. Are you sure?',
+          other:
             'This product is used in {count} recipes. Deleting it will also remove it from those recipes. Are you sure?',
         },
       },
@@ -189,8 +188,8 @@ export const LANG_EN_US = {
       },
     },
     ingredientsCount: {
-      single: '{count} ingredient',
-      plural: '{count} ingredients',
+      one: '{count} ingredient',
+      other: '{count} ingredients',
     },
     recipesCount: 'All Recipes ({count})',
     noRecipes: 'No recipes yet.',
@@ -205,8 +204,8 @@ export const LANG_EN_US = {
     useBtn: 'Use example data',
     hint: 'Fill your fridge with a few sample products to see how the app works.',
     successMessage: {
-      single: 'Added {added} sample product to your fridge.',
-      plural: 'Added {added} sample products to your fridge.',
+      one: 'Added {added} sample product to your fridge.',
+      other: 'Added {added} sample products to your fridge.',
     },
     alreadyLoaded: 'Sample products are already in your list.',
   },
