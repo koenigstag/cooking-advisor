@@ -61,9 +61,6 @@ export const RecipeModal = ({
         </div>
         <div className='modal-body'>
           <MealTypePills mealTypes={recipe.mealTypes} />
-          {recipe.description && (
-            <p className='recipe-modal-desc'>{recipe.description}</p>
-          )}
           <div className='rc-ingredients'>
             {recipe.items.map((item, idx) => {
               const mine = isMineItem(item);
@@ -98,6 +95,9 @@ export const RecipeModal = ({
               );
             })}
           </div>
+          {recipe.description && (
+            <p className='recipe-modal-desc'>{recipe.description}</p>
+          )}
         </div>
         <div className='modal-footer'>
           {source.kind === 'mine' ? (
