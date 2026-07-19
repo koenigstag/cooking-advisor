@@ -10,7 +10,6 @@ import {
 import { type Recipe } from '../../store/state.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
-import { isMobile } from '../../constants/index.ts';
 import { RecipeModal } from '../recipe-modal.tsx';
 import { MealTypePills } from '../meal-type-pills.tsx';
 
@@ -115,7 +114,7 @@ const RecipeCard = ({
 };
 
 export const RecipesTab = () => {
-  const [filterOpen, setFilterOpen] = React.useState(isMobile ? false : true);
+  const [filterOpen, setFilterOpen] = React.useState(false);
   const [recipeSearch, setRecipeSearch] = React.useState('');
 
   const state = useAppState();

@@ -142,6 +142,9 @@ export const LANG_EN_US = {
         label: 'Description / Cooking Method',
         placeholder: 'Short description or cooking steps…',
       },
+      mealTypes: {
+        label: 'Meal Type',
+      },
       ingredients: {
         label: 'Ingredients',
         fields: {

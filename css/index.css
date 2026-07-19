@@ -429,6 +429,23 @@ nav.tabs button:not(.active):hover {
   --mt-c: var(--ink-soft);
   --mt-bg: var(--line);
 }
+.mt-pill.selectable {
+  cursor: pointer;
+  user-select: none;
+  opacity: 0.45;
+  border: 1.5px solid transparent;
+  transition: opacity 0.12s;
+}
+.mt-pill.selectable:hover {
+  opacity: 0.75;
+}
+.mt-pill.selectable.active {
+  opacity: 1;
+  border-color: var(--mt-c);
+}
+.mt-pill.selectable.active:hover {
+  opacity: 1;
+}
 .rc-footer {
   margin-top: auto;
   font-size: 12.5px;

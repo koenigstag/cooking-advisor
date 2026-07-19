@@ -142,6 +142,9 @@ export const LANG_RU_RU = {
         label: 'Описание / способ приготовления',
         placeholder: 'Короткое описание или шаги приготовления…',
       },
+      mealTypes: {
+        label: 'Приём пищи',
+      },
       ingredients: {
         label: 'Ингредиенты',
         fields: {
