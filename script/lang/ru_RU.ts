@@ -62,12 +62,19 @@ export const LANG_RU_RU = {
     ingredients: 'ингредиентов',
     noIngredientsHint:
       'Продуктов пока нет. Добавьте их во вкладке «Мои продукты» или прямо при создании рецепта.',
-    searchPlaceholder: 'Поиск по названию…',
+    searchPlaceholder: 'Поиск по названию или ингредиенту…',
     recipesEnding: 'рецептов',
     noRecipesTitle: 'Пока нет ни одного рецепта',
     noRecipesHint:
       'Добавьте первый рецепт во вкладке «Добавить рецепт» — и он появится здесь.',
     noResultsTitle: 'Ничего не найдено',
+    myRecipes: 'Мои рецепты',
+    library: 'Библиотека рецептов',
+    addToMyRecipes: 'Добавить в мои рецепты',
+    addedToMyRecipes: 'Добавлено в ваши рецепты.',
+    libraryLoading: 'Загрузка библиотеки рецептов…',
+    libraryEmpty: 'Библиотека рецептов пока пуста.',
+    libraryLoadError: 'Не удалось загрузить библиотеку рецептов.',
     status: {
       canCook: 'Можно готовить',
       missingIngredients: 'Не хватает {count}',

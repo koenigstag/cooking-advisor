@@ -62,12 +62,19 @@ export const LANG_EN_US = {
     ingredients: 'ingredients',
     noIngredientsHint:
       'No ingredients yet. Add them in the "My Ingredients" tab or directly when creating a recipe.',
-    searchPlaceholder: 'Search by name…',
+    searchPlaceholder: 'Search by name or ingredient…',
     recipesEnding: 'recipes',
     noRecipesTitle: 'No recipes yet',
     noRecipesHint:
       'Add your first recipe in the "Add Recipe" tab — it will appear here.',
     noResultsTitle: 'No results found',
+    myRecipes: 'My Recipes',
+    library: 'Recipe Library',
+    addToMyRecipes: 'Add to My Recipes',
+    addedToMyRecipes: 'Added to your recipes.',
+    libraryLoading: 'Loading recipe library…',
+    libraryEmpty: 'The recipe library is empty.',
+    libraryLoadError: 'Could not load the recipe library.',
     status: {
       canCook: 'Can cook',
       missingIngredients: 'Missing {count}',

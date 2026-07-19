@@ -592,6 +592,19 @@ textarea {
   text-decoration: underline;
   cursor: pointer;
 }
+.btn.danger {
+  background: transparent;
+  color: var(--rust);
+  border: 1.5px solid var(--rust);
+}
+.btn.danger:hover {
+  background: var(--rust-pale);
+}
+.modal-footer {
+  display: flex;
+  gap: 10px;
+  padding: 0 20px 20px;
+}
 
 /* ---------- Fridge / ingredients list ---------- */
 .fridge-list {
@@ -757,6 +770,57 @@ textarea {
 }
 .rlc-actions button.danger {
   color: var(--rust);
+}
+
+/* ---------- Accordion ---------- */
+.accordion {
+  margin-bottom: 20px;
+}
+.accordion:last-child {
+  margin-bottom: 0;
+}
+.accordion-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0 0 10px;
+  cursor: pointer;
+  font-family: 'Fraunces', Georgia, serif;
+  color: var(--green-dark);
+}
+.accordion-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+}
+.accordion-count {
+  font-family: 'Work Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--green-pale);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+.accordion-chevron {
+  color: var(--ink-soft);
+  transition: transform 0.15s ease;
+}
+.accordion-chevron.open {
+  transform: rotate(180deg);
+}
+.accordion-body {
+  padding-top: 2px;
+}
+.library-status {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  padding: 10px 0;
 }
 
 .empty-state {

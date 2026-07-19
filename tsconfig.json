@@ -19,5 +19,6 @@
     "forceConsistentCasingInFileNames": true,
 
     "jsx": "react"
-  }
+  },
+  "exclude": ["node_modules", "server"]
 }

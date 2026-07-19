@@ -8,6 +8,7 @@ import type { MealType, Recipe, RecipeItem } from '../../store/state.ts';
 import { uid } from '../../utils.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
+import { publishRecipeToLibrary } from '../../server-api.ts';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
@@ -123,12 +124,16 @@ export const AddRecipeTab = () => {
       editing.items = items;
       editing.mealTypes = draftData.mealTypes;
     } else {
-      state.recipes.push({
+      const newRecipe: Recipe = {
         id: uid(),
         name,
         description: draftData.description.trim(),
         items,
         mealTypes: draftData.mealTypes,
+      };
+      state.recipes.push(newRecipe);
+      publishRecipeToLibrary(newRecipe).catch((e) => {
+        console.warn('Failed to publish recipe to the library', e);
       });
     }
     saveData();
