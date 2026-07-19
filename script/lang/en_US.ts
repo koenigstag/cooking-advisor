@@ -12,6 +12,10 @@ export const LANG_EN_US = {
     copied: 'Copied!',
     stackTraceLabel: 'Stack trace',
   },
+  tabError: {
+    title: 'This section couldn’t be displayed',
+    hint: 'Something went wrong while rendering this tab. Try switching tabs or reloading the page.',
+  },
 
   title: 'What to Cook — Find Recipes Based on Ingredients',
 
