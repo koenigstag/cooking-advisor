@@ -34,7 +34,15 @@ function readRawAppState(): Promise<unknown> {
   });
 }
 
-export function AppError({ error }: { error: unknown }) {
+export function AppError({
+  error,
+  title = LANG_EN_US.appError.title,
+  hint = LANG_EN_US.appError.hint,
+}: {
+  error: unknown;
+  title?: string;
+  hint?: string;
+}) {
   const [copied, setCopied] = React.useState(false);
 
   const handleCopy = async () => {
@@ -57,8 +65,8 @@ export function AppError({ error }: { error: unknown }) {
 
   return (
     <div className='empty-state'>
-      <div className='display'>{LANG_EN_US.appError.title}</div>
-      <p>{LANG_EN_US.appError.hint}</p>
+      <div className='display'>{title}</div>
+      <p>{hint}</p>
       {error instanceof Error && <p>{error.message}</p>}
       <button className='btn secondary' onClick={handleCopy}>
         {copied ? LANG_EN_US.appError.copied : LANG_EN_US.appError.copyStateBtn}

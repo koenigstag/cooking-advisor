@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { IndexedDBUnsupported } from './components/index-db-unsupported.tsx';
 import { LoadingState } from './components/loading.tsx';
 import { AppError } from './components/app-error.tsx';
+import { ErrorBoundary } from './components/error-boundary.tsx';
 import { App } from './components/app.tsx';
 import { stateStore } from './store/store.ts';
 import { syncIngredientCatalog } from './ingredient-catalog.ts';
@@ -42,7 +43,11 @@ async function init(root: HTMLElement) {
     console.warn('Ingredient catalog sync failed, continuing without it', e);
   }
 
-  reactRoot.render(<App />);
+  reactRoot.render(
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
 }
 
 export default init;
