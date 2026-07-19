@@ -53,6 +53,7 @@ const RecipeCard = ({
 
   const handleEditClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
+    stateStore.setEditingRecipeId(id);
     stateStore.setActiveTab('addRecipe');
   };
 
