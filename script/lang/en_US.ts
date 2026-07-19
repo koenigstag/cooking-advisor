@@ -16,6 +16,9 @@ export const LANG_EN_US = {
     title: 'This section couldn’t be displayed',
     hint: 'Something went wrong while rendering this tab. Try switching tabs or reloading the page.',
   },
+  cardError: {
+    message: 'Couldn’t display this item.',
+  },
 
   title: 'What to Cook — Find Recipes Based on Ingredients',
 

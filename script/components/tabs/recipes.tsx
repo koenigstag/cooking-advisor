@@ -18,6 +18,7 @@ import { uid } from '../../utils.ts';
 import { RecipeModal } from '../recipe-modal.tsx';
 import { MealTypePills } from '../meal-type-pills.tsx';
 import { Accordion } from '../accordion.tsx';
+import { ErrorBoundary } from '../error-boundary.tsx';
 import {
   fetchLibraryRecipes,
   getServerBaseUrl,
@@ -399,7 +400,11 @@ export const RecipesTab = () => {
           <div className='recipe-grid'>
             {filteredMyRecipes.map((r) => {
               const ev = evaluateRecipe(r);
-              return <MyRecipeCard key={r.id} recipe={r} ev={ev} />;
+              return (
+                <ErrorBoundary key={r.id} compact>
+                  <MyRecipeCard recipe={r} ev={ev} />
+                </ErrorBoundary>
+              );
             })}
           </div>
         )}
@@ -428,7 +433,9 @@ export const RecipesTab = () => {
           ) : (
             <div className='recipe-grid'>
               {filteredLibraryRecipes.map((r) => (
-                <LibraryRecipeCard key={r.id} recipe={r} />
+                <ErrorBoundary key={r.id} compact>
+                  <LibraryRecipeCard recipe={r} />
+                </ErrorBoundary>
               ))}
             </div>
           ))}

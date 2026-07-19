@@ -1023,6 +1023,20 @@ textarea {
   margin: 0;
 }
 
+.card-error {
+  background: var(--card);
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  text-align: center;
+}
+.card-error-detail {
+  opacity: 0.75;
+  font-style: italic;
+}
+
 ::placeholder {
   color: #b3ab91;
 }

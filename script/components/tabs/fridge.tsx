@@ -16,6 +16,7 @@ import { stateStore } from '../../store/store.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { INGREDIENT_TAGS, type IngredientTag } from '../../store/state.ts';
 import { Accordion } from '../accordion.tsx';
+import { ErrorBoundary } from '../error-boundary.tsx';
 
 export const FridgeTab = () => {
   const state = useAppState();
@@ -118,137 +119,139 @@ export const FridgeTab = () => {
 
   return (
     <React.Fragment>
-      <div className='card'>
-        <h3 style={{ marginTop: '0' }}>{t('fridge.title')}</h3>
-        <div className='field-row'>
-          <div className='field' style={{ flex: '0 0 auto' }}>
-            <label>{t('fridge.fields.icon.label')}</label>
-            <IconPicker
-              value={iconId}
-              onChange={handleIconChange}
-              title={t('fridge.fields.icon.label')}
-            />
-          </div>
-          <div className='field' style={{ flex: '2' }}>
-            <label>{t('fridge.fields.name.label')}</label>
-            <input
-              type='text'
-              id='newIngName'
-              placeholder={t('fridge.fields.name.placeholder')}
-              list='ingSuggestList'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <datalist id='ingSuggestList'>
-              {state.ingredients
-                .filter((i) => !isIngredientBlocked(i.id))
-                .map((i) => (
-                  <option
-                    key={i.id}
-                    value={ingredientDisplayName(i.name, state.lang)}
-                  />
+      <ErrorBoundary title={t('tabError.title')} hint={t('tabError.hint')}>
+        <div className='card'>
+          <h3 style={{ marginTop: '0' }}>{t('fridge.title')}</h3>
+          <div className='field-row'>
+            <div className='field' style={{ flex: '0 0 auto' }}>
+              <label>{t('fridge.fields.icon.label')}</label>
+              <IconPicker
+                value={iconId}
+                onChange={handleIconChange}
+                title={t('fridge.fields.icon.label')}
+              />
+            </div>
+            <div className='field' style={{ flex: '2' }}>
+              <label>{t('fridge.fields.name.label')}</label>
+              <input
+                type='text'
+                id='newIngName'
+                placeholder={t('fridge.fields.name.placeholder')}
+                list='ingSuggestList'
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <datalist id='ingSuggestList'>
+                {state.ingredients
+                  .filter((i) => !isIngredientBlocked(i.id))
+                  .map((i) => (
+                    <option
+                      key={i.id}
+                      value={ingredientDisplayName(i.name, state.lang)}
+                    />
+                  ))}
+              </datalist>
+            </div>
+            <div className='field'>
+              <label>{t('fridge.fields.amount.label')}</label>
+              <input
+                type='number'
+                id='newIngAmount'
+                placeholder={t('fridge.fields.amount.placeholder')}
+                min={0}
+                step='any'
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
+            <div className='field'>
+              <label>{t('fridge.fields.unit.label')}</label>
+              <input
+                type='text'
+                id='newIngUnit'
+                placeholder={t('fridge.fields.unit.placeholder')}
+                list='unitSuggestList'
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
+              />
+              <datalist id='unitSuggestList'>
+                {units.map((u) => (
+                  <option key={u} value={t(`units.${u}`)} />
                 ))}
-            </datalist>
+              </datalist>
+            </div>
           </div>
           <div className='field'>
-            <label>{t('fridge.fields.amount.label')}</label>
-            <input
-              type='number'
-              id='newIngAmount'
-              placeholder={t('fridge.fields.amount.placeholder')}
-              min={0}
-              step='any'
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div className='field'>
-            <label>{t('fridge.fields.unit.label')}</label>
-            <input
-              type='text'
-              id='newIngUnit'
-              placeholder={t('fridge.fields.unit.placeholder')}
-              list='unitSuggestList'
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-            />
-            <datalist id='unitSuggestList'>
-              {units.map((u) => (
-                <option key={u} value={t(`units.${u}`)} />
-              ))}
-            </datalist>
-          </div>
-        </div>
-        <div className='field'>
-          <label>{t('fridge.fields.tags.label')}</label>
-          <div className='pill-row' id='newIngTagsRow'>
-            {tags.map((tag) => (
-              <span key={tag} className='pill'>
-                {t(`ingredientTags.${tag}`)}
-                <button
-                  type='button'
-                  className='pill-remove'
-                  aria-label={t('common.delete')}
-                  onClick={() => handleToggleTag(tag)}
-                >
-                  <FaXmark />
-                </button>
-              </span>
-            ))}
-            {(() => {
-              const remainingTags = INGREDIENT_TAGS.filter(
-                (tag) => !tags.includes(tag)
-              );
-              if (remainingTags.length === 0) return null;
-              if (!addingTag) {
-                return (
+            <label>{t('fridge.fields.tags.label')}</label>
+            <div className='pill-row' id='newIngTagsRow'>
+              {tags.map((tag) => (
+                <span key={tag} className='pill'>
+                  {t(`ingredientTags.${tag}`)}
                   <button
                     type='button'
-                    className='pill-add-btn'
-                    aria-label={t('fridge.fields.tags.addBtn')}
-                    onClick={() => setAddingTag(true)}
-                  >
-                    +
-                  </button>
-                );
-              }
-              return (
-                <span className='pill-add-inline'>
-                  <select
-                    autoFocus
-                    value=''
-                    onChange={(e) => {
-                      const tag = e.target.value as IngredientTag;
-                      if (tag) setTags((prev) => [...prev, tag]);
-                      setAddingTag(false);
-                    }}
-                  >
-                    <option value='' disabled>
-                      {t('fridge.fields.tags.pick')}
-                    </option>
-                    {remainingTags.map((tag) => (
-                      <option key={tag} value={tag}>
-                        {t(`ingredientTags.${tag}`)}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type='button'
-                    className='pill-add-cancel'
-                    aria-label={t('common.cancel')}
-                    onClick={() => setAddingTag(false)}
+                    className='pill-remove'
+                    aria-label={t('common.delete')}
+                    onClick={() => handleToggleTag(tag)}
                   >
                     <FaXmark />
                   </button>
                 </span>
-              );
-            })()}
+              ))}
+              {(() => {
+                const remainingTags = INGREDIENT_TAGS.filter(
+                  (tag) => !tags.includes(tag)
+                );
+                if (remainingTags.length === 0) return null;
+                if (!addingTag) {
+                  return (
+                    <button
+                      type='button'
+                      className='pill-add-btn'
+                      aria-label={t('fridge.fields.tags.addBtn')}
+                      onClick={() => setAddingTag(true)}
+                    >
+                      +
+                    </button>
+                  );
+                }
+                return (
+                  <span className='pill-add-inline'>
+                    <select
+                      autoFocus
+                      value=''
+                      onChange={(e) => {
+                        const tag = e.target.value as IngredientTag;
+                        if (tag) setTags((prev) => [...prev, tag]);
+                        setAddingTag(false);
+                      }}
+                    >
+                      <option value='' disabled>
+                        {t('fridge.fields.tags.pick')}
+                      </option>
+                      {remainingTags.map((tag) => (
+                        <option key={tag} value={tag}>
+                          {t(`ingredientTags.${tag}`)}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type='button'
+                      className='pill-add-cancel'
+                      aria-label={t('common.cancel')}
+                      onClick={() => setAddingTag(false)}
+                    >
+                      <FaXmark />
+                    </button>
+                  </span>
+                );
+              })()}
+            </div>
           </div>
+          <button className='btn' id='addIngBtn' onClick={handleAddProduct}>
+            {t('fridge.actions.addProduct')}
+          </button>
         </div>
-        <button className='btn' id='addIngBtn' onClick={handleAddProduct}>
-          {t('fridge.actions.addProduct')}
-        </button>
-      </div>
+      </ErrorBoundary>
       <div className='section-title'>
         {t('fridge.productsList.title', {
           count: state.ingredients.length,

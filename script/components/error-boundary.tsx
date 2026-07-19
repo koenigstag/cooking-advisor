@@ -1,10 +1,15 @@
 import React from 'react';
 import { AppError } from './app-error.tsx';
+import { t } from '../lang/lang.ts';
 
 type Props = {
   children: React.ReactNode;
   title?: string;
   hint?: string;
+  // For small, repeated items (a single card in a grid) where the full
+  // empty-state fallback would be visually oversized — a one-line notice
+  // instead, no stack trace/copy button.
+  compact?: boolean;
 };
 type State = { error: unknown };
 
@@ -25,6 +30,17 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   render() {
     if (this.state.error) {
+      if (this.props.compact) {
+        const error = this.state.error;
+        return (
+          <div className='card-error'>
+            {t('cardError.message')}
+            {error instanceof Error && error.message && (
+              <span className='card-error-detail'> {error.message}</span>
+            )}
+          </div>
+        );
+      }
       return (
         <AppError
           error={this.state.error}
