@@ -41,6 +41,8 @@ function addLibraryRecipeToMine(libRecipe: LibraryRecipe) {
   alert(t('recipeList.addedToMyRecipes'));
 }
 
+const MANY_RECIPES_THRESHOLD = 6;
+
 function matchesSearch(
   name: string,
   items: { name: string }[],
@@ -227,6 +229,24 @@ export const RecipesTab = () => {
     matchesSearch(r.name, r.items, recipeSearch)
   );
 
+  const hasVisibleMyRecipes = filteredMyRecipes.length > 0;
+  const recommendedMyOpen = hasVisibleMyRecipes;
+  const recommendedLibraryOpen =
+    !hasVisibleMyRecipes || state.recipes.length <= MANY_RECIPES_THRESHOLD;
+
+  const [myOpen, setMyOpen] = React.useState(recommendedMyOpen);
+  const [libraryOpen, setLibraryOpen] = React.useState(recommendedLibraryOpen);
+
+  React.useEffect(() => {
+    setMyOpen(recommendedMyOpen);
+    setLibraryOpen(recommendedLibraryOpen);
+  }, [recommendedMyOpen, recommendedLibraryOpen]);
+
+  const handleToggleMyRecipes = (nextOpen: boolean) => {
+    setMyOpen(nextOpen);
+    if (!nextOpen) setLibraryOpen(true);
+  };
+
   return (
     <div className='filter-panel'>
       <div className='fp-head'>
@@ -294,7 +314,12 @@ export const RecipesTab = () => {
         />
       </div>
 
-      <Accordion title={t('recipeList.myRecipes')} count={filteredMyRecipes.length}>
+      <Accordion
+        title={t('recipeList.myRecipes')}
+        count={filteredMyRecipes.length}
+        open={myOpen}
+        onToggle={handleToggleMyRecipes}
+      >
         {!hasRecipes ? (
           <div className='empty-state'>
             <div className='display'>{t('recipeList.noRecipesTitle')}</div>
@@ -317,6 +342,8 @@ export const RecipesTab = () => {
       <Accordion
         title={t('recipeList.library')}
         count={libraryStatus === 'ready' ? filteredLibraryRecipes.length : undefined}
+        open={libraryOpen}
+        onToggle={setLibraryOpen}
       >
         {libraryStatus === 'loading' && (
           <div className='library-status'>{t('recipeList.libraryLoading')}</div>
