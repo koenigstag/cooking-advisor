@@ -1,5 +1,5 @@
 import React from 'react';
-import { t } from '../../lang/lang.ts';
+import { t, tc } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import { loadExampleData } from '../../example-data.ts';
 import { fridgeEntry, getOrCreateIngredient } from '../../ingredient.ts';
@@ -78,9 +78,10 @@ export const FridgeTab = () => {
     );
     let msg = t('fridge.productsList.actions.confirmDelete');
     if (usedIn.length) {
-      msg = t('fridge.productsList.actions.confirmDeleteWhenUsed', {
-        count: usedIn.length,
-      });
+      msg = tc(
+        'fridge.productsList.actions.confirmDeleteWhenUsed',
+        usedIn.length
+      );
     }
     if (confirm(msg)) {
       stateStore.setIngredients(
@@ -98,9 +99,9 @@ export const FridgeTab = () => {
   };
 
   const handleUseExampleData = async () => {
-    const { addedRecipes } = await loadExampleData(state.lang);
-    if (addedRecipes > 0) {
-      alert(t('exampleData.successMessage', { added: addedRecipes }));
+    const { addedProducts } = await loadExampleData(state.lang);
+    if (addedProducts > 0) {
+      alert(tc('exampleData.successMessage', addedProducts, { added: addedProducts }));
     } else {
       alert(t('exampleData.alreadyLoaded'));
     }

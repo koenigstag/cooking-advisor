@@ -1,6 +1,6 @@
 import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
-import { t } from '../../lang/lang.ts';
+import { t, tc } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
 import { getOrCreateIngredient, ingredientName } from '../../ingredient.ts';
 import { units } from '../../options.ts';
@@ -8,6 +8,7 @@ import type { MealType, Recipe, RecipeItem } from '../../store/state.ts';
 import { uid } from '../../utils.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
+import { publishRecipeToLibrary } from '../../server-api.ts';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
@@ -123,12 +124,16 @@ export const AddRecipeTab = () => {
       editing.items = items;
       editing.mealTypes = draftData.mealTypes;
     } else {
-      state.recipes.push({
+      const newRecipe: Recipe = {
         id: uid(),
         name,
         description: draftData.description.trim(),
         items,
         mealTypes: draftData.mealTypes,
+      };
+      state.recipes.push(newRecipe);
+      publishRecipeToLibrary(newRecipe, state.lang).catch((e) => {
+        console.warn('Failed to publish recipe to the library', e);
       });
     }
     saveData();
@@ -329,7 +334,7 @@ export const AddRecipeTab = () => {
                 <div>
                   <div className='rname'>{r.name}</div>
                   <div className='rmeta'>
-                    {t('addRecipe.ingredientsCount', { count: r.items.length })}
+                    {tc('addRecipe.ingredientsCount', r.items.length)}
                   </div>
                 </div>
                 <div className='rlc-actions'>

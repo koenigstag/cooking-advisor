@@ -59,15 +59,24 @@ export const LANG_EN_US = {
     whatIHave: 'What I have',
     collapse: 'Collapse',
     expand: 'Expand',
-    ingredients: 'ingredients',
+    ingredients: {
+      one: 'ingredient',
+      other: 'ingredients',
+    },
     noIngredientsHint:
       'No ingredients yet. Add them in the "My Ingredients" tab or directly when creating a recipe.',
-    searchPlaceholder: 'Search by name…',
-    recipesEnding: 'recipes',
+    searchPlaceholder: 'Search by name or ingredient…',
     noRecipesTitle: 'No recipes yet',
     noRecipesHint:
       'Add your first recipe in the "Add Recipe" tab — it will appear here.',
     noResultsTitle: 'No results found',
+    myRecipes: 'My Recipes',
+    library: 'Recipe Library',
+    addToMyRecipes: 'Add to My Recipes',
+    addedToMyRecipes: 'Added to your recipes.',
+    libraryLoading: 'Loading recipe library…',
+    libraryEmpty: 'The recipe library is empty.',
+    libraryLoadError: 'Could not load the recipe library.',
     status: {
       canCook: 'Can cook',
       missingIngredients: 'Missing {count}',
@@ -124,8 +133,11 @@ export const LANG_EN_US = {
       actions: {
         remove: 'Remove',
         confirmDelete: 'Are you sure you want to delete this product?',
-        confirmDeleteWhenUsed:
-          'This product is used in {count} recipe(s). Deleting it will also remove it from those recipes. Are you sure?',
+        confirmDeleteWhenUsed: {
+          one: 'This product is used in {count} recipe. Deleting it will also remove it from that recipe. Are you sure?',
+          other:
+            'This product is used in {count} recipes. Deleting it will also remove it from those recipes. Are you sure?',
+        },
       },
     },
   },
@@ -175,7 +187,10 @@ export const LANG_EN_US = {
         noIngredients: 'Please add at least one ingredient.',
       },
     },
-    ingredientsCount: '{count} ingredients',
+    ingredientsCount: {
+      one: '{count} ingredient',
+      other: '{count} ingredients',
+    },
     recipesCount: 'All Recipes ({count})',
     noRecipes: 'No recipes yet.',
   },
@@ -187,10 +202,12 @@ export const LANG_EN_US = {
 
   exampleData: {
     useBtn: 'Use example data',
-    hint: 'Add a few sample recipes and products to see how the app works.',
-    successMessage:
-      'Added {added} example recipes and filled your fridge with sample products.',
-    alreadyLoaded: 'Example recipes are already in your list.',
+    hint: 'Fill your fridge with a few sample products to see how the app works.',
+    successMessage: {
+      one: 'Added {added} sample product to your fridge.',
+      other: 'Added {added} sample products to your fridge.',
+    },
+    alreadyLoaded: 'Sample products are already in your list.',
   },
 
   exportImport: {

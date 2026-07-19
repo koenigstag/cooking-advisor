@@ -1,19 +1,60 @@
 import React from 'react';
-import { LANG_CODES, t, type LANG } from '../../lang/lang.ts';
+import { LANG_CODES, t, tc, type LANG } from '../../lang/lang.ts';
 import { saveData } from '../../database.ts';
-import { loadExampleData } from '../../example-data.ts';
 import {
   evaluateRecipe,
   type EvaluateRecipeResult,
   fridgeEntry,
+  getOrCreateIngredient,
 } from '../../ingredient.ts';
+import { guessIconId } from '../../icons/icon-map.ts';
 import { type Recipe } from '../../store/state.ts';
 import { useAppState } from '../../hooks/use-app-state.ts';
 import { stateStore } from '../../store/store.ts';
+import { uid } from '../../utils.ts';
 import { RecipeModal } from '../recipe-modal.tsx';
 import { MealTypePills } from '../meal-type-pills.tsx';
+import { Accordion } from '../accordion.tsx';
+import { fetchLibraryRecipes, type LibraryRecipe } from '../../server-api.ts';
 
-const RecipeCard = ({
+function addLibraryRecipeToMine(libRecipe: LibraryRecipe) {
+  const items = libRecipe.items.map((item) => {
+    const ing = getOrCreateIngredient(item.name, guessIconId(item.name))!;
+    return {
+      ingredientId: ing.id,
+      name: ing.name,
+      amount: item.amount,
+      unit: item.unit,
+    };
+  });
+
+  const newRecipe: Recipe = {
+    id: uid(),
+    name: libRecipe.name,
+    description: libRecipe.description,
+    items,
+    mealTypes: libRecipe.mealTypes,
+  };
+
+  stateStore.setRecipes([...stateStore.getState().recipes, newRecipe]);
+  saveData();
+  alert(t('recipeList.addedToMyRecipes'));
+}
+
+const MANY_RECIPES_THRESHOLD = 6;
+
+function matchesSearch(
+  name: string,
+  items: { name: string }[],
+  query: string
+): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  if (name.toLowerCase().includes(q)) return true;
+  return items.some((it) => it.name.toLowerCase().includes(q));
+}
+
+const MyRecipeCard = ({
   recipe,
   ev,
 }: {
@@ -43,27 +84,23 @@ const RecipeCard = ({
       </span>
     );
 
-  const handleCardClick = () => {
-    setIsModalOpen(true);
-  };
+  const handleCardClick = () => setIsModalOpen(true);
+  const handleModalClose = () => setIsModalOpen(false);
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleEditClick = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    stateStore.setEditingRecipeId(id);
+  const handleEditClick = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    stateStore.setEditingRecipeId(recipe.id);
     stateStore.setActiveTab('addRecipe');
   };
 
-  const handleDeleteClick = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
+  const handleDeleteClick = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
     if (confirm(t('recipeList.actions.confirmDelete'))) {
       stateStore.setRecipes(
-        stateStore.getState().recipes.filter((r) => r.id !== id)
+        stateStore.getState().recipes.filter((r) => r.id !== recipe.id)
       );
       saveData();
+      handleModalClose();
     }
   };
 
@@ -77,9 +114,7 @@ const RecipeCard = ({
           <h3>{recipe.name}</h3>
         </div>
         <MealTypePills mealTypes={recipe.mealTypes} />
-        {recipe.description && (
-          <p className='rc-desc'>{recipe.description}</p>
-        )}
+        {recipe.description && <p className='rc-desc'>{recipe.description}</p>}
         <div className='rc-footer'>
           {statusLabelEl}
           <div style={{ marginTop: '5px' }}>
@@ -90,25 +125,47 @@ const RecipeCard = ({
           </div>
         </div>
         <div className='rc-actions'>
-          <button
-            data-edit={recipe.id}
-            onClick={(e) => handleEditClick(e, recipe.id)}
-          >
+          <button data-edit={recipe.id} onClick={handleEditClick}>
             {t('common.edit')}
           </button>
-          <button
-            data-del={recipe.id}
-            onClick={(e) => handleDeleteClick(e, recipe.id)}
-          >
+          <button data-del={recipe.id} onClick={handleDeleteClick}>
             {t('common.delete')}
           </button>
         </div>
       </div>
       <RecipeModal
-        recipe={recipe}
-        ev={ev}
+        source={{ kind: 'mine', recipe, ev }}
         open={isModalOpen}
         onClose={handleModalClose}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
+      />
+    </React.Fragment>
+  );
+};
+
+const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const handleAddToMyRecipes = () => {
+    addLibraryRecipeToMine(recipe);
+    setIsModalOpen(false);
+  };
+
+  return (
+    <React.Fragment>
+      <div className='recipe-card' onClick={() => setIsModalOpen(true)}>
+        <div className='rc-head'>
+          <h3>{recipe.name}</h3>
+        </div>
+        <MealTypePills mealTypes={recipe.mealTypes} />
+        {recipe.description && <p className='rc-desc'>{recipe.description}</p>}
+      </div>
+      <RecipeModal
+        source={{ kind: 'library', recipe }}
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onAddToMyRecipes={handleAddToMyRecipes}
       />
     </React.Fragment>
   );
@@ -117,10 +174,34 @@ const RecipeCard = ({
 export const RecipesTab = () => {
   const [filterOpen, setFilterOpen] = React.useState(false);
   const [recipeSearch, setRecipeSearch] = React.useState('');
+  const [libraryRecipes, setLibraryRecipes] = React.useState<LibraryRecipe[]>(
+    []
+  );
+  const [libraryStatus, setLibraryStatus] = React.useState<
+    'loading' | 'ready' | 'error'
+  >('loading');
 
   const state = useAppState();
   const hasIngredients = state.ingredients.length > 0;
   const hasRecipes = state.recipes.length > 0;
+
+  React.useEffect(() => {
+    let cancelled = false;
+    setLibraryStatus('loading');
+    fetchLibraryRecipes(state.lang)
+      .then((recipes) => {
+        if (cancelled) return;
+        setLibraryRecipes(recipes);
+        setLibraryStatus('ready');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setLibraryStatus('error');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [state.lang]);
 
   const handleToggleFilter = () => {
     setFilterOpen(!filterOpen);
@@ -142,13 +223,29 @@ export const RecipesTab = () => {
     setRecipeSearch(e.target.value);
   };
 
-  const handleUseExampleData = async () => {
-    const { addedRecipes } = await loadExampleData(state.lang);
-    if (addedRecipes > 0) {
-      alert(t('exampleData.successMessage', { added: addedRecipes }));
-    } else {
-      alert(t('exampleData.alreadyLoaded'));
-    }
+  const filteredMyRecipes = state.recipes.filter((r) =>
+    matchesSearch(r.name, r.items, recipeSearch)
+  );
+  const filteredLibraryRecipes = libraryRecipes.filter((r) =>
+    matchesSearch(r.name, r.items, recipeSearch)
+  );
+
+  const hasVisibleMyRecipes = filteredMyRecipes.length > 0;
+  const recommendedMyOpen = hasVisibleMyRecipes;
+  const recommendedLibraryOpen =
+    !hasVisibleMyRecipes || state.recipes.length <= MANY_RECIPES_THRESHOLD;
+
+  const [myOpen, setMyOpen] = React.useState(recommendedMyOpen);
+  const [libraryOpen, setLibraryOpen] = React.useState(recommendedLibraryOpen);
+
+  React.useEffect(() => {
+    setMyOpen(recommendedMyOpen);
+    setLibraryOpen(recommendedLibraryOpen);
+  }, [recommendedMyOpen, recommendedLibraryOpen]);
+
+  const handleToggleMyRecipes = (nextOpen: boolean) => {
+    setMyOpen(nextOpen);
+    if (!nextOpen) setLibraryOpen(true);
   };
 
   return (
@@ -189,7 +286,8 @@ export const RecipesTab = () => {
                   })
               ) : (
                 <span className={`chip`}>
-                  {state.ingredients.length} {t('recipeList.ingredients')}
+                  {state.ingredients.length}{' '}
+                  {tc('recipeList.ingredients', state.ingredients.length)}
                 </span>
               )}
             </div>
@@ -204,7 +302,7 @@ export const RecipesTab = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '14px',
+          marginBottom: '20px',
           gap: '10px',
           flexWrap: 'wrap',
         }}
@@ -216,38 +314,58 @@ export const RecipesTab = () => {
           value={recipeSearch}
           onChange={handleSearchChange}
         />
-        <span
-          style={{
-            fontSize: '12.5px',
-            color: 'var(--ink-soft)',
-          }}
-        >
-          {hasRecipes
-            ? state.recipes.length + ' ' + t('recipeList.recipesEnding')
-            : ''}
-        </span>
       </div>
-      {!hasRecipes ? (
-        <div className='empty-state'>
-          <div className='display'>{t('recipeList.noRecipesTitle')}</div>
-          <p>{t('recipeList.noRecipesHint')}</p>
-          <p>{t('exampleData.hint')}</p>
-          <button
-            className='btn'
-            id='useExampleDataBtn'
-            onClick={handleUseExampleData}
-          >
-            {t('exampleData.useBtn')}
-          </button>
-        </div>
-      ) : (
-        <div className='recipe-grid'>
-          {state.recipes.map((r) => {
-            const ev = evaluateRecipe(r);
-            return <RecipeCard key={r.id} recipe={r} ev={ev} />;
-          })}
-        </div>
-      )}
+
+      <Accordion
+        title={t('recipeList.myRecipes')}
+        count={filteredMyRecipes.length}
+        open={myOpen}
+        onToggle={handleToggleMyRecipes}
+      >
+        {!hasRecipes ? (
+          <div className='empty-state'>
+            <div className='display'>{t('recipeList.noRecipesTitle')}</div>
+            <p>{t('recipeList.noRecipesHint')}</p>
+          </div>
+        ) : filteredMyRecipes.length === 0 ? (
+          <div className='empty-state'>
+            <div className='display'>{t('recipeList.noResultsTitle')}</div>
+          </div>
+        ) : (
+          <div className='recipe-grid'>
+            {filteredMyRecipes.map((r) => {
+              const ev = evaluateRecipe(r);
+              return <MyRecipeCard key={r.id} recipe={r} ev={ev} />;
+            })}
+          </div>
+        )}
+      </Accordion>
+
+      <Accordion
+        title={t('recipeList.library')}
+        count={libraryStatus === 'ready' ? filteredLibraryRecipes.length : undefined}
+        open={libraryOpen}
+        onToggle={setLibraryOpen}
+      >
+        {libraryStatus === 'loading' && (
+          <div className='library-status'>{t('recipeList.libraryLoading')}</div>
+        )}
+        {libraryStatus === 'error' && (
+          <div className='library-status'>{t('recipeList.libraryLoadError')}</div>
+        )}
+        {libraryStatus === 'ready' &&
+          (libraryRecipes.length === 0 ? (
+            <div className='library-status'>{t('recipeList.libraryEmpty')}</div>
+          ) : filteredLibraryRecipes.length === 0 ? (
+            <div className='library-status'>{t('recipeList.noResultsTitle')}</div>
+          ) : (
+            <div className='recipe-grid'>
+              {filteredLibraryRecipes.map((r) => (
+                <LibraryRecipeCard key={r.id} recipe={r} />
+              ))}
+            </div>
+          ))}
+      </Accordion>
     </div>
   );
 };

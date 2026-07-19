@@ -1,18 +1,45 @@
 import React from 'react';
 import { FaXmark } from 'react-icons/fa6';
 import { t } from '../lang/lang.ts';
-import { type EvaluateRecipeResult, fridgeEntry, ingredientName } from '../ingredient.ts';
-import { type Recipe } from '../store/state.ts';
+import {
+  type EvaluateRecipeResult,
+  fridgeEntry,
+  ingredientName,
+} from '../ingredient.ts';
+import { type Recipe, type RecipeItem } from '../store/state.ts';
+import { type LibraryRecipe, type LibraryRecipeItem } from '../server-api.ts';
 import { MealTypePills } from './meal-type-pills.tsx';
 
+export type RecipeModalSource =
+  | { kind: 'mine'; recipe: Recipe; ev: EvaluateRecipeResult }
+  | { kind: 'library'; recipe: LibraryRecipe };
+
 export interface RecipeModalProps {
-  recipe: Recipe;
-  ev: EvaluateRecipeResult;
+  source: RecipeModalSource;
   open: boolean;
   onClose?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onAddToMyRecipes?: () => void;
 }
 
-export const RecipeModal = ({ recipe, ev, open, onClose }: RecipeModalProps) => {
+function isMineItem(
+  item: RecipeItem | LibraryRecipeItem
+): item is RecipeItem {
+  return 'ingredientId' in item;
+}
+
+export const RecipeModal = ({
+  source,
+  open,
+  onClose,
+  onEdit,
+  onDelete,
+  onAddToMyRecipes,
+}: RecipeModalProps) => {
+  const { recipe } = source;
+  const ev = source.kind === 'mine' ? source.ev : undefined;
+
   return (
     <div className='modal-overlay' hidden={!open} onClick={onClose}>
       <div
@@ -34,23 +61,29 @@ export const RecipeModal = ({ recipe, ev, open, onClose }: RecipeModalProps) => 
         </div>
         <div className='modal-body'>
           <MealTypePills mealTypes={recipe.mealTypes} />
-          {recipe.description && (
-            <p className='recipe-modal-desc'>{recipe.description}</p>
-          )}
           <div className='rc-ingredients'>
-            {recipe.items.map((item) => {
-              const fe = fridgeEntry(item.ingredientId);
-              const isMissing = !fe.inStock;
-              const isWarn = ev.warnList.some(
-                (w) => w.ingredientId === item.ingredientId
-              );
+            {recipe.items.map((item, idx) => {
+              const mine = isMineItem(item);
+              const displayName = mine ? ingredientName(item.ingredientId) : item.name;
+              const isMissing = mine ? !fridgeEntry(item.ingredientId).inStock : false;
+              const isWarn =
+                mine && ev
+                  ? ev.warnList.some((w) => w.ingredientId === item.ingredientId)
+                  : false;
+              const statusClass = mine
+                ? isMissing
+                  ? 'missing'
+                  : isWarn
+                    ? 'warn'
+                    : 'on'
+                : '';
               return (
                 <span
-                  key={item.ingredientId}
-                  className={`chip readonly ${isMissing ? 'missing' : isWarn ? 'warn' : 'on'}`}
+                  key={mine ? item.ingredientId : `${item.name}-${idx}`}
+                  className={`chip readonly ${statusClass}`}
                 >
                   <span className='dot'></span>
-                  {ingredientName(item.ingredientId)}
+                  {displayName}
                   {item.amount != null && (
                     <small>
                       {item.amount}
@@ -62,6 +95,25 @@ export const RecipeModal = ({ recipe, ev, open, onClose }: RecipeModalProps) => 
               );
             })}
           </div>
+          {recipe.description && (
+            <p className='recipe-modal-desc'>{recipe.description}</p>
+          )}
+        </div>
+        <div className='modal-footer'>
+          {source.kind === 'mine' ? (
+            <>
+              <button className='btn secondary' onClick={onEdit}>
+                {t('common.edit')}
+              </button>
+              <button className='btn danger' onClick={onDelete}>
+                {t('common.delete')}
+              </button>
+            </>
+          ) : (
+            <button className='btn' onClick={onAddToMyRecipes}>
+              {t('recipeList.addToMyRecipes')}
+            </button>
+          )}
         </div>
       </div>
     </div>

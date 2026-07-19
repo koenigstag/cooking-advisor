@@ -72,3 +72,23 @@ export function translate(
 }
 
 export const t = translate;
+
+export function translatePlural(
+  key: string,
+  count: number,
+  params?: { [key: string]: string | number | boolean | null | undefined }
+): string {
+  const currentLang = (window.__appState().lang as LANG) || LANG_DEFAULT;
+  const category = new Intl.PluralRules(LANG_CODES[currentLang]).select(count);
+
+  const fullKey = `${key}.${category}`;
+  const result = translate(fullKey, { count, ...params });
+  if (result === fullKey) {
+    // this category isn't defined for this key/locale (e.g. English has no
+    // "few"/"many") — CLDR guarantees "other" always exists as a fallback
+    return translate(`${key}.other`, { count, ...params });
+  }
+  return result;
+}
+
+export const tc = translatePlural;
