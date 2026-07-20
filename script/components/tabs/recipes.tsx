@@ -155,14 +155,6 @@ const MyRecipeCard = ({
             {t('recipeList.status.dietBlocked', { list: blockedNames.join(', ') })}
           </div>
         )}
-        <div className='rc-actions'>
-          <button data-edit={recipe.id} onClick={handleEditClick}>
-            {t('common.edit')}
-          </button>
-          <button data-del={recipe.id} onClick={handleDeleteClick}>
-            {t('common.delete')}
-          </button>
-        </div>
       </div>
       <RecipeModal
         source={{ kind: 'mine', recipe, ev }}

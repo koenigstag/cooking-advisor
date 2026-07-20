@@ -97,7 +97,7 @@ export const LANG_EN_US = {
       canCook: 'Can cook',
       missingIngredients: 'Missing {count}',
       noIngredients: 'No ingredients',
-      matchedIngredients: ' · {matched}/{total} available',
+      matchedIngredients: ' · {matched}/{total} ingredients available',
       caloriesPerServing: '{kcal} kcal / serving',
       warnLowStock: '(low stock)',
       dietBlocked: '⚠ Contains blocked: {list}',

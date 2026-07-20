@@ -99,7 +99,7 @@ export const LANG_RU_RU = {
       canCook: 'Можно готовить',
       missingIngredients: 'Не хватает {count}',
       noIngredients: 'Нет продуктов',
-      matchedIngredients: ' · {matched}/{total} есть в наличии',
+      matchedIngredients: ' · {matched}/{total} ингредиентов есть в наличии',
       caloriesPerServing: '{kcal} ккал / порция',
       warnLowStock: '(мало)',
       dietBlocked: '⚠ Содержит запрещённое: {list}',
