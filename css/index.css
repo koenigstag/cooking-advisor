@@ -10,6 +10,8 @@
   --gold-pale: #f2e3c4;
   --rust: #b5533c;
   --rust-pale: #f3dfd8;
+  --orange: #cc7722;
+  --orange-pale: #f6e2c6;
   --plum: #7d5a6e;
   --plum-pale: #ecdde4;
   --line: #e2d9c2;
@@ -343,8 +345,8 @@ nav.tabs button:not(.active):hover {
   font-weight: 400;
 }
 .chip.diet-blocked {
-  background: var(--rust-pale);
-  border-color: var(--rust);
+  background: var(--orange-pale);
+  border-color: var(--orange);
   border-style: dashed;
 }
 
@@ -629,7 +631,7 @@ nav.tabs button:not(.active):hover {
   text-transform: none;
   letter-spacing: normal;
   font-weight: 500;
-  color: var(--rust);
+  color: var(--orange);
 }
 .rc-actions {
   display: flex;
@@ -785,7 +787,7 @@ textarea {
 }
 .diet-blocked-tag {
   margin-left: 6px;
-  color: var(--rust);
+  color: var(--orange);
   font-weight: 400;
   font-size: 12px;
 }
