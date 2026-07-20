@@ -701,6 +701,7 @@ textarea {
 }
 .field-row > * {
   flex: 1;
+  min-width: 0;
 }
 .ing-row {
   display: grid;

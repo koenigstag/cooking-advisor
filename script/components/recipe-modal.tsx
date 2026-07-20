@@ -50,7 +50,10 @@ export const RecipeModal = ({
           source.recipe,
           estimateRecipeCalories(source.recipe.items, stateStore.getState().ingredients)
         )
-      : null;
+      : // Library items have no ingredientId per item, so there's no way to
+        // estimate from ingredients — only show it if the server already
+        // provided a calories value directly.
+        caloriesPerServing(source.recipe, null);
 
   return (
     <div className='modal-overlay' hidden={!open} onClick={onClose}>

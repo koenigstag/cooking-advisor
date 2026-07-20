@@ -72,7 +72,7 @@ export type CaloriesPerServing = {
 };
 
 export function caloriesPerServing(
-  recipe: Recipe,
+  recipe: { calories?: number; servings?: number },
   estimate: CalorieEstimate | null
 ): CaloriesPerServing | null {
   const servings = recipe.servings && recipe.servings > 0 ? recipe.servings : 1;

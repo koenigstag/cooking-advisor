@@ -174,6 +174,10 @@ const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
 
   const dietary = stateStore.getState().dietary;
   const blockedNames = blockedIngredientNames(recipe.items);
+  // No per-item ingredientId on library recipes, so there's no way to
+  // estimate from ingredients — only shows up if the server already
+  // provided a calories value directly.
+  const cps = caloriesPerServing(recipe, null);
 
   const handleModalClose = () => setIsModalOpen(false);
 
@@ -214,6 +218,13 @@ const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
         {dietary.action === 'warn' && blockedNames.length > 0 && (
           <div className='status-label diet-warn' style={{ marginTop: '6px' }}>
             {t('recipeList.status.dietBlocked', { list: blockedNames.join(', ') })}
+          </div>
+        )}
+        {cps && (
+          <div className='calories-per-serving'>
+            {t('recipeList.status.caloriesPerServing', {
+              kcal: `${cps.partial ? '~' : ''}${cps.kcal}`,
+            })}
           </div>
         )}
       </div>
