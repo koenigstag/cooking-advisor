@@ -1122,3 +1122,27 @@ textarea {
 .snackbar-info {
   background: var(--plum);
 }
+
+.confirm-overlay {
+  /* Above the regular .modal-overlay (z-index: 50) so a confirm triggered
+     from inside an already-open modal (settings, recipe details) still
+     renders on top of it. There's only ever one confirm dialog at a time,
+     so a single fixed z-index above the rest is enough — no need to track
+     stacking order dynamically. */
+  z-index: 60;
+}
+.confirm-card {
+  max-width: 400px;
+  padding: 22px;
+}
+.confirm-message {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

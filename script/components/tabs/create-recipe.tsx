@@ -16,6 +16,7 @@ import { stateStore } from '../../store/store.ts';
 import { publishRecipeToLibrary } from '../../server-api.ts';
 import { ErrorBoundary } from '../error-boundary.tsx';
 import { useSnackbar } from '../snackbar.tsx';
+import { useConfirm } from '../confirm-dialog.tsx';
 
 const MEAL_TYPES: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack'];
 
@@ -37,6 +38,7 @@ const defaultDraftData = {
 export const AddRecipeTab = () => {
   const state = useAppState();
   const { enqueueSnackbar } = useSnackbar();
+  const confirmDialog = useConfirm();
   const [draftData, setDraftData] = React.useState<{
     forId: string;
     name: string;
@@ -161,8 +163,8 @@ export const AddRecipeTab = () => {
     stateStore.setEditingRecipeId(recipe.id);
   };
 
-  const handleDeleteRecipe = (recipeId: string) => {
-    if (confirm(t('addRecipe.actions.confirmDelete'))) {
+  const handleDeleteRecipe = async (recipeId: string) => {
+    if (await confirmDialog(t('addRecipe.actions.confirmDelete'), { danger: true })) {
       stateStore.setRecipes(state.recipes.filter((rec) => rec.id !== recipeId));
       saveData();
       setDraftData(defaultDraftData);

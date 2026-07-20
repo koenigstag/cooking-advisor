@@ -27,6 +27,7 @@ export const LANG_EN_US = {
     edit: 'Edit',
     change: 'Edit',
     cancel: 'Cancel',
+    confirm: 'Confirm',
     delete: 'Delete',
     close: 'Close',
     save: 'Save',

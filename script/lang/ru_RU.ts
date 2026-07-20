@@ -27,6 +27,7 @@ export const LANG_RU_RU = {
     edit: 'Редактировать',
     change: 'Изменить',
     cancel: 'Отменить',
+    confirm: 'Подтвердить',
     delete: 'Удалить',
     close: 'Закрыть',
     save: 'Сохранить',
