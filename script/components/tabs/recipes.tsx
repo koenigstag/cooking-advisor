@@ -19,6 +19,7 @@ import { RecipeModal } from '../recipe-modal.tsx';
 import { MealTypePills } from '../meal-type-pills.tsx';
 import { Accordion } from '../accordion.tsx';
 import { ErrorBoundary } from '../error-boundary.tsx';
+import { useConfirm } from '../confirm-dialog.tsx';
 import {
   fetchLibraryRecipes,
   getServerBaseUrl,
@@ -71,6 +72,7 @@ const MyRecipeCard = ({
   ev: EvaluateRecipeResult;
 }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const confirmDialog = useConfirm();
 
   const dietary = stateStore.getState().dietary;
   const blockedNames = blockedIngredientNames(recipe.items);
@@ -105,9 +107,9 @@ const MyRecipeCard = ({
     stateStore.setActiveTab('addRecipe');
   };
 
-  const handleDeleteClick = (e?: React.MouseEvent) => {
+  const handleDeleteClick = async (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (confirm(t('recipeList.actions.confirmDelete'))) {
+    if (await confirmDialog({ text: t('recipeList.actions.confirmDelete'), danger: true })) {
       stateStore.setRecipes(
         stateStore.getState().recipes.filter((r) => r.id !== recipe.id)
       );
@@ -164,6 +166,7 @@ const MyRecipeCard = ({
 const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [addedRecipe, setAddedRecipe] = React.useState<Recipe | null>(null);
+  const confirmDialog = useConfirm();
 
   const dietary = stateStore.getState().dietary;
   const blockedNames = blockedIngredientNames(recipe.items);
@@ -180,9 +183,9 @@ const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
     stateStore.setActiveTab('addRecipe');
   };
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = async () => {
     if (!addedRecipe) return;
-    if (confirm(t('recipeList.actions.confirmDelete'))) {
+    if (await confirmDialog({ text: t('recipeList.actions.confirmDelete'), danger: true })) {
       stateStore.setRecipes(
         stateStore.getState().recipes.filter((r) => r.id !== addedRecipe.id)
       );

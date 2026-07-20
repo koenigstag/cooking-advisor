@@ -17,9 +17,11 @@ import { useAppState } from '../../hooks/use-app-state.ts';
 import { INGREDIENT_TAGS, type IngredientTag } from '../../store/state.ts';
 import { Accordion } from '../accordion.tsx';
 import { ErrorBoundary } from '../error-boundary.tsx';
+import { useConfirm } from '../confirm-dialog.tsx';
 
 export const FridgeTab = () => {
   const state = useAppState();
+  const confirmDialog = useConfirm();
 
   const [name, setName] = React.useState('');
   const [amount, setAmount] = React.useState('');
@@ -91,7 +93,7 @@ export const FridgeTab = () => {
     saveData();
   };
 
-  const handleRemoveProduct = (ingId: string) => {
+  const handleRemoveProduct = async (ingId: string) => {
     const usedIn = state.recipes.filter((r) =>
       r.items.some((it) => it.ingredientId === ingId)
     );
@@ -102,7 +104,7 @@ export const FridgeTab = () => {
         usedIn.length
       );
     }
-    if (confirm(msg)) {
+    if (await confirmDialog({ text: msg, danger: true })) {
       stateStore.setIngredients(
         stateStore.getState().ingredients.filter((i) => i.id !== ingId)
       );

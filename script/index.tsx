@@ -4,6 +4,8 @@ import { IndexedDBUnsupported } from './components/index-db-unsupported.tsx';
 import { LoadingState } from './components/loading.tsx';
 import { AppError } from './components/app-error.tsx';
 import { ErrorBoundary } from './components/error-boundary.tsx';
+import { SnackbarProvider } from './components/snackbar.tsx';
+import { ConfirmProvider } from './components/confirm-dialog.tsx';
 import { App } from './components/app.tsx';
 import { stateStore } from './store/store.ts';
 import { syncIngredientCatalog } from './ingredient-catalog.ts';
@@ -44,9 +46,13 @@ async function init(root: HTMLElement) {
   }
 
   reactRoot.render(
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
+    <SnackbarProvider>
+      <ConfirmProvider>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </ConfirmProvider>
+    </SnackbarProvider>
   );
 }
 

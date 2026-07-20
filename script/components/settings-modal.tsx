@@ -8,6 +8,7 @@ import { validateServerBaseUrl } from '../validate-server-url.ts';
 import { findIngredientByName, ingredientDisplayName } from '../ingredient.ts';
 import { DIETARY_PRESETS, isPresetActive } from '../dietary-presets.ts';
 import { INGREDIENT_TAGS } from '../store/state.ts';
+import { useConfirm } from './confirm-dialog.tsx';
 
 export interface SettingsModalProps {
   open: boolean;
@@ -18,6 +19,7 @@ type SettingsTab = 'dietary' | 'sync';
 
 const DietaryTab = () => {
   const state = useAppState();
+  const confirmDialog = useConfirm();
   const [query, setQuery] = React.useState('');
   const [addError, setAddError] = React.useState<string | null>(null);
   const [addingIngredient, setAddingIngredient] = React.useState(false);
@@ -63,10 +65,10 @@ const DietaryTab = () => {
     saveData();
   };
 
-  const handlePresetClick = (presetId: (typeof DIETARY_PRESETS)[number]['id']) => {
+  const handlePresetClick = async (presetId: (typeof DIETARY_PRESETS)[number]['id']) => {
     const preset = DIETARY_PRESETS.find((p) => p.id === presetId)!;
     const tagList = preset.blockTags.map((tag) => t(`ingredientTags.${tag}`)).join(', ');
-    if (!confirm(t('settings.dietary.presets.confirmApply', { list: tagList }))) return;
+    if (!(await confirmDialog({ text: t('settings.dietary.presets.confirmApply', { list: tagList }) }))) return;
     stateStore.addDietaryBlockedTags(preset.blockTags);
     saveData();
   };

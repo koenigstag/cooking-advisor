@@ -1050,3 +1050,99 @@ textarea {
     justify-self: end;
   }
 }
+
+.snackbar-stack {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 80;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  padding: 0 16px;
+  pointer-events: none;
+}
+.snackbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  box-shadow: 0 6px 20px rgba(43, 42, 34, 0.25);
+  pointer-events: auto;
+  animation: snackbar-in 0.15s ease-out;
+}
+@keyframes snackbar-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.snackbar-icon {
+  display: flex;
+  flex: 0 0 auto;
+  font-size: 16px;
+}
+.snackbar-message {
+  flex: 1;
+  font-size: 14px;
+}
+.snackbar-close {
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  color: inherit;
+  opacity: 0.7;
+  cursor: pointer;
+  display: flex;
+  padding: 2px;
+}
+.snackbar-close:hover {
+  opacity: 1;
+}
+.snackbar-success {
+  background: var(--green-dark);
+}
+.snackbar-error {
+  background: var(--rust);
+}
+.snackbar-warning {
+  background: var(--gold);
+  color: var(--ink);
+}
+.snackbar-info {
+  background: var(--plum);
+}
+
+.confirm-overlay {
+  /* Above the regular .modal-overlay (z-index: 50) so a confirm triggered
+     from inside an already-open modal (settings, recipe details) still
+     renders on top of it. There's only ever one confirm dialog at a time,
+     so a single fixed z-index above the rest is enough — no need to track
+     stacking order dynamically. */
+  z-index: 60;
+}
+.confirm-card {
+  max-width: 400px;
+  padding: 22px;
+}
+.confirm-message {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
