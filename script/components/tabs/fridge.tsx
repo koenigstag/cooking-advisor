@@ -104,7 +104,7 @@ export const FridgeTab = () => {
         usedIn.length
       );
     }
-    if (await confirmDialog(msg, { danger: true })) {
+    if (await confirmDialog({ text: msg, danger: true })) {
       stateStore.setIngredients(
         stateStore.getState().ingredients.filter((i) => i.id !== ingId)
       );

@@ -164,7 +164,7 @@ export const AddRecipeTab = () => {
   };
 
   const handleDeleteRecipe = async (recipeId: string) => {
-    if (await confirmDialog(t('addRecipe.actions.confirmDelete'), { danger: true })) {
+    if (await confirmDialog({ text: t('addRecipe.actions.confirmDelete'), danger: true })) {
       stateStore.setRecipes(state.recipes.filter((rec) => rec.id !== recipeId));
       saveData();
       setDraftData(defaultDraftData);

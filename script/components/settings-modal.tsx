@@ -68,7 +68,7 @@ const DietaryTab = () => {
   const handlePresetClick = async (presetId: (typeof DIETARY_PRESETS)[number]['id']) => {
     const preset = DIETARY_PRESETS.find((p) => p.id === presetId)!;
     const tagList = preset.blockTags.map((tag) => t(`ingredientTags.${tag}`)).join(', ');
-    if (!(await confirmDialog(t('settings.dietary.presets.confirmApply', { list: tagList })))) return;
+    if (!(await confirmDialog({ text: t('settings.dietary.presets.confirmApply', { list: tagList }) }))) return;
     stateStore.addDietaryBlockedTags(preset.blockTags);
     saveData();
   };

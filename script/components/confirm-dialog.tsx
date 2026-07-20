@@ -1,34 +1,35 @@
 import React from 'react';
 import { t } from '../lang/lang.ts';
 
-export type ConfirmOptions = {
-  confirmLabel?: string;
-  cancelLabel?: string;
+export type ConfirmDialogOptions = {
+  text: string;
+  cancelText?: string;
+  confirmText?: string;
   danger?: boolean;
 };
 
 type ConfirmRequest = {
-  message: string;
-  confirmLabel: string;
-  cancelLabel: string;
+  text: string;
+  confirmText: string;
+  cancelText: string;
   danger: boolean;
   resolve: (result: boolean) => void;
 };
 
-type ConfirmContextValue = (message: string, options?: ConfirmOptions) => Promise<boolean>;
+type ConfirmContextValue = (options: ConfirmDialogOptions) => Promise<boolean>;
 
 const ConfirmContext = React.createContext<ConfirmContextValue | null>(null);
 
 export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => {
   const [request, setRequest] = React.useState<ConfirmRequest | null>(null);
 
-  const confirm = React.useCallback<ConfirmContextValue>((message, options) => {
+  const confirmDialog = React.useCallback<ConfirmContextValue>((options) => {
     return new Promise<boolean>((resolve) => {
       setRequest({
-        message,
-        confirmLabel: options?.confirmLabel ?? t('common.confirm'),
-        cancelLabel: options?.cancelLabel ?? t('common.cancel'),
-        danger: options?.danger ?? false,
+        text: options.text,
+        confirmText: options.confirmText ?? t('common.confirm'),
+        cancelText: options.cancelText ?? t('common.cancel'),
+        danger: options.danger ?? false,
         resolve,
       });
     });
@@ -40,21 +41,21 @@ export const ConfirmProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   return (
-    <ConfirmContext.Provider value={confirm}>
+    <ConfirmContext.Provider value={confirmDialog}>
       {children}
       <div className='modal-overlay confirm-overlay' hidden={!request} onClick={() => settle(false)}>
         {request && (
           <div className='modal-card confirm-card' role='alertdialog' aria-modal='true' onClick={(e) => e.stopPropagation()}>
-            <p className='confirm-message'>{request.message}</p>
+            <p className='confirm-message'>{request.text}</p>
             <div className='confirm-actions'>
               <button className='btn secondary' onClick={() => settle(false)}>
-                {request.cancelLabel}
+                {request.cancelText}
               </button>
               <button
                 className={request.danger ? 'btn danger' : 'btn'}
                 onClick={() => settle(true)}
               >
-                {request.confirmLabel}
+                {request.confirmText}
               </button>
             </div>
           </div>

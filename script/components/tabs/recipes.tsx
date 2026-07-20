@@ -109,7 +109,7 @@ const MyRecipeCard = ({
 
   const handleDeleteClick = async (e?: React.MouseEvent) => {
     e?.stopPropagation();
-    if (await confirmDialog(t('recipeList.actions.confirmDelete'), { danger: true })) {
+    if (await confirmDialog({ text: t('recipeList.actions.confirmDelete'), danger: true })) {
       stateStore.setRecipes(
         stateStore.getState().recipes.filter((r) => r.id !== recipe.id)
       );
@@ -185,7 +185,7 @@ const LibraryRecipeCard = ({ recipe }: { recipe: LibraryRecipe }) => {
 
   const handleDeleteClick = async () => {
     if (!addedRecipe) return;
-    if (await confirmDialog(t('recipeList.actions.confirmDelete'), { danger: true })) {
+    if (await confirmDialog({ text: t('recipeList.actions.confirmDelete'), danger: true })) {
       stateStore.setRecipes(
         stateStore.getState().recipes.filter((r) => r.id !== addedRecipe.id)
       );
