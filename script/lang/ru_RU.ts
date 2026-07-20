@@ -214,6 +214,7 @@ export const LANG_RU_RU = {
       addRecipe: 'Добавить рецепт',
       confirmDelete: 'Вы уверены, что хотите удалить этот рецепт?',
       saveAlert: {
+        noName: 'Введите название рецепта.',
         noIngredients: 'Добавьте хотя бы один ингредиент.',
       },
     },
