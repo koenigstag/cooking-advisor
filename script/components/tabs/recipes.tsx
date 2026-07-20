@@ -20,6 +20,7 @@ import { MealTypePills } from '../meal-type-pills.tsx';
 import { Accordion } from '../accordion.tsx';
 import { ErrorBoundary } from '../error-boundary.tsx';
 import { useConfirm } from '../confirm-dialog.tsx';
+import { caloriesPerServing, estimateRecipeCalories } from '../../nutrition.ts';
 import {
   fetchLibraryRecipes,
   getServerBaseUrl,
@@ -76,6 +77,10 @@ const MyRecipeCard = ({
 
   const dietary = stateStore.getState().dietary;
   const blockedNames = blockedIngredientNames(recipe.items);
+  const cps = caloriesPerServing(
+    recipe,
+    estimateRecipeCalories(recipe.items, stateStore.getState().ingredients)
+  );
 
   const fullMatch = ev.status === 'full';
   let statusLabelEl: React.ReactNode;
@@ -137,6 +142,13 @@ const MyRecipeCard = ({
               total: ev.total,
             })}
           </div>
+          {cps && (
+            <div className='calories-per-serving'>
+              {t('recipeList.status.caloriesPerServing', {
+                kcal: `${cps.partial ? '~' : ''}${cps.kcal}`,
+              })}
+            </div>
+          )}
         </div>
         {dietary.action === 'warn' && blockedNames.length > 0 && (
           <div className='status-label diet-warn' style={{ marginTop: '6px' }}>

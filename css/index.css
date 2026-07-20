@@ -631,6 +631,10 @@ nav.tabs button:not(.active):hover {
   font-weight: 500;
   color: var(--rust);
 }
+.calories-per-serving {
+  margin-top: 4px;
+  color: var(--ink-soft);
+}
 .rc-actions {
   display: flex;
   gap: 10px;
@@ -663,6 +667,7 @@ label {
   font-weight: 600;
   color: var(--green-dark);
   margin-bottom: 5px;
+  white-space: nowrap;
 }
 input[type='text'],
 input[type='number'],
@@ -882,6 +887,66 @@ textarea {
 }
 .fridge-row .qty-inputs input[type='text'] {
   width: 60px;
+}
+.qty-unit-group,
+.qty-unit-field-group {
+  display: flex;
+}
+.qty-unit-group input,
+.qty-unit-field-group input {
+  position: relative;
+}
+.qty-unit-group input:first-child,
+.qty-unit-field-group input:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.qty-unit-group input:last-child,
+.qty-unit-field-group input:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+.qty-unit-group input:focus,
+.qty-unit-field-group input:focus {
+  z-index: 1;
+}
+.qty-unit-field-group input {
+  width: auto;
+  min-width: 0;
+}
+.qty-unit-field-group input:first-child {
+  flex: 0 0 90px;
+}
+.qty-unit-field-group input:last-child {
+  flex: 0.33;
+}
+.qty-unit-field-labels {
+  display: flex;
+}
+.qty-unit-field-labels label:first-child {
+  flex: 0 0 90px;
+}
+.qty-unit-field-labels label:last-child {
+  flex: 0.33;
+}
+.calories-input-wrap {
+  position: relative;
+  display: inline-flex;
+}
+.calories-input-wrap .calories-input {
+  width: 120px;
+  padding-right: 58px;
+}
+.calories-input-suffix {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  color: var(--ink-soft);
+  opacity: 0.6;
+  pointer-events: none;
 }
 .fridge-row .del {
   background: none;

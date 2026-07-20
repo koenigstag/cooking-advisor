@@ -98,6 +98,7 @@ export const LANG_EN_US = {
       missingIngredients: 'Missing {count}',
       noIngredients: 'No ingredients',
       matchedIngredients: ' · {matched}/{total} available',
+      caloriesPerServing: '{kcal} kcal / serving',
       warnLowStock: '(low stock)',
       dietBlocked: '⚠ Contains blocked: {list}',
       dietBlockedTag: '(blocked)',
@@ -125,6 +126,10 @@ export const LANG_EN_US = {
         label: 'Unit',
         placeholder: 'g, pcs, l…',
       },
+      calories: {
+        label: 'Calories (kcal/100g)',
+        placeholder: 'e.g., 165',
+      },
       icon: {
         label: 'Icon',
       },
@@ -150,6 +155,11 @@ export const LANG_EN_US = {
           },
           unit: {
             placeholder: 'unit',
+          },
+          calories: {
+            title: 'Calories per 100g — used to estimate a recipe\'s total calories',
+            placeholder: 'kcal/100g',
+            unit: 'kcal/100g',
           },
         },
       },
@@ -183,6 +193,14 @@ export const LANG_EN_US = {
       },
       mealTypes: {
         label: 'Meal Type',
+      },
+      servings: {
+        label: 'Servings',
+        placeholder: 'e.g., 4',
+      },
+      calories: {
+        label: 'Calories (kcal)',
+        placeholder: 'Estimated from ingredients',
       },
       ingredients: {
         label: 'Ingredients',

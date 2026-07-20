@@ -100,6 +100,7 @@ export const LANG_RU_RU = {
       missingIngredients: 'Не хватает {count}',
       noIngredients: 'Нет продуктов',
       matchedIngredients: ' · {matched}/{total} есть в наличии',
+      caloriesPerServing: '{kcal} ккал / порция',
       warnLowStock: '(мало)',
       dietBlocked: '⚠ Содержит запрещённое: {list}',
       dietBlockedTag: '(запрещено)',
@@ -127,6 +128,10 @@ export const LANG_RU_RU = {
         label: 'Ед. изм.',
         placeholder: 'г, шт, л…',
       },
+      calories: {
+        label: 'Калорийность (ккал/100г)',
+        placeholder: 'например, 165',
+      },
       icon: {
         label: 'Иконка',
       },
@@ -152,6 +157,11 @@ export const LANG_RU_RU = {
           },
           unit: {
             placeholder: 'ед.',
+          },
+          calories: {
+            title: 'Калорийность на 100г — используется для оценки калорийности рецепта',
+            placeholder: 'ккал/100г',
+            unit: 'ккал/100г',
           },
         },
       },
@@ -187,6 +197,14 @@ export const LANG_RU_RU = {
       },
       mealTypes: {
         label: 'Приём пищи',
+      },
+      servings: {
+        label: 'Порций',
+        placeholder: 'например, 4',
+      },
+      calories: {
+        label: 'Калорийность (ккал)',
+        placeholder: 'Оценка по ингредиентам',
       },
       ingredients: {
         label: 'Ингредиенты',
