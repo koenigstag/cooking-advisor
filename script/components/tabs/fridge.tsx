@@ -359,9 +359,6 @@ export const FridgeTab = () => {
                       step='any'
                       className='calories-input'
                       title={t('fridge.productsList.ingredient.fields.calories.title')}
-                      placeholder={t(
-                        'fridge.productsList.ingredient.fields.calories.placeholder'
-                      )}
                       value={ing.calories != null ? ing.calories : ''}
                       onChange={(e) => handleCaloriesChange(ing.id, e.target.value)}
                     />
