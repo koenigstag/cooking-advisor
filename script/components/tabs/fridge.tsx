@@ -194,7 +194,7 @@ export const FridgeTab = () => {
                 ))}
               </datalist>
             </div>
-            <div className='field' style={{ flex: '0 0 auto' }}>
+            <div className='field' style={{ flex: '0 0 100px' }}>
               <label>{t('fridge.fields.calories.label')}</label>
               <input
                 type='number'
@@ -348,6 +348,7 @@ export const FridgeTab = () => {
                       placeholder={t(
                         'fridge.productsList.ingredient.fields.unit.placeholder'
                       )}
+                      list='unitSuggestList'
                       value={fe.unit ? fe.unit : ''}
                       onChange={(e) => handleUnitChange(ing.id, e.target.value)}
                     />
@@ -358,6 +359,7 @@ export const FridgeTab = () => {
                       min={0}
                       step='any'
                       className='calories-input'
+                      style={{ width: '100px' }}
                       title={t('fridge.productsList.ingredient.fields.calories.title')}
                       value={ing.calories != null ? ing.calories : ''}
                       onChange={(e) => handleCaloriesChange(ing.id, e.target.value)}
