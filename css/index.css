@@ -922,7 +922,7 @@ textarea {
   flex: 0 0 90px;
 }
 .qty-unit-field-group input:last-child {
-  flex: 0.33;
+  flex: 0 0 60px;
 }
 .qty-unit-field-labels {
   display: flex;
@@ -931,7 +931,7 @@ textarea {
   flex: 0 0 90px;
 }
 .qty-unit-field-labels label:last-child {
-  flex: 0.33;
+  flex: 0 0 60px;
 }
 .calories-input-wrap {
   position: relative;

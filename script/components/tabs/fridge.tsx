@@ -164,7 +164,7 @@ export const FridgeTab = () => {
                   ))}
               </datalist>
             </div>
-            <div className='field' style={{ flex: '0 0 200px' }}>
+            <div className='field' style={{ flex: '0 0 auto' }}>
               <div className='qty-unit-field-labels'>
                 <label>{t('fridge.fields.amount.label')}</label>
                 <label>{t('fridge.fields.unit.label')}</label>
@@ -194,7 +194,7 @@ export const FridgeTab = () => {
                 ))}
               </datalist>
             </div>
-            <div className='field' style={{ flex: '0 0 220px' }}>
+            <div className='field' style={{ flex: '0 0 auto' }}>
               <label>{t('fridge.fields.calories.label')}</label>
               <input
                 type='number'
