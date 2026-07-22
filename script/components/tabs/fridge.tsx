@@ -25,7 +25,8 @@ export const FridgeTab = () => {
 
   const [name, setName] = React.useState('');
   const [amount, setAmount] = React.useState('');
-  const [unit, setUnit] = React.useState('');
+  const [unit, setUnit] = React.useState(() => t('units.gram'));
+  const [calories, setCalories] = React.useState('');
   const [iconId, setIconId] = React.useState<IconId | undefined>(undefined);
   const [iconTouched, setIconTouched] = React.useState(false);
   const [tags, setTags] = React.useState<IngredientTag[]>([]);
@@ -59,11 +60,15 @@ export const FridgeTab = () => {
       amount: amountValue,
       unit: unitValue,
     });
+    if (calories !== '') {
+      stateStore.setIngredientCalories(ing.id, parseFloat(calories));
+    }
     saveData();
 
     setName('');
     setAmount('');
-    setUnit('');
+    setUnit(t('units.gram'));
+    setCalories('');
     setIconId(undefined);
     setIconTouched(false);
     setTags([]);
@@ -90,6 +95,11 @@ export const FridgeTab = () => {
   const handleUnitChange = (ingId: string, value: string) => {
     const fe = fridgeEntry(ingId);
     stateStore.setFridgeEntry(ingId, { ...fe, unit: value.trim() || null });
+    saveData();
+  };
+
+  const handleCaloriesChange = (ingId: string, value: string) => {
+    stateStore.setIngredientCalories(ingId, value !== '' ? parseFloat(value) : null);
     saveData();
   };
 
@@ -133,7 +143,7 @@ export const FridgeTab = () => {
                 title={t('fridge.fields.icon.label')}
               />
             </div>
-            <div className='field' style={{ flex: '2' }}>
+            <div className='field' style={{ flex: '1 1 auto' }}>
               <label>{t('fridge.fields.name.label')}</label>
               <input
                 type='text'
@@ -154,33 +164,47 @@ export const FridgeTab = () => {
                   ))}
               </datalist>
             </div>
-            <div className='field'>
-              <label>{t('fridge.fields.amount.label')}</label>
-              <input
-                type='number'
-                id='newIngAmount'
-                placeholder={t('fridge.fields.amount.placeholder')}
-                min={0}
-                step='any'
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
-            <div className='field'>
-              <label>{t('fridge.fields.unit.label')}</label>
-              <input
-                type='text'
-                id='newIngUnit'
-                placeholder={t('fridge.fields.unit.placeholder')}
-                list='unitSuggestList'
-                value={unit}
-                onChange={(e) => setUnit(e.target.value)}
-              />
+            <div className='field' style={{ flex: '0 0 auto' }}>
+              <div className='qty-unit-field-labels'>
+                <label>{t('fridge.fields.amount.label')}</label>
+                <label>{t('fridge.fields.unit.label')}</label>
+              </div>
+              <div className='qty-unit-field-group'>
+                <input
+                  type='number'
+                  id='newIngAmount'
+                  placeholder={t('fridge.fields.amount.placeholder')}
+                  min={0}
+                  step='any'
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                />
+                <input
+                  type='text'
+                  id='newIngUnit'
+                  placeholder={t('fridge.fields.unit.placeholder')}
+                  list='unitSuggestList'
+                  value={unit}
+                  onChange={(e) => setUnit(e.target.value)}
+                />
+              </div>
               <datalist id='unitSuggestList'>
                 {units.map((u) => (
                   <option key={u} value={t(`units.${u}`)} />
                 ))}
               </datalist>
+            </div>
+            <div className='field' style={{ flex: '0 0 auto' }}>
+              <label>{t('fridge.fields.calories.label')}</label>
+              <input
+                type='number'
+                id='newIngCalories'
+                placeholder={t('fridge.fields.calories.placeholder')}
+                min={0}
+                step='any'
+                value={calories}
+                onChange={(e) => setCalories(e.target.value)}
+              />
             </div>
           </div>
           <div className='field'>
@@ -308,24 +332,43 @@ export const FridgeTab = () => {
                   )}
                 </span>
                 <div className='qty-inputs'>
-                  <input
-                    type='number'
-                    min={0}
-                    step='any'
-                    placeholder={t(
-                      'fridge.productsList.ingredient.fields.quantity.placeholder'
-                    )}
-                    value={fe.amount != null ? fe.amount : ''}
-                    onChange={(e) => handleAmountChange(ing.id, e.target.value)}
-                  />
-                  <input
-                    type='text'
-                    placeholder={t(
-                      'fridge.productsList.ingredient.fields.unit.placeholder'
-                    )}
-                    value={fe.unit ? fe.unit : ''}
-                    onChange={(e) => handleUnitChange(ing.id, e.target.value)}
-                  />
+                  <div className='qty-unit-group'>
+                    <input
+                      type='number'
+                      min={0}
+                      step='any'
+                      placeholder={t(
+                        'fridge.productsList.ingredient.fields.quantity.placeholder'
+                      )}
+                      value={fe.amount != null ? fe.amount : ''}
+                      onChange={(e) => handleAmountChange(ing.id, e.target.value)}
+                    />
+                    <input
+                      type='text'
+                      placeholder={t(
+                        'fridge.productsList.ingredient.fields.unit.placeholder'
+                      )}
+                      value={fe.unit ? fe.unit : ''}
+                      onChange={(e) => handleUnitChange(ing.id, e.target.value)}
+                    />
+                  </div>
+                  <span className='calories-input-wrap'>
+                    <input
+                      type='number'
+                      min={0}
+                      step='any'
+                      className='calories-input'
+                      title={t('fridge.productsList.ingredient.fields.calories.title')}
+                      placeholder={t(
+                        'fridge.productsList.ingredient.fields.calories.placeholder'
+                      )}
+                      value={ing.calories != null ? ing.calories : ''}
+                      onChange={(e) => handleCaloriesChange(ing.id, e.target.value)}
+                    />
+                    <span className='calories-input-suffix'>
+                      {t('fridge.productsList.ingredient.fields.calories.unit')}
+                    </span>
+                  </span>
                 </div>
                 <button
                   className='del'

@@ -12,6 +12,8 @@ import { type Recipe, type RecipeItem } from '../store/state.ts';
 import { type LibraryRecipe, type LibraryRecipeItem } from '../server-api.ts';
 import { MealTypePills } from './meal-type-pills.tsx';
 import { ErrorBoundary } from './error-boundary.tsx';
+import { caloriesPerServing, estimateRecipeCalories } from '../nutrition.ts';
+import { stateStore } from '../store/store.ts';
 
 export type RecipeModalSource =
   | { kind: 'mine'; recipe: Recipe; ev: EvaluateRecipeResult }
@@ -42,6 +44,16 @@ export const RecipeModal = ({
 }: RecipeModalProps) => {
   const { recipe } = source;
   const ev = source.kind === 'mine' ? source.ev : undefined;
+  const cps =
+    source.kind === 'mine'
+      ? caloriesPerServing(
+          source.recipe,
+          estimateRecipeCalories(source.recipe.items, stateStore.getState().ingredients)
+        )
+      : // Library items have no ingredientId per item, so there's no way to
+        // estimate from ingredients — only show it if the server already
+        // provided a calories value directly.
+        caloriesPerServing(source.recipe, null);
 
   return (
     <div className='modal-overlay' hidden={!open} onClick={onClose}>
@@ -104,6 +116,13 @@ export const RecipeModal = ({
             </div>
             {recipe.description && (
               <p className='recipe-modal-desc'>{recipe.description}</p>
+            )}
+            {cps && (
+              <div className='calories-per-serving'>
+                {t('recipeList.status.caloriesPerServing', {
+                  kcal: `${cps.partial ? '~' : ''}${cps.kcal}`,
+                })}
+              </div>
             )}
           </ErrorBoundary>
         </div>

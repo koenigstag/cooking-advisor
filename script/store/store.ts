@@ -79,6 +79,14 @@ export const stateStore = {
       prev.ingredients = ingredients;
     });
   },
+  setIngredientCalories(ingredientId: string, calories: number | null) {
+    this.mutate((prev) => {
+      const ingredient = prev.ingredients.find((i) => i.id === ingredientId);
+      if (!ingredient) return;
+      if (calories == null) delete ingredient.calories;
+      else ingredient.calories = calories;
+    });
+  },
   setEditingRecipeId(recipeId: string | null) {
     this.mutate((prev) => {
       prev.editingRecipeId = recipeId;

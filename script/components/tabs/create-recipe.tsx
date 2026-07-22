@@ -3,11 +3,13 @@ import { FaXmark } from 'react-icons/fa6';
 import { t, tc } from '../../lang/lang.ts';
 import { saveData } from '../../database/index.ts';
 import {
+  findIngredientByName,
   getOrCreateIngredient,
   ingredientDisplayName,
   ingredientName,
   isIngredientBlocked,
 } from '../../ingredient.ts';
+import { estimateRecipeCalories } from '../../nutrition.ts';
 import { units } from '../../options.ts';
 import type { MealType, Recipe, RecipeItem } from '../../store/state.ts';
 import { uid } from '../../utils.ts';
@@ -33,6 +35,8 @@ const defaultDraftData = {
     } as unknown as RecipeItem,
   ],
   mealTypes: [] as MealType[],
+  servings: '',
+  calories: '',
 };
 
 export const AddRecipeTab = () => {
@@ -45,6 +49,8 @@ export const AddRecipeTab = () => {
     description: string;
     items: RecipeItem[];
     mealTypes: MealType[];
+    servings: string;
+    calories: string;
   }>(defaultDraftData);
 
   const editing = state.editingRecipeId
@@ -64,6 +70,8 @@ export const AddRecipeTab = () => {
           unit: it.unit,
         })),
         mealTypes: recipe.mealTypes || [],
+        servings: recipe.servings != null ? recipe.servings.toString() : '',
+        calories: recipe.calories != null ? recipe.calories.toString() : '',
       });
     } else {
       setDraftData(defaultDraftData);
@@ -128,11 +136,15 @@ export const AddRecipeTab = () => {
       enqueueSnackbar(t('addRecipe.actions.saveAlert.noIngredients'), { variant: 'error' });
       return;
     }
+    const servings = draftData.servings !== '' ? parseFloat(draftData.servings) : undefined;
+    const calories = draftData.calories !== '' ? parseFloat(draftData.calories) : undefined;
     if (editing) {
       editing.name = name;
       editing.description = draftData.description.trim();
       editing.items = items;
       editing.mealTypes = draftData.mealTypes;
+      editing.servings = servings;
+      editing.calories = calories;
     } else {
       const newRecipe: Recipe = {
         id: uid(),
@@ -140,6 +152,8 @@ export const AddRecipeTab = () => {
         description: draftData.description.trim(),
         items,
         mealTypes: draftData.mealTypes,
+        servings,
+        calories,
       };
       state.recipes.push(newRecipe);
       publishRecipeToLibrary(newRecipe, state.lang).catch((e) => {
@@ -177,6 +191,23 @@ export const AddRecipeTab = () => {
   function draftItemsNeedsReset() {
     return false;
   }
+
+  // Looks up existing ingredients by the name typed into each row, purely
+  // for a live preview — doesn't create anything, unlike getOrCreateIngredient
+  // in handleSaveRecipe. An unresolved or as-yet-unknown ingredient just
+  // means that row is skipped in the estimate (same as an unrecognized unit).
+  const caloriesEstimate = React.useMemo(() => {
+    const previewItems: RecipeItem[] = draftData.items
+      .map((it) => {
+        const n = (it.name || '').trim();
+        if (!n) return null;
+        const ing = findIngredientByName(n);
+        if (!ing) return null;
+        return { ingredientId: ing.id, name: n, amount: it.amount, unit: it.unit };
+      })
+      .filter((it): it is RecipeItem => it !== null);
+    return estimateRecipeCalories(previewItems, state.ingredients);
+  }, [draftData.items, state.ingredients]);
 
   React.useEffect(() => {
     if (
@@ -229,6 +260,40 @@ export const AddRecipeTab = () => {
               setDraftData({ ...draftData, description: e.target.value })
             }
           />
+        </div>
+        <div className='field-row'>
+          <div className='field'>
+            <label>{t('addRecipe.fields.servings.label')}</label>
+            <input
+              type='number'
+              id='recServings'
+              min={1}
+              step='1'
+              placeholder={t('addRecipe.fields.servings.placeholder')}
+              value={draftData.servings}
+              onChange={(e) =>
+                setDraftData({ ...draftData, servings: e.target.value })
+              }
+            />
+          </div>
+          <div className='field'>
+            <label>{t('addRecipe.fields.calories.label')}</label>
+            <input
+              type='number'
+              id='recCalories'
+              min={0}
+              step='any'
+              placeholder={
+                caloriesEstimate
+                  ? `${caloriesEstimate.partial ? '~' : ''}${caloriesEstimate.kcal}`
+                  : t('addRecipe.fields.calories.placeholder')
+              }
+              value={draftData.calories}
+              onChange={(e) =>
+                setDraftData({ ...draftData, calories: e.target.value })
+              }
+            />
+          </div>
         </div>
         <label>{t('addRecipe.fields.ingredients.label')}</label>
         <div id='ingRows'>

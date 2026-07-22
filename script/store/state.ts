@@ -48,6 +48,9 @@ export type Ingredient = {
   name: IngredientName;
   iconId?: IconId;
   tags?: IngredientTag[];
+  // kcal per 100g. Optional, and only meaningful for ingredients measured
+  // by weight — used to estimate a recipe's total calories.
+  calories?: number;
   // Only set for ingredients sourced from the server catalog; used to
   // decide whether a resync should overwrite name/iconId/tags.
   updatedAt?: string;
@@ -74,6 +77,11 @@ export type Recipe = {
   description: string;
   items: RecipeItem[];
   mealTypes?: MealType[];
+  // Manual override for the recipe's total calories (kcal). When unset, an
+  // estimate is computed from the ingredients' calories fields instead.
+  calories?: number;
+  // Used with calories (manual or estimated) to show a per-serving figure.
+  servings?: number;
 };
 
 export type DietaryAction = 'warn' | 'hide';

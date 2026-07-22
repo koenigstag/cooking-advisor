@@ -38,6 +38,10 @@ export type LibraryRecipe = {
   mealTypes?: MealType[];
   lang?: LANG;
   createdAt: string;
+  // Not currently sent by publishRecipeToLibrary — display-only for now,
+  // in case the server starts returning them.
+  servings?: number;
+  calories?: number;
 };
 
 export async function fetchLibraryRecipes(lang: LANG): Promise<LibraryRecipe[]> {
