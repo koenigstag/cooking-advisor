@@ -122,15 +122,15 @@ export const LANG_RU_RU = {
       },
       amount: {
         label: 'Количество',
-        placeholder: 'например, 500',
+        placeholder: '100',
       },
       unit: {
         label: 'Ед. изм.',
         placeholder: 'г, шт, л…',
       },
       calories: {
-        label: 'Калорийность (ккал/100г)',
-        placeholder: 'например, 165',
+        label: 'ккал/100г',
+        placeholder: '165',
       },
       icon: {
         label: 'Иконка',
