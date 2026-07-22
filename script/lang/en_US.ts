@@ -120,15 +120,15 @@ export const LANG_EN_US = {
       },
       amount: {
         label: 'Amount',
-        placeholder: 'e.g., 500',
+        placeholder: '100',
       },
       unit: {
         label: 'Unit',
         placeholder: 'g, pcs, l…',
       },
       calories: {
-        label: 'Calories (kcal/100g)',
-        placeholder: 'e.g., 165',
+        label: 'kcal/100g',
+        placeholder: '165',
       },
       icon: {
         label: 'Icon',
